@@ -10,7 +10,12 @@ const path = require('path');
 function esc(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-function raw(str) { return String(str); }
+function sanitizeHtml(str) {
+  // Escape everything, then restore only safe tags: <strong>, <em>, <br>
+  let s = esc(str);
+  s = s.replace(/&lt;(\/?(strong|em|b|i|br)\s*\/?)&gt;/gi, '<$1>');
+  return s;
+}
 
 function buildHeroStats(stats) {
   return stats.map(s => `
@@ -90,7 +95,7 @@ function generateHTML(data) {
     <div class="sell-banner__content">
       <div></div>
       <div class="sell-banner__form-box reveal">
-        <div class="sell-banner__form-title">${raw(d.sell_banner.title)}</div>
+        <div class="sell-banner__form-title">${sanitizeHtml(d.sell_banner.title)}</div>
         <div class="sell-banner__form-subtitle">${esc(d.sell_banner.subtitle)}</div>
         <form onsubmit="submitForm(event,'sell')">
           <div class="form-group"><input type="text" name="name" class="form-input form-input--light" placeholder="Your name" required /></div>
@@ -308,7 +313,7 @@ function generateHTML(data) {
     <div class="concept__grid">
       <div class="concept__text reveal">
         <h2 class="section-title">${esc(d.concept.title)}</h2>
-        ${d.concept.paragraphs.map(p=>`<p>${raw(p)}</p>`).join('\n        ')}
+        ${d.concept.paragraphs.map(p=>`<p>${sanitizeHtml(p)}</p>`).join('\n        ')}
         <div class="concept__ctas">
           <a href="#layouts" class="btn btn--gold">Explore Layouts</a>
           <a href="#roi" class="btn btn--teal-outline">Investment Details</a>

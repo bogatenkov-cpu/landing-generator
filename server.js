@@ -170,6 +170,7 @@ Return ONLY the JSON object, no markdown, no explanation.`;
 }
 
 const server = http.createServer(async (req, res) => {
+ try {
   const url = new URL(req.url, `http://localhost:${PORT}`);
 
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -270,7 +271,11 @@ const server = http.createServer(async (req, res) => {
 
   // Preview
   if (req.method === 'POST' && url.pathname === '/api/preview') {
-    const data = await parseBody(req);
+    let data;
+    try { data = await parseBody(req); } catch(e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message })); return;
+    }
     try {
       const html = generateHTML(data);
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
@@ -284,7 +289,11 @@ const server = http.createServer(async (req, res) => {
 
   // Save project JSON + generate dist
   if (req.method === 'POST' && url.pathname === '/api/save') {
-    const data = await parseBody(req);
+    let data;
+    try { data = await parseBody(req); } catch(e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message })); return;
+    }
     try {
       const slug = data.project_slug;
       if (!slug) throw new Error('project_slug is required');
@@ -306,7 +315,12 @@ const server = http.createServer(async (req, res) => {
 
   // AI Fill — Claude with web search
   if (req.method === 'POST' && url.pathname === '/api/ai-fill') {
-    const { query } = await parseBody(req);
+    let body;
+    try { body = await parseBody(req); } catch(e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message })); return;
+    }
+    const { query } = body;
     try {
       if (!query) throw new Error('query is required (project name or URL)');
       const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -346,6 +360,13 @@ const server = http.createServer(async (req, res) => {
 
   res.writeHead(404);
   res.end('Not found');
+ } catch(e) {
+  console.error('Unhandled error:', e.message);
+  if (!res.headersSent) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Internal server error' }));
+  }
+ }
 });
 
 server.listen(PORT, () => {
