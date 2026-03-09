@@ -333,6 +333,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`\n🚀 Landing Generator running at http://localhost:${PORT}\n`);
+  console.log(`🔑 ANTHROPIC_API_KEY: ${process.env.ANTHROPIC_API_KEY ? 'SET (' + process.env.ANTHROPIC_API_KEY.slice(0,10) + '...)' : 'NOT SET'}`);
   if (process.env.ADMIN_PASSWORD) {
     console.log(`🔒 Password protection: ON\n`);
   } else {
