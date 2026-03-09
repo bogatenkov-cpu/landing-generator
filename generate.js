@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Landing Page Generator — Tranio Thailand
+ * Landing Page Generator — Tranio
+ * Supports multi-language (EN/RU), currency selection, custom forms
  * node generate.js data/anava-samui.json
  */
 
@@ -8,86 +9,201 @@ const fs = require('fs');
 const path = require('path');
 
 function esc(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function sanitizeHtml(str) {
-  // Escape everything, then restore only safe tags: <strong>, <em>, <br>
   let s = esc(str);
   s = s.replace(/&lt;(\/?(strong|em|b|i|br)\s*\/?)&gt;/gi, '<$1>');
   return s;
 }
 
-function buildHeroStats(stats) {
-  return stats.map(s => `
+// Multi-lang text: handles both "string" and {en:"...",ru:"..."} formats
+// Returns spans with data-lang attributes for multi-lang, or plain escaped text
+function t(val, langs) {
+  if (!val) return '';
+  if (typeof val === 'string') return esc(val);
+  if (typeof val === 'object' && !Array.isArray(val)) {
+    return langs.map(l => `<span data-lang="${l}">${esc(val[l] || '')}</span>`).join('');
+  }
+  return esc(String(val));
+}
+
+// Same but allows safe HTML tags (for paragraphs)
+function tHtml(val, langs) {
+  if (!val) return '';
+  if (typeof val === 'string') return sanitizeHtml(val);
+  if (typeof val === 'object' && !Array.isArray(val)) {
+    return langs.map(l => `<span data-lang="${l}">${sanitizeHtml(val[l] || '')}</span>`).join('');
+  }
+  return sanitizeHtml(String(val));
+}
+
+// For attribute values (no spans, pick first available language)
+function tAttr(val, langs) {
+  if (!val) return '';
+  if (typeof val === 'string') return esc(val);
+  if (typeof val === 'object' && !Array.isArray(val)) {
+    for (const l of langs) { if (val[l]) return esc(val[l]); }
+    return esc(Object.values(val)[0] || '');
+  }
+  return esc(String(val));
+}
+
+// UI translations for interface elements
+const UI = {
+  en: {
+    concept: 'Concept', amenities: 'Amenities', layouts: 'Layouts',
+    investment: 'Investment', gallery: 'Gallery', location: 'Location',
+    request_call: 'Request a Call', explore_layouts: 'Explore Layouts',
+    investment_details: 'Investment Details', download_catalogue: 'Download the Full Project Catalogue',
+    get_catalogue: 'Get the Catalogue', available_layouts: 'Available Layouts',
+    request_floor_plan: 'Request Floor Plan', floor_plan_note: 'Floor plan<br>available upon request',
+    unit_type: 'Unit Type', size: 'Size', price_from: 'Price From',
+    guaranteed_roi: 'Guaranteed ROI', annual_income: 'Est. Annual Income',
+    get_investment_plan: 'Get a Personalized Investment Plan',
+    about_developer: 'About the Developer',
+    still_questions: 'Still Have Questions About',
+    experts_help: 'Our experts will answer all questions about pricing, layouts, investment returns, and the purchase process.',
+    request_callback: 'Request a Callback', send_request: 'Send a Request',
+    your_name: 'Your name', phone: 'Phone number', email: 'Email',
+    privacy: 'I confirm I have read and accept the', privacy_policy: 'Privacy Policy',
+    thank_you: 'Thank you! We\'ll be in touch shortly.',
+    rights: 'All rights reserved.', terms: 'Terms of Use',
+    get_valuation: 'Get a Valuation'
+  },
+  ru: {
+    concept: 'Концепция', amenities: 'Удобства', layouts: 'Планировки',
+    investment: 'Инвестиции', gallery: 'Галерея', location: 'Расположение',
+    request_call: 'Заказать звонок', explore_layouts: 'Смотреть планировки',
+    investment_details: 'Детали инвестиций', download_catalogue: 'Скачайте полный каталог проекта',
+    get_catalogue: 'Получить каталог', available_layouts: 'Доступные планировки',
+    request_floor_plan: 'Запросить планировку', floor_plan_note: 'Планировка<br>по запросу',
+    unit_type: 'Тип юнита', size: 'Площадь', price_from: 'Цена от',
+    guaranteed_roi: 'Гарантированный ROI', annual_income: 'Годовой доход',
+    get_investment_plan: 'Получить инвестиционный план',
+    about_developer: 'О застройщике',
+    still_questions: 'Остались вопросы по',
+    experts_help: 'Наши эксперты ответят на все вопросы о ценах, планировках, доходности и процессе покупки.',
+    request_callback: 'Заказать обратный звонок', send_request: 'Отправить заявку',
+    your_name: 'Ваше имя', phone: 'Номер телефона', email: 'Email',
+    privacy: 'Подтверждаю согласие с', privacy_policy: 'Политикой конфиденциальности',
+    thank_you: 'Спасибо! Мы свяжемся с вами в ближайшее время.',
+    rights: 'Все права защищены.', terms: 'Условия использования',
+    get_valuation: 'Получить оценку'
+  }
+};
+
+// Helper: get UI string for all active languages with data-lang spans
+function ui(key, langs) {
+  if (langs.length === 1) return UI[langs[0]][key] || UI.en[key] || key;
+  return langs.map(l => `<span data-lang="${l}">${UI[l][key] || UI.en[key] || key}</span>`).join('');
+}
+
+function buildHeroStats(stats, langs) {
+  return (stats || []).map(s => `
         <div class="hero__stat">
-          <span class="hero__stat-value">${esc(s.value)}</span>
-          <span class="hero__stat-label">${esc(s.label)}</span>
+          <span class="hero__stat-value">${t(s.value, langs)}</span>
+          <span class="hero__stat-label">${t(s.label, langs)}</span>
         </div>`).join('');
 }
-function buildConceptSpecs(specs) {
-  return specs.map(s => `
+function buildConceptSpecs(specs, langs) {
+  return (specs || []).map(s => `
           <div class="concept__spec-row">
-            <span class="concept__spec-key">${esc(s.key)}</span>
-            <span class="concept__spec-val">${esc(s.value)}</span>
+            <span class="concept__spec-key">${t(s.key, langs)}</span>
+            <span class="concept__spec-val">${t(s.value, langs)}</span>
           </div>`).join('');
 }
-function buildAmenities(items) {
-  return items.map((item, i) => `
+function buildAmenities(items, langs) {
+  return (items || []).map((item, i) => `
             <div class="amenities__item">
               <span class="amenities__num">${String(i+1).padStart(2,'0')}</span>
-              <span class="amenities__name">${esc(item)}</span>
+              <span class="amenities__name">${t(item, langs)}</span>
             </div>`).join('');
 }
-function buildCatalogueTags(tags) {
-  return tags.map(t => `<span class="catalogue__tag">${esc(t)}</span>`).join('\n          ');
+function buildCatalogueTags(tags, langs) {
+  return (tags || []).map(tg => `<span class="catalogue__tag">${t(tg, langs)}</span>`).join('\n          ');
 }
-function buildLayouts(layouts) {
-  return layouts.map(l => `
+function buildLayouts(layouts, langs) {
+  return (layouts || []).map(l => `
         <div class="layout-item">
           <button class="layout-item__header" onclick="toggleLayout(this)">
-            <span>${esc(l.name)} — from ${esc(l.price_from)}</span>
+            <span>${t(l.name, langs)} — from ${t(l.price_from, langs)}</span>
             <span class="toggle">+</span>
           </button>
           <div class="layout-item__body">
             <div class="layout-item__plan">
-              <div style="color:rgba(255,255,255,.4);font-family:var(--font-ui);font-size:14px;text-align:center">Floor plan<br>available upon request</div>
+              <div style="color:rgba(255,255,255,.4);font-family:var(--font-ui);font-size:14px;text-align:center">${ui('floor_plan_note', langs)}</div>
             </div>
             <div class="layout-item__specs">
-              <div>${l.specs.map(s=>`<div class="layout-item__spec-row"><span class="layout-item__spec-key">${esc(s.key)}</span><span class="layout-item__spec-val">${esc(s.value)}</span></div>`).join('')}</div>
-              <button class="btn btn--gold layout-item__cta" onclick="openModal('layouts')">Request Floor Plan</button>
+              <div>${(l.specs||[]).map(s=>`<div class="layout-item__spec-row"><span class="layout-item__spec-key">${t(s.key, langs)}</span><span class="layout-item__spec-val">${t(s.value, langs)}</span></div>`).join('')}</div>
+              <button class="btn btn--gold layout-item__cta" onclick="openModal('layouts')">${ui('request_floor_plan', langs)}</button>
             </div>
           </div>
         </div>`).join('\n');
 }
-function buildRoiRows(rows) {
-  return rows.map(r => `
+function buildRoiRows(rows, langs) {
+  return (rows || []).map(r => `
             <tr>
-              <td>${esc(r.type)}</td><td>${esc(r.size)}</td><td>${esc(r.price)}</td>
-              <td><span class="roi__badge">${esc(r.roi)}</span></td><td>${esc(r.annual_income)}</td>
+              <td>${t(r.type, langs)}</td><td>${t(r.size, langs)}</td><td>${t(r.price, langs)}</td>
+              <td><span class="roi__badge">${t(r.roi, langs)}</span></td><td>${t(r.annual_income, langs)}</td>
             </tr>`).join('');
 }
 function buildGallerySlides(images) {
-  return images.map((img,i) => `
-          <div class="gallery__slide"><img src="${esc(img)}" alt="Gallery ${i+1}" loading="lazy" /></div>`).join('');
+  return (images || []).map((img,i) => `
+          <div class="gallery__slide"><img src="${esc(typeof img === 'string' ? img : '')}" alt="Gallery ${i+1}" loading="lazy" /></div>`).join('');
 }
-function buildDistances(distances) {
-  return distances.map(d => `
+function buildDistances(distances, langs) {
+  return (distances || []).map(d => `
             <div class="location__dist-row">
-              <span class="location__place">${esc(d.place)}</span>
-              <span class="location__time">${esc(d.time)}</span>
+              <span class="location__place">${t(d.place, langs)}</span>
+              <span class="location__time">${t(d.time, langs)}</span>
             </div>`).join('');
 }
-function buildDevFacts(facts) {
-  return facts.map(f => `
+function buildDevFacts(facts, langs) {
+  return (facts || []).map(f => `
             <div class="developer__stat-row">
-              <span class="developer__stat-key">${esc(f.key)}</span>
-              <span class="developer__stat-val">${esc(f.value)}</span>
+              <span class="developer__stat-key">${t(f.key, langs)}</span>
+              <span class="developer__stat-val">${t(f.value, langs)}</span>
             </div>`).join('');
+}
+
+// Build form fields HTML
+function buildFormFields(fields, langs, lightStyle) {
+  const cls = lightStyle ? 'form-input form-input--light' : 'form-input';
+  if (!fields || !fields.length) {
+    // Default fields
+    return `
+          <div class="form-group"><input type="text" name="name" class="${cls}" placeholder="${ui('your_name', langs)}" required /></div>
+          <div class="form-group"><input type="tel" name="phone" class="${cls}" placeholder="${ui('phone', langs)}" required /></div>
+          <div class="form-group"><input type="email" name="email" class="${cls}" placeholder="${ui('email', langs)}" /></div>`;
+  }
+  return fields.map(f => {
+    const ph = tAttr(f.placeholder || f.label, langs);
+    const req = f.required ? ' required' : '';
+    return `
+          <div class="form-group"><input type="${esc(f.type||'text')}" name="${esc(f.name)}" class="${cls}" placeholder="${ph}"${req} /></div>`;
+  }).join('');
+}
+
+function buildPrivacy(langs, lightStyle) {
+  const cls = lightStyle ? 'form-privacy form-privacy--light' : 'form-privacy';
+  return `
+          <label class="form-consent"><input type="checkbox" name="privacy" required /> <span>${ui('privacy', langs)} <a href="#">${ui('privacy_policy', langs)}</a></span></label>`;
 }
 
 function generateHTML(data) {
   const d = data;
+  const langs = d.languages && d.languages.length ? d.languages : ['en'];
+  const defaultLang = langs[0];
+  const multiLang = langs.length > 1;
   const webhook = esc(d.crm_webhook || '');
+  const formFields = d.form_fields || null;
+
+  // Language switcher HTML for nav
+  const langSwitcher = multiLang ? `
+    <div class="lang-switch" id="langSwitch">
+      ${langs.map(l => `<button class="lang-switch__btn${l === defaultLang ? ' active' : ''}" data-lang="${l}" onclick="switchLang('${l}')">${l.toUpperCase()}</button>`).join('')}
+    </div>` : '';
 
   const sellBannerSection = d.sell_banner && d.sell_banner.show ? `
   <section class="sell-banner">
@@ -95,27 +211,34 @@ function generateHTML(data) {
     <div class="sell-banner__content">
       <div></div>
       <div class="sell-banner__form-box reveal">
-        <div class="sell-banner__form-title">${sanitizeHtml(d.sell_banner.title)}</div>
-        <div class="sell-banner__form-subtitle">${esc(d.sell_banner.subtitle)}</div>
+        <div class="sell-banner__form-title">${tHtml(d.sell_banner.title, langs)}</div>
+        <div class="sell-banner__form-subtitle">${t(d.sell_banner.subtitle, langs)}</div>
         <form onsubmit="submitForm(event,'sell')">
-          <div class="form-group"><input type="text" name="name" class="form-input form-input--light" placeholder="Your name" required /></div>
-          <div class="form-group"><input type="email" name="email" class="form-input form-input--light" placeholder="Email" /></div>
-          <div class="form-group"><input type="tel" name="phone" class="form-input form-input--light" placeholder="Phone number" required /></div>
+          ${buildFormFields(formFields, langs, true)}
           <input type="hidden" name="formname" value="Sell Banner" />
-          <button type="submit" class="btn btn--gold" style="width:100%;margin-top:12px">Get a Valuation</button>
-          <p class="form-privacy form-privacy--light">I confirm I have read and accept the <a href="#">Privacy Policy</a></p>
+          <button type="submit" class="btn btn--gold" style="width:100%;margin-top:12px">${ui('get_valuation', langs)}</button>
+          ${buildPrivacy(langs, true)}
+          <div class="form-success">${ui('thank_you', langs)}</div>
         </form>
       </div>
     </div>
   </section>` : '';
 
+  // Multi-lang paragraphs: each paragraph can be string or {en,ru}
+  const conceptParas = (d.concept.paragraphs || []).map(p => {
+    if (typeof p === 'object' && !Array.isArray(p)) {
+      return langs.map(l => `<p data-lang="${l}">${sanitizeHtml(p[l] || '')}</p>`).join('\n        ');
+    }
+    return `<p>${sanitizeHtml(p)}</p>`;
+  }).join('\n        ');
+
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${defaultLang}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${esc(d.meta_title)}</title>
-  <meta name="description" content="${esc(d.meta_description)}" />
+  <title>${tAttr(d.meta_title, langs)}</title>
+  <meta name="description" content="${tAttr(d.meta_description, langs)}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -138,6 +261,12 @@ function generateHTML(data) {
     .section-title{font-family:var(--font-heading);font-size:clamp(32px,4.5vw,52px);font-weight:300;color:var(--text-mid);margin-bottom:48px}
     .reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
     .reveal.visible{opacity:1;transform:none}
+    ${multiLang ? `[data-lang]{display:none}body[data-lang="${defaultLang}"] [data-lang="${defaultLang}"]{display:revert}${langs.filter(l=>l!==defaultLang).map(l=>`body[data-lang="${l}"] [data-lang="${l}"]{display:revert}`).join('')}` : ''}
+    .lang-switch{display:flex;gap:4px;margin-left:16px}
+    .lang-switch__btn{font-family:var(--font-ui);font-size:11px;font-weight:600;padding:4px 10px;border-radius:4px;border:1.5px solid rgba(255,255,255,.4);background:transparent;color:rgba(255,255,255,.7);cursor:pointer;transition:.2s;letter-spacing:.05em}
+    .lang-switch__btn.active{background:rgba(255,255,255,.9);color:var(--teal);border-color:rgba(255,255,255,.9)}
+    .nav.solid .lang-switch__btn{border-color:rgba(0,0,0,.2);color:var(--text-mid)}
+    .nav.solid .lang-switch__btn.active{background:var(--teal);color:var(--white);border-color:var(--teal)}
     .nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 var(--px);height:64px;background:rgba(242,237,230,.96);backdrop-filter:blur(8px);border-bottom:1px solid rgba(0,0,0,.06);transition:background .3s}
     .nav.transparent{background:transparent;border-bottom-color:transparent}
     .nav__logo{font-family:var(--font-heading);font-size:20px;font-weight:300;letter-spacing:.1em;text-transform:uppercase;color:var(--white)}
@@ -146,6 +275,7 @@ function generateHTML(data) {
     .nav__links a{font-family:var(--font-ui);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--white);opacity:.85;transition:opacity .2s}
     .nav.solid .nav__links a{color:var(--text-dark)}
     .nav__links a:hover{opacity:1}
+    .nav__right{display:flex;align-items:center;gap:12px}
     .nav__call-btn{font-family:var(--font-ui);font-size:13px;padding:9px 22px;border-radius:100px;border:1.5px solid var(--white);color:var(--white);background:transparent;cursor:pointer;transition:background .2s,color .2s}
     .nav.solid .nav__call-btn{border-color:var(--teal);color:var(--teal)}
     .nav__call-btn:hover{background:var(--white);color:var(--teal)}
@@ -257,9 +387,10 @@ function generateHTML(data) {
     .form-input--light{color:var(--text-dark);border-bottom-color:rgba(0,0,0,.2)}
     .form-input--light::placeholder{color:var(--text-muted)}
     .form-input--light:focus{border-bottom-color:var(--teal)}
-    .form-privacy{font-size:11px;color:rgba(255,255,255,.45);text-align:center;margin-top:12px;line-height:1.6}
-    .form-privacy--light{color:var(--text-muted)}
-    .form-privacy a{text-decoration:underline}
+    .form-consent{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:rgba(255,255,255,.45);margin-top:12px;line-height:1.6;cursor:pointer}
+    .form-consent input{margin-top:3px;flex-shrink:0}
+    .form-consent a{text-decoration:underline}
+    .form-consent--light{color:var(--text-muted)}
     .form-success{display:none;text-align:center;padding:20px;color:var(--white);font-size:16px}
     .footer{background:var(--teal-dark);padding:32px var(--px);display:flex;justify-content:space-between;align-items:center;font-family:var(--font-ui);font-size:12px;color:rgba(255,255,255,.4)}
     .footer a{color:rgba(255,255,255,.5)}
@@ -282,18 +413,21 @@ function generateHTML(data) {
     }
   </style>
 </head>
-<body>
+<body${multiLang ? ` data-lang="${defaultLang}"` : ''}>
   <nav class="nav transparent" id="mainNav">
-    <a href="#" class="nav__logo">${esc(d.project_name)}</a>
+    <a href="#" class="nav__logo">${t(d.project_name, langs)}</a>
     <ul class="nav__links" id="navLinks">
-      <li><a href="#concept">Concept</a></li>
-      <li><a href="#amenities">Amenities</a></li>
-      <li><a href="#layouts">Layouts</a></li>
-      <li><a href="#roi">Investment</a></li>
-      <li><a href="#gallery">Gallery</a></li>
-      <li><a href="#location">Location</a></li>
+      <li><a href="#concept">${ui('concept', langs)}</a></li>
+      <li><a href="#amenities">${ui('amenities', langs)}</a></li>
+      <li><a href="#layouts">${ui('layouts', langs)}</a></li>
+      <li><a href="#roi">${ui('investment', langs)}</a></li>
+      <li><a href="#gallery">${ui('gallery', langs)}</a></li>
+      <li><a href="#location">${ui('location', langs)}</a></li>
     </ul>
-    <button class="nav__call-btn" onclick="openModal('nav')">Request a Call</button>
+    <div class="nav__right">
+      ${langSwitcher}
+      <button class="nav__call-btn" onclick="openModal('nav')">${ui('request_call', langs)}</button>
+    </div>
     <div class="nav__burger" id="burger"><span></span><span></span><span></span></div>
   </nav>
 
@@ -301,25 +435,25 @@ function generateHTML(data) {
     <div class="hero__bg" id="heroBg" style="background-image:url('${esc(d.hero.image)}')"></div>
     <div class="hero__overlay"></div>
     <div class="hero__content">
-      <h1 class="hero__title">${esc(d.hero.title)}</h1>
-      <p class="hero__desc">${esc(d.hero.description)}</p>
+      <h1 class="hero__title">${t(d.hero.title, langs)}</h1>
+      <p class="hero__desc">${t(d.hero.description, langs)}</p>
     </div>
     <div class="hero__stats">
-      <div class="hero__stats-inner">${buildHeroStats(d.hero.stats)}</div>
+      <div class="hero__stats-inner">${buildHeroStats(d.hero.stats, langs)}</div>
     </div>
   </section>
 
   <section class="section concept" id="concept">
     <div class="concept__grid">
       <div class="concept__text reveal">
-        <h2 class="section-title">${esc(d.concept.title)}</h2>
-        ${d.concept.paragraphs.map(p=>`<p>${sanitizeHtml(p)}</p>`).join('\n        ')}
+        <h2 class="section-title">${t(d.concept.title, langs)}</h2>
+        ${conceptParas}
         <div class="concept__ctas">
-          <a href="#layouts" class="btn btn--gold">Explore Layouts</a>
-          <a href="#roi" class="btn btn--teal-outline">Investment Details</a>
+          <a href="#layouts" class="btn btn--gold">${ui('explore_layouts', langs)}</a>
+          <a href="#roi" class="btn btn--teal-outline">${ui('investment_details', langs)}</a>
         </div>
       </div>
-      <div class="concept__specs reveal" style="transition-delay:.15s">${buildConceptSpecs(d.concept.specs)}</div>
+      <div class="concept__specs reveal" style="transition-delay:.15s">${buildConceptSpecs(d.concept.specs, langs)}</div>
     </div>
   </section>
 
@@ -329,11 +463,11 @@ function generateHTML(data) {
     <div class="container">
       <div class="amenities__grid">
         <div class="amenities__image reveal">
-          <img src="${esc(d.amenities.image)}" alt="${esc(d.amenities.title)}" loading="lazy" />
+          <img src="${esc(d.amenities.image)}" alt="${tAttr(d.amenities.title, langs)}" loading="lazy" />
         </div>
         <div class="reveal" style="transition-delay:.15s">
-          <h2 class="section-title">${esc(d.amenities.title)}</h2>
-          <div class="amenities__list">${buildAmenities(d.amenities.items)}</div>
+          <h2 class="section-title">${t(d.amenities.title, langs)}</h2>
+          <div class="amenities__list">${buildAmenities(d.amenities.items, langs)}</div>
         </div>
       </div>
     </div>
@@ -342,41 +476,39 @@ function generateHTML(data) {
   <section class="section">
     <div class="catalogue reveal">
       <div class="catalogue__left">
-        <h3>Download the Full Project Catalogue</h3>
-        <div class="catalogue__tags">${buildCatalogueTags(d.catalogue.tags)}</div>
+        <h3>${ui('download_catalogue', langs)}</h3>
+        <div class="catalogue__tags">${buildCatalogueTags(d.catalogue.tags, langs)}</div>
         <form onsubmit="submitForm(event,'catalogue')" style="margin-top:32px">
-          <div class="form-group"><input type="text" name="name" class="form-input" placeholder="Your name" required /></div>
-          <div class="form-group"><input type="email" name="email" class="form-input" placeholder="Email" /></div>
-          <div class="form-group"><input type="tel" name="phone" class="form-input" placeholder="Phone number" required /></div>
+          ${buildFormFields(formFields, langs, false)}
           <input type="hidden" name="formname" value="Catalogue" />
-          <button type="submit" class="btn btn--gold" style="width:100%;margin-top:12px">Get the Catalogue</button>
-          <p class="form-privacy">I confirm I have read and accept the <a href="#">Privacy Policy</a></p>
-          <div class="form-success">Thank you! We'll be in touch shortly.</div>
+          <button type="submit" class="btn btn--gold" style="width:100%;margin-top:12px">${ui('get_catalogue', langs)}</button>
+          ${buildPrivacy(langs, false)}
+          <div class="form-success">${ui('thank_you', langs)}</div>
         </form>
       </div>
       <div class="catalogue__image">
-        <img src="${esc(d.catalogue.image)}" alt="${esc(d.project_name)} catalogue" loading="lazy" />
+        <img src="${esc(d.catalogue.image)}" alt="${tAttr(d.project_name, langs)} catalogue" loading="lazy" />
       </div>
     </div>
   </section>
 
   <section class="section section--cream" id="layouts">
     <div class="container">
-      <h2 class="section-title reveal">Available Layouts</h2>
+      <h2 class="section-title reveal">${ui('available_layouts', langs)}</h2>
       <div class="layouts__accordion reveal" style="transition-delay:.1s">
-${buildLayouts(d.layouts)}
+${buildLayouts(d.layouts, langs)}
       </div>
     </div>
   </section>
 
   <section class="section" id="roi">
     <div class="container">
-      <h2 class="section-title reveal">${esc(d.roi.title)}</h2>
+      <h2 class="section-title reveal">${t(d.roi.title, langs)}</h2>
       <div class="roi__table-wrap reveal" style="transition-delay:.1s">
         <table class="roi__table">
-          <thead><tr><th>Unit Type</th><th>Size</th><th>Price From</th><th>Guaranteed ROI</th><th>Est. Annual Income</th></tr></thead>
-          <tbody>${buildRoiRows(d.roi.rows)}
-            <tr class="roi__cta-row"><td colspan="5"><button class="btn btn--gold" onclick="openModal('roi')">Get a Personalized Investment Plan</button></td></tr>
+          <thead><tr><th>${ui('unit_type', langs)}</th><th>${ui('size', langs)}</th><th>${ui('price_from', langs)}</th><th>${ui('guaranteed_roi', langs)}</th><th>${ui('annual_income', langs)}</th></tr></thead>
+          <tbody>${buildRoiRows(d.roi.rows, langs)}
+            <tr class="roi__cta-row"><td colspan="5"><button class="btn btn--gold" onclick="openModal('roi')">${ui('get_investment_plan', langs)}</button></td></tr>
           </tbody>
         </table>
       </div>
@@ -386,7 +518,7 @@ ${buildLayouts(d.layouts)}
   <section class="section section--cream" id="gallery">
     <div class="container">
       <div class="gallery__header">
-        <h2 class="section-title reveal" style="margin-bottom:0">Gallery</h2>
+        <h2 class="section-title reveal" style="margin-bottom:0">${ui('gallery', langs)}</h2>
         <div class="gallery__nav">
           <button id="galPrev" aria-label="Previous">&#8592;</button>
           <button id="galNext" aria-label="Next">&#8594;</button>
@@ -400,11 +532,11 @@ ${buildLayouts(d.layouts)}
 
   <section class="section" id="location">
     <div class="container">
-      <h2 class="section-title reveal">${esc(d.location.title)}</h2>
+      <h2 class="section-title reveal">${t(d.location.title, langs)}</h2>
       <div class="location__grid">
         <div class="reveal">
-          <p class="location__desc">${esc(d.location.description)}</p>
-          <div class="location__distances">${buildDistances(d.location.distances)}</div>
+          <p class="location__desc">${t(d.location.description, langs)}</p>
+          <div class="location__distances">${buildDistances(d.location.distances, langs)}</div>
         </div>
         <div class="location__map reveal" style="transition-delay:.15s">
           <iframe src="${esc(d.location.map_embed)}" allowfullscreen loading="lazy"></iframe>
@@ -415,15 +547,15 @@ ${buildLayouts(d.layouts)}
 
   <section class="section section--cream">
     <div class="container">
-      <h2 class="section-title reveal">About the Developer</h2>
+      <h2 class="section-title reveal">${ui('about_developer', langs)}</h2>
       <div class="developer__grid">
         <div class="developer__image reveal">
-          <img src="${esc(d.developer.image)}" alt="${esc(d.developer.name)}" loading="lazy" />
+          <img src="${esc(d.developer.image)}" alt="${tAttr(d.developer.name, langs)}" loading="lazy" />
         </div>
         <div class="reveal" style="transition-delay:.15s">
-          <div class="developer__logo">${esc(d.developer.name)}</div>
-          <p class="developer__desc">${esc(d.developer.description)}</p>
-          <div class="developer__stats">${buildDevFacts(d.developer.facts)}</div>
+          <div class="developer__logo">${t(d.developer.name, langs)}</div>
+          <p class="developer__desc">${t(d.developer.description, langs)}</p>
+          <div class="developer__stats">${buildDevFacts(d.developer.facts, langs)}</div>
         </div>
       </div>
     </div>
@@ -433,8 +565,8 @@ ${buildLayouts(d.layouts)}
     <div class="container">
       <div class="final-cta__grid">
         <div class="reveal">
-          <h2>Still Have Questions About ${esc(d.project_name)}?</h2>
-          <p>Our experts will answer all questions about pricing, layouts, investment returns, and the purchase process.</p>
+          <h2>${ui('still_questions', langs)} ${t(d.project_name, langs)}?</h2>
+          <p>${ui('experts_help', langs)}</p>
           <div class="final-cta__contact">
             <div>${esc(d.contact.address)}</div>
             <div><a href="mailto:${esc(d.contact.email)}">${esc(d.contact.email)}</a></div>
@@ -442,14 +574,13 @@ ${buildLayouts(d.layouts)}
           </div>
         </div>
         <div class="final-cta__form-box reveal" style="transition-delay:.15s">
-          <div class="final-cta__form-title">Request a Callback</div>
+          <div class="final-cta__form-title">${ui('request_callback', langs)}</div>
           <form id="mainForm" onsubmit="submitForm(event,'main')">
-            <div class="form-group"><input type="text" name="name" class="form-input" placeholder="Your name" required /></div>
-            <div class="form-group"><input type="tel" name="phone" class="form-input" placeholder="Phone number" required /></div>
+            ${buildFormFields(formFields, langs, false)}
             <input type="hidden" name="formname" value="Main Callback" />
-            <button type="submit" class="btn btn--gold" style="width:100%;margin-top:12px">Send a Request</button>
-            <p class="form-privacy">I confirm I have read and accept the <a href="#">Privacy Policy</a></p>
-            <div class="form-success">Thank you! We'll be in touch shortly.</div>
+            <button type="submit" class="btn btn--gold" style="width:100%;margin-top:12px">${ui('send_request', langs)}</button>
+            ${buildPrivacy(langs, false)}
+            <div class="form-success">${ui('thank_you', langs)}</div>
           </form>
         </div>
       </div>
@@ -457,28 +588,35 @@ ${buildLayouts(d.layouts)}
   </section>
 
   <footer class="footer">
-    <span>&copy; ${new Date().getFullYear()} ${esc(d.project_name)}. All rights reserved.</span>
-    <div style="display:flex;gap:24px"><a href="#">Privacy Policy</a><a href="#">Terms of Use</a></div>
+    <span>&copy; ${new Date().getFullYear()} ${tAttr(d.project_name, langs)}. ${ui('rights', langs)}</span>
+    <div style="display:flex;gap:24px"><a href="#">${ui('privacy_policy', langs)}</a><a href="#">${ui('terms', langs)}</a></div>
   </footer>
 
   <div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
     <div class="modal-box">
       <button class="modal-close" onclick="closeModal()">&times;</button>
-      <h3>Request a Callback</h3>
+      <h3>${ui('request_callback', langs)}</h3>
       <form id="modalForm" onsubmit="submitForm(event,'modal')">
-        <div class="form-group"><input type="text" name="name" class="form-input" placeholder="Your name" required /></div>
-        <div class="form-group"><input type="tel" name="phone" class="form-input" placeholder="Phone number" required /></div>
+        ${buildFormFields(formFields, langs, false)}
         <input type="hidden" name="formname" value="Modal" />
-        <button type="submit" class="btn btn--gold" style="width:100%;margin-top:12px">Send a Request</button>
-        <p class="form-privacy">I confirm I have read and accept the <a href="#">Privacy Policy</a></p>
-        <div class="form-success">Thank you! We'll be in touch shortly.</div>
+        <button type="submit" class="btn btn--gold" style="width:100%;margin-top:12px">${ui('send_request', langs)}</button>
+        ${buildPrivacy(langs, false)}
+        <div class="form-success">${ui('thank_you', langs)}</div>
       </form>
     </div>
   </div>
 
   <script>
     var WEBHOOK = '${webhook}';
-    var PROJECT = '${esc(d.project_name)}';
+    var PROJECT = '${tAttr(d.project_name, langs)}';
+
+    // Language switcher
+    function switchLang(lang) {
+      document.body.setAttribute('data-lang', lang);
+      document.querySelectorAll('.lang-switch__btn').forEach(function(b){
+        b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+      });
+    }
 
     // Nav scroll
     var nav = document.getElementById('mainNav');
@@ -520,29 +658,23 @@ ${buildLayouts(d.layouts)}
     function closeModal(){ document.getElementById('modal').classList.remove('open'); }
     function closeModalOutside(e){ if(e.target === e.currentTarget) closeModal(); }
 
-    // Form submit → CRM webhook
+    // Form submit
     function submitForm(e, formId) {
       e.preventDefault();
       var form = e.target;
+      var privacy = form.querySelector('input[name=privacy]');
+      if (privacy && !privacy.checked) { privacy.focus(); return; }
       var data = new FormData(form);
       data.append('project', PROJECT);
       data.append('formid', formId);
+      data.append('language', document.body.getAttribute('data-lang') || '${defaultLang}');
       var body = new URLSearchParams(data).toString();
-
       if(!WEBHOOK) { showSuccess(form); return; }
-
-      fetch(WEBHOOK, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: body,
-        mode: 'no-cors'
-      }).catch(function(){});
-
+      fetch(WEBHOOK, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:body, mode:'no-cors' }).catch(function(){});
       showSuccess(form);
     }
-
     function showSuccess(form) {
-      form.querySelectorAll('input,button').forEach(function(el){ el.style.display='none'; });
+      form.querySelectorAll('input:not([type=hidden]),button,label').forEach(function(el){ el.style.display='none'; });
       var s = form.querySelector('.form-success');
       if(s) s.style.display = 'block';
     }
