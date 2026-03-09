@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Landing Generator — Tranio</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#222;min-height:100vh}
+.app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+
+/* Sidebar */
+.sidebar{background:#1a2a2a;color:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar__logo{padding:24px 20px 16px;font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#bfa177;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar__new{margin:16px;padding:10px 16px;background:#bfa177;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;width:calc(100% - 32px);text-align:center}
+.sidebar__new:hover{background:#a8895f}
+.sidebar__list{flex:1;overflow-y:auto;padding:8px 0}
+.sidebar__item{padding:10px 20px;font-size:13px;cursor:pointer;color:rgba(255,255,255,.7);border-left:3px solid transparent;transition:.15s}
+.sidebar__item:hover{background:rgba(255,255,255,.06);color:#fff}
+.sidebar__item.active{background:rgba(191,161,119,.15);color:#bfa177;border-left-color:#bfa177}
+.sidebar__item-name{font-weight:500}
+.sidebar__item-slug{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
+.sidebar__empty{padding:20px;font-size:12px;color:rgba(255,255,255,.3);text-align:center}
+
+/* Main */
+.main{display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:#fff;border-bottom:1px solid #e5e7eb;padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.topbar__title{font-size:15px;font-weight:600;color:#111}
+.topbar__actions{display:flex;gap:10px}
+.btn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:.15s}
+.btn-outline{background:transparent;border:1.5px solid #d1d5db;color:#444}
+.btn-outline:hover{border-color:#9ca3af;color:#111}
+.btn-primary{background:#2f5050;color:#fff}
+.btn-primary:hover{background:#253f3f}
+.btn-gold{background:#bfa177;color:#fff}
+.btn-gold:hover{background:#a8895f}
+.btn-danger{background:#dc2626;color:#fff}
+.btn-danger:hover{background:#b91c1c}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Form */
+.content{padding:32px;flex:1}
+.welcome{text-align:center;padding:80px 40px;color:#9ca3af}
+.welcome h2{font-size:24px;color:#374151;margin-bottom:12px}
+.welcome p{font-size:14px;line-height:1.6}
+
+.form-sections{display:flex;flex-direction:column;gap:24px;max-width:900px}
+.section-card{background:#fff;border-radius:12px;border:1px solid #e5e7eb;overflow:hidden}
+.section-card__header{padding:16px 20px;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.section-card__title{font-size:14px;font-weight:600;color:#111;display:flex;align-items:center;gap:8px}
+.section-card__chevron{font-size:12px;color:#9ca3af;transition:transform .2s}
+.section-card.collapsed .section-card__chevron{transform:rotate(-90deg)}
+.section-card__body{padding:20px;display:flex;flex-direction:column;gap:16px}
+.section-card.collapsed .section-card__body{display:none}
+
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12px;font-weight:500;color:#6b7280;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field textarea,.field select{width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;color:#111;outline:none;transition:border-color .15s;font-family:inherit}
+.field input:focus,.field textarea:focus{border-color:#2f5050}
+.field textarea{resize:vertical;min-height:80px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* Dynamic lists */
+.dyn-list{display:flex;flex-direction:column;gap:8px}
+.dyn-item{display:flex;gap:8px;align-items:flex-start}
+.dyn-item input,.dyn-item textarea{flex:1}
+.dyn-item .btn-rm{padding:8px 10px;background:#fee2e2;color:#dc2626;border:none;border-radius:6px;cursor:pointer;font-size:14px;flex-shrink:0;line-height:1}
+.dyn-item .btn-rm:hover{background:#fecaca}
+.btn-add{padding:8px 14px;background:#f0f9ff;color:#0369a1;border:1.5px dashed #bae6fd;border-radius:8px;font-size:13px;cursor:pointer;align-self:flex-start}
+.btn-add:hover{background:#e0f2fe}
+
+/* Layout/ROI sub-cards */
+.sub-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.sub-card__header{display:flex;justify-content:space-between;align-items:center}
+.sub-card__title{font-size:13px;font-weight:600;color:#374151}
+
+/* Status */
+.status{padding:10px 16px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none}
+.status.show{display:block}
+.status-ok{background:#dcfce7;color:#166534}
+.status-err{background:#fee2e2;color:#991b1b}
+.status-info{background:#dbeafe;color:#1e40af}
+
+/* Deploy result */
+.deploy-result{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-top:20px;display:none}
+.deploy-result.show{display:block}
+.deploy-result h4{font-size:14px;font-weight:600;margin-bottom:12px}
+.deploy-result a{color:#2f5050;font-weight:500}
+
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.preview-frame{width:100%;height:100vh;border:none;display:none}
+
+/* Image field with upload */
+.img-input-wrap{display:flex;gap:8px;align-items:center}
+.img-input-wrap input{flex:1;min-width:0}
+.btn-upload{display:inline-flex;align-items:center;gap:5px;padding:9px 12px;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:8px;font-size:12px;font-weight:500;color:#374151;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:.15s;line-height:1}
+.btn-upload:hover{background:#f3f4f6;border-color:#9ca3af}
+.btn-upload input[type=file]{display:none}
+.img-thumb{margin-top:6px;border-radius:8px;overflow:hidden;max-height:110px;display:none}
+.img-thumb img{width:100%;max-height:110px;object-fit:cover;display:block}
+.img-thumb.visible{display:block}
+
+/* Login overlay */
+.login-overlay{position:fixed;inset:0;background:rgba(15,23,42,.88);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(6px)}
+.login-box{background:#fff;border-radius:16px;padding:48px 40px;width:340px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+.login-box h2{font-size:22px;font-weight:700;color:#111;margin-bottom:6px}
+.login-box p{color:#6b7280;font-size:13px;margin-bottom:28px}
+.login-box input[type=password]{width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;font-family:inherit;outline:none;margin-bottom:12px}
+.login-box input[type=password]:focus{border-color:#2f5050}
+.login-box .btn-signin{width:100%;padding:11px;background:#2f5050;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+.login-box .btn-signin:hover{background:#253f3f}
+.login-err{color:#dc2626;font-size:12px;margin-top:10px;min-height:16px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__logo">🏗 Landing Generator</div>
+    <button class="sidebar__new" onclick="newProject()">+ New Project</button>
+    <div class="sidebar__list" id="projectList">
+      <div class="sidebar__empty">Loading...</div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main" id="mainArea">
+    <div class="topbar">
+      <div class="topbar__title" id="topbarTitle">Select or create a project</div>
+      <div class="topbar__actions" id="topbarActions" style="display:none">
+        <button class="btn btn-outline" onclick="previewProject()">👁 Preview</button>
+        <button class="btn btn-primary" onclick="saveProject()">💾 Save</button>
+        <button class="btn btn-gold" id="deployBtn" onclick="deployProject()">🚀 Deploy</button>
+      </div>
+    </div>
+
+    <div class="content" id="content">
+      <div class="welcome">
+        <h2>Welcome to Landing Generator</h2>
+        <p>Create or select a project from the sidebar.<br>Fill in the data, preview, and deploy with one click.</p>
+      </div>
+    </div>
+    <iframe class="preview-frame" id="previewFrame"></iframe>
+  </div>
+
+</div>
+
+<!-- Login overlay -->
+<div id="loginOverlay" class="login-overlay" style="display:none">
+  <div class="login-box">
+    <h2>Landing Generator</h2>
+    <p>Tranio Thailand — enter admin password</p>
+    <input type="password" id="loginPwd" placeholder="Password"
+           onkeydown="if(event.key==='Enter')doLogin()" />
+    <button class="btn-signin" onclick="doLogin()">Sign in</button>
+    <div id="loginErr" class="login-err"></div>
+  </div>
+</div>
+
+<script>
+var currentSlug = null;
+var _pass = localStorage.getItem('admin_pass') || '';
+
+// ── Auth ──────────────────────────────────────────────────
+function apiFetch(url, opts) {
+  opts = opts || {};
+  opts.headers = opts.headers || {};
+  if (_pass) opts.headers['x-admin-password'] = _pass;
+  return fetch(url, opts);
+}
+
+async function initAuth() {
+  try {
+    var r = await apiFetch('/api/projects');
+    if (r.status === 401) { showLogin(); return; }
+    renderProjectList(await r.json());
+  } catch(e) {
+    renderProjectList([]);
+  }
+}
+
+function showLogin() {
+  document.getElementById('loginOverlay').style.display = 'flex';
+  setTimeout(function(){ document.getElementById('loginPwd').focus(); }, 100);
+}
+
+async function doLogin() {
+  var pwd = document.getElementById('loginPwd').value;
+  var errEl = document.getElementById('loginErr');
+  errEl.textContent = '';
+  if (!pwd) { errEl.textContent = 'Enter password'; return; }
+  try {
+    var r = await fetch('/api/projects', { headers: { 'x-admin-password': pwd } });
+    if (r.status === 401) { errEl.textContent = 'Wrong password, try again'; return; }
+    _pass = pwd;
+    localStorage.setItem('admin_pass', pwd);
+    document.getElementById('loginOverlay').style.display = 'none';
+    renderProjectList(await r.json());
+  } catch(e) { errEl.textContent = 'Connection error: ' + e.message; }
+}
+
+// ── Projects list ─────────────────────────────────────────
+async function loadProjects() {
+  try {
+    var r = await apiFetch('/api/projects');
+    if (r.status === 401) { showLogin(); return; }
+    renderProjectList(await r.json());
+  } catch(e) {}
+}
+
+function renderProjectList(projects) {
+  var list = document.getElementById('projectList');
+  if (!projects.length) {
+    list.innerHTML = '<div class="sidebar__empty">No projects yet</div>';
+    return;
+  }
+  list.innerHTML = projects.map(function(p) {
+    return '<div class="sidebar__item' + (p.slug === currentSlug ? ' active' : '') + '" onclick="loadProject(\'' + p.slug + '\')">'
+      + '<div class="sidebar__item-name">' + p.name + '</div>'
+      + '<div class="sidebar__item-slug">' + p.slug + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+// ── New project ───────────────────────────────────────────
+function newProject() {
+  currentSlug = null;
+  renderForm(defaultData());
+  document.getElementById('topbarTitle').textContent = 'New Project';
+  document.getElementById('topbarActions').style.display = 'flex';
+  closePreview();
+  document.querySelectorAll('.sidebar__item').forEach(function(el) { el.classList.remove('active'); });
+}
+
+// ── Load existing project ─────────────────────────────────
+async function loadProject(slug) {
+  try {
+    var r = await apiFetch('/api/project/' + slug);
+    if (r.status === 401) { showLogin(); return; }
+    var data = await r.json();
+    currentSlug = slug;
+    renderForm(data);
+    document.getElementById('topbarTitle').textContent = data.project_name;
+    document.getElementById('topbarActions').style.display = 'flex';
+    closePreview();
+    loadProjects();
+  } catch(e) { alert('Failed to load project'); }
+}
+
+// ── Image helpers ─────────────────────────────────────────
+function getImgSrc(val) {
+  if (!val) return '';
+  if (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('//')) return val;
+  // relative path like "images/hero.jpg" — serve from server
+  var slug = (document.getElementById('f_slug') || {}).value || '';
+  var fname = val.replace(/^images\//, '');
+  return slug ? '/api/image/' + slug + '/' + fname : val;
+}
+
+// Returns HTML for an image field with URL input + upload button + thumbnail
+function imgField(id, value, label, placeholder) {
+  var src = value ? getImgSrc(value) : '';
+  return '<div class="field">'
+    + '<label>' + label + '</label>'
+    + '<div class="img-input-wrap">'
+    +   '<input id="' + id + '" value="' + s(value) + '" placeholder="' + s(placeholder || 'https://... or Upload') + '"'
+    +   ' oninput="updateImgThumb(\'' + id + '\')" />'
+    +   '<label class="btn-upload" title="Upload from file">'
+    +     '📎 Upload'
+    +     '<input type="file" accept="image/*" onchange="uploadImage(\'' + id + '\',this)" />'
+    +   '</label>'
+    + '</div>'
+    + '<div class="img-thumb' + (value ? ' visible' : '') + '" id="th_' + id + '">'
+    +   '<img src="' + src + '" alt="" onerror="this.parentElement.classList.remove(\'visible\')" />'
+    + '</div>'
+    + '</div>';
+}
+
+function updateImgThumb(id) {
+  var input = document.getElementById(id);
+  var thumb = document.getElementById('th_' + id);
+  if (!input || !thumb) return;
+  var val = input.value.trim();
+  if (val) {
+    thumb.querySelector('img').src = getImgSrc(val);
+    thumb.classList.add('visible');
+  } else {
+    thumb.classList.remove('visible');
+  }
+}
+
+async function uploadImage(inputId, fileInput) {
+  var file = fileInput.files[0];
+  if (!file) return;
+  var slug = (document.getElementById('f_slug') || {}).value.trim();
+  if (!slug) { alert('Fill in Project Slug first'); fileInput.value = ''; return; }
+  var input = document.getElementById(inputId);
+  var orig = input.placeholder;
+  input.placeholder = 'Uploading...';
+  input.disabled = true;
+  try {
+    var b64 = await new Promise(function(resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function(e) { resolve(e.target.result.split(',')[1]); };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    var r = await apiFetch('/api/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug: slug, filename: file.name, data: b64 })
+    });
+    var json = await r.json();
+    if (json.ok) {
+      input.value = json.path;
+      updateImgThumb(inputId);
+      showStatus('Image uploaded: ' + json.path, 'ok');
+    } else {
+      alert('Upload failed: ' + json.error);
+    }
+  } catch(e) {
+    alert('Upload error: ' + e.message);
+  } finally {
+    input.placeholder = orig;
+    input.disabled = false;
+    fileInput.value = '';
+  }
+}
+
+// ── Collect form data ─────────────────────────────────────
+function collectFormData() {
+  function v(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+  function checked(id) { var el = document.getElementById(id); return el ? el.checked : false; }
+
+  var heroStats = [];
+  document.querySelectorAll('.hero-stat').forEach(function(row) {
+    var inputs = row.querySelectorAll('input[type=text],input:not([type])');
+    if(inputs[0] && inputs[0].value) heroStats.push({ value: inputs[0].value.trim(), label: inputs[1].value.trim() });
+  });
+
+  var conceptSpecs = [];
+  document.querySelectorAll('.concept-spec').forEach(function(row) {
+    var inputs = row.querySelectorAll('input[type=text],input:not([type])');
+    if(inputs[0] && inputs[0].value) conceptSpecs.push({ key: inputs[0].value.trim(), value: inputs[1].value.trim() });
+  });
+
+  var amenities = [];
+  document.querySelectorAll('.amenity-item input[type=text],.amenity-item input:not([type])').forEach(function(inp) {
+    if(inp.value.trim()) amenities.push(inp.value.trim());
+  });
+
+  var catTags = [];
+  document.querySelectorAll('.cat-tag input[type=text],.cat-tag input:not([type])').forEach(function(inp) {
+    if(inp.value.trim()) catTags.push(inp.value.trim());
+  });
+
+  var layouts = [];
+  document.querySelectorAll('.layout-card').forEach(function(card) {
+    var inputs = card.querySelectorAll('input[type=text],input:not([type])');
+    var name = inputs[0] ? inputs[0].value.trim() : '';
+    var price = inputs[1] ? inputs[1].value.trim() : '';
+    if(!name) return;
+    var specs = [];
+    card.querySelectorAll('.layout-spec').forEach(function(row) {
+      var si = row.querySelectorAll('input[type=text],input:not([type])');
+      if(si[0] && si[0].value.trim()) specs.push({ key: si[0].value.trim(), value: si[1].value.trim() });
+    });
+    layouts.push({ name: name, price_from: price, specs: specs });
+  });
+
+  var roiRows = [];
+  document.querySelectorAll('.roi-row').forEach(function(row) {
+    var inputs = row.querySelectorAll('input[type=text],input:not([type])');
+    if(inputs[0] && inputs[0].value.trim()) roiRows.push({
+      type: inputs[0].value.trim(), size: inputs[1].value.trim(),
+      price: inputs[2].value.trim(), roi: inputs[3].value.trim(), annual_income: inputs[4].value.trim()
+    });
+  });
+
+  var galleryImages = [];
+  document.querySelectorAll('.gallery-img input[type=text],.gallery-img input:not([type]):not([accept])').forEach(function(inp) {
+    if(inp.value.trim()) galleryImages.push(inp.value.trim());
+  });
+
+  var distances = [];
+  document.querySelectorAll('.distance-row').forEach(function(row) {
+    var inputs = row.querySelectorAll('input[type=text],input:not([type])');
+    if(inputs[0] && inputs[0].value.trim()) distances.push({ place: inputs[0].value.trim(), time: inputs[1].value.trim() });
+  });
+
+  var devFacts = [];
+  document.querySelectorAll('.dev-fact').forEach(function(row) {
+    var inputs = row.querySelectorAll('input[type=text],input:not([type])');
+    if(inputs[0] && inputs[0].value.trim()) devFacts.push({ key: inputs[0].value.trim(), value: inputs[1].value.trim() });
+  });
+
+  var paragraphs = [];
+  document.querySelectorAll('.concept-para textarea').forEach(function(ta) {
+    if(ta.value.trim()) paragraphs.push(ta.value.trim());
+  });
+
+  return {
+    project_slug: v('f_slug'),
+    project_name: v('f_name'),
+    meta_title: v('f_meta_title'),
+    meta_description: v('f_meta_desc'),
+    crm_webhook: v('f_webhook'),
+    hero: {
+      image: v('f_hero_image'),
+      title: v('f_hero_title'),
+      description: v('f_hero_desc'),
+      stats: heroStats
+    },
+    concept: {
+      title: v('f_concept_title'),
+      paragraphs: paragraphs,
+      specs: conceptSpecs
+    },
+    sell_banner: {
+      image: v('f_sell_image'),
+      title: v('f_sell_title'),
+      subtitle: v('f_sell_subtitle'),
+      show: checked('f_sell_show')
+    },
+    amenities: {
+      image: v('f_amenities_image'),
+      title: v('f_amenities_title'),
+      items: amenities
+    },
+    catalogue: {
+      image: v('f_catalogue_image'),
+      tags: catTags
+    },
+    layouts: layouts,
+    roi: { title: v('f_roi_title'), rows: roiRows },
+    gallery: { images: galleryImages },
+    location: {
+      title: v('f_location_title'),
+      description: v('f_location_desc'),
+      distances: distances,
+      map_embed: v('f_map_embed')
+    },
+    developer: {
+      image: v('f_dev_image'),
+      name: v('f_dev_name'),
+      description: v('f_dev_desc'),
+      facts: devFacts
+    },
+    contact: {
+      address: v('f_contact_address'),
+      email: v('f_contact_email'),
+      website: v('f_contact_website')
+    }
+  };
+}
+
+// ── Save ──────────────────────────────────────────────────
+async function saveProject() {
+  var data = collectFormData();
+  if(!data.project_slug) { alert('Fill in the Project Slug field'); return; }
+  try {
+    var r = await apiFetch('/api/save', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+    if (r.status === 401) { showLogin(); return; }
+    var res = await r.json();
+    if(res.ok) {
+      currentSlug = res.slug;
+      document.getElementById('topbarTitle').textContent = data.project_name || res.slug;
+      loadProjects();
+      showStatus('Saved ✓', 'ok');
+    } else { showStatus(res.error, 'err'); }
+  } catch(e) { showStatus(e.message, 'err'); }
+}
+
+// ── Preview ───────────────────────────────────────────────
+async function previewProject() {
+  var data = collectFormData();
+  try {
+    var r = await apiFetch('/api/preview', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+    if (r.status === 401) { showLogin(); return; }
+    var html = await r.text();
+    var frame = document.getElementById('previewFrame');
+    frame.style.display = 'block';
+    document.getElementById('content').style.display = 'none';
+    frame.srcdoc = html;
+    document.getElementById('topbarTitle').textContent = '← Back  |  ' + (data.project_name || 'Preview');
+    document.getElementById('topbarTitle').style.cursor = 'pointer';
+    document.getElementById('topbarTitle').onclick = closePreview;
+  } catch(e) { showStatus(e.message,'err'); }
+}
+
+function closePreview() {
+  document.getElementById('previewFrame').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
+  document.getElementById('topbarTitle').onclick = null;
+  document.getElementById('topbarTitle').style.cursor = '';
+}
+
+// ── Deploy ────────────────────────────────────────────────
+async function deployProject() {
+  var data = collectFormData();
+  if(!data.project_slug) { alert('Fill in the Project Slug field first'); return; }
+  // Save first
+  var saveR = await apiFetch('/api/save', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+  if (saveR.status === 401) { showLogin(); return; }
+  var saveData = await saveR.json();
+  if(!saveData.ok) { showStatus('Save failed: ' + saveData.error, 'err'); return; }
+
+  var btn = document.getElementById('deployBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Deploying...';
+  showStatus('Deploying to GitHub & Vercel...', 'info');
+
+  try {
+    var r = await apiFetch('/api/deploy', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ slug: data.project_slug }) });
+    if (r.status === 401) { showLogin(); return; }
+    var res = await r.json();
+    if(res.ok) {
+      showStatus('Deployed! 🎉', 'ok');
+      var result = document.getElementById('deployResult');
+      result.style.display = 'block';
+      document.getElementById('deployLinks').innerHTML =
+        '<a href="' + res.deployUrl + '" target="_blank">🌐 ' + res.deployUrl + '</a><br>'
+        + '<a href="' + res.githubUrl + '" target="_blank">📦 ' + res.githubUrl + '</a>';
+    } else {
+      showStatus('Deploy failed: ' + res.error, 'err');
+    }
+  } catch(e) { showStatus('Deploy error: ' + e.message, 'err'); }
+  btn.disabled = false;
+  btn.innerHTML = '🚀 Deploy';
+}
+
+function showStatus(msg, type) {
+  var s = document.getElementById('formStatus');
+  if(!s) return;
+  s.textContent = msg;
+  s.className = 'status show status-' + type;
+  setTimeout(function(){ s.classList.remove('show'); }, 5000);
+}
+
+// ── Dynamic list helpers ──────────────────────────────────
+function addItem(containerId, html) {
+  var c = document.getElementById(containerId);
+  var div = document.createElement('div');
+  div.innerHTML = html;
+  c.appendChild(div.firstElementChild);
+}
+function removeItem(btn) { btn.closest('.dyn-item, .sub-card').remove(); }
+
+function addHeroStat() {
+  addItem('heroStats', '<div class="dyn-item hero-stat">'
+    + '<input placeholder="Value (e.g. From $105,000)" />'
+    + '<input placeholder="Label (e.g. Starting Price)" />'
+    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '</div>');
+}
+function addConceptSpec() {
+  addItem('conceptSpecs', '<div class="dyn-item concept-spec">'
+    + '<input placeholder="Key (e.g. Location)" />'
+    + '<input placeholder="Value (e.g. Bangrak Beach)" />'
+    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '</div>');
+}
+function addAmenity() {
+  addItem('amenitiesList', '<div class="dyn-item amenity-item">'
+    + '<input placeholder="e.g. 2,000 m² wrap-around pool" />'
+    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '</div>');
+}
+function addCatTag() {
+  addItem('catTags', '<div class="dyn-item cat-tag">'
+    + '<input placeholder="e.g. Floor Plans" />'
+    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '</div>');
+}
+function addLayout() {
+  addItem('layoutsList', '<div class="sub-card layout-card">'
+    + '<div class="sub-card__header">'
+    +   '<span class="sub-card__title">Layout</span>'
+    +   '<button class="btn btn-danger" style="padding:4px 10px;font-size:12px" onclick="removeItem(this)">Remove</button>'
+    + '</div>'
+    + '<div class="field-row">'
+    +   '<div class="field"><label>Unit Type</label><input placeholder="e.g. Studio" /></div>'
+    +   '<div class="field"><label>Price From</label><input placeholder="e.g. $105,000" /></div>'
+    + '</div>'
+    + '<div class="dyn-list">'
+    +   '<div class="dyn-item layout-spec"><input placeholder="Spec key"/><input placeholder="Spec value"/><button class="btn-rm" onclick="removeItem(this)">×</button></div>'
+    + '</div>'
+    + '<button class="btn-add" onclick="addLayoutSpec(this)">+ Add spec row</button>'
+    + '</div>');
+}
+function addLayoutSpec(btn) {
+  var list = btn.closest('.sub-card').querySelector('.dyn-list');
+  var div = document.createElement('div');
+  div.className = 'dyn-item layout-spec';
+  div.innerHTML = '<input placeholder="Spec key"/><input placeholder="Spec value"/><button class="btn-rm" onclick="removeItem(this)">×</button>';
+  list.appendChild(div);
+}
+function addRoiRow() {
+  addItem('roiRows', '<div class="dyn-item roi-row">'
+    + '<input placeholder="Type (Studio)" />'
+    + '<input placeholder="Size (28-29m²)" />'
+    + '<input placeholder="Price ($105k)" />'
+    + '<input placeholder="ROI (6%)" />'
+    + '<input placeholder="Annual ($6,300)" />'
+    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '</div>');
+}
+function addGalleryImg() {
+  var id = 'gimg_' + Date.now();
+  addItem('galleryImages', '<div class="dyn-item gallery-img">'
+    + '<input id="' + id + '" placeholder="https://... or Upload" oninput="updateImgThumb(\'' + id + '\')" />'
+    + '<label class="btn-upload" title="Upload image">📎'
+    +   '<input type="file" accept="image/*" onchange="uploadImage(\'' + id + '\',this)" />'
+    + '</label>'
+    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '</div>');
+}
+function addDistance() {
+  addItem('distances', '<div class="dyn-item distance-row">'
+    + '<input placeholder="Place" />'
+    + '<input placeholder="Time (e.g. 5 min drive)" />'
+    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '</div>');
+}
+function addDevFact() {
+  addItem('devFacts', '<div class="dyn-item dev-fact">'
+    + '<input placeholder="Key" />'
+    + '<input placeholder="Value" />'
+    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '</div>');
+}
+function addConceptPara() {
+  addItem('conceptParas', '<div class="dyn-item concept-para">'
+    + '<textarea placeholder="Paragraph text (HTML allowed: &lt;strong&gt;bold&lt;/strong&gt;)" rows="3"></textarea>'
+    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '</div>');
+}
+
+// ── Toggle section card ───────────────────────────────────
+function toggleSection(header) {
+  header.closest('.section-card').classList.toggle('collapsed');
+}
+
+// ── Render form ───────────────────────────────────────────
+function renderForm(d) {
+  var content = document.getElementById('content');
+  var hero = d.hero || {};
+  var concept = d.concept || {};
+  var sell = d.sell_banner || {};
+  var amen = d.amenities || {};
+  var cat = d.catalogue || {};
+  var loc = d.location || {};
+  var dev = d.developer || {};
+  var contact = d.contact || {};
+
+  content.innerHTML = ''
+    + '<div id="formStatus" class="status"></div>'
+    + '<div class="form-sections">'
+
+    // Basic Info
+    + '<div class="section-card">'
+    + '<div class="section-card__header" onclick="toggleSection(this)">'
+    + '<div class="section-card__title">⚙️ Basic Info & CRM</div>'
+    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__body">'
+    + '<div class="field-row">'
+    + '<div class="field"><label>Project Slug *</label><input id="f_slug" value="' + s(d.project_slug) + '" placeholder="anava-samui" /></div>'
+    + '<div class="field"><label>Project Name *</label><input id="f_name" value="' + s(d.project_name) + '" placeholder="ANAVA Samui" /></div>'
+    + '</div>'
+    + '<div class="field"><label>Meta Title</label><input id="f_meta_title" value="' + s(d.meta_title) + '" /></div>'
+    + '<div class="field"><label>Meta Description</label><textarea id="f_meta_desc" rows="2">' + s(d.meta_description) + '</textarea></div>'
+    + '<div class="field"><label>CRM Webhook URL</label><input id="f_webhook" value="' + s(d.crm_webhook) + '" placeholder="https://tranio.ru/lead-management/tilda_to_lead/.../" /></div>'
+    + '</div></div>'
+
+    // Hero
+    + '<div class="section-card">'
+    + '<div class="section-card__header" onclick="toggleSection(this)">'
+    + '<div class="section-card__title">🖼 Hero Section</div>'
+    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__body">'
+    + imgField('f_hero_image', hero.image, 'Hero Image (1920×1080)')
+    + '<div class="field"><label>Title</label><input id="f_hero_title" value="' + s(hero.title) + '" /></div>'
+    + '<div class="field"><label>Description</label><textarea id="f_hero_desc" rows="3">' + s(hero.description) + '</textarea></div>'
+    + '<div class="field"><label>Stats (4 badges)</label>'
+    + '<div class="dyn-list" id="heroStats">'
+    + (hero.stats || []).map(function(stat) {
+        return '<div class="dyn-item hero-stat">'
+          + '<input value="' + s(stat.value) + '" placeholder="Value" />'
+          + '<input value="' + s(stat.label) + '" placeholder="Label" />'
+          + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+          + '</div>';
+      }).join('')
+    + '</div>'
+    + '<button class="btn-add" onclick="addHeroStat()">+ Add stat</button>'
+    + '</div></div></div>'
+
+    // Concept
+    + '<div class="section-card">'
+    + '<div class="section-card__header" onclick="toggleSection(this)">'
+    + '<div class="section-card__title">📝 Concept Section</div>'
+    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__body">'
+    + '<div class="field"><label>Section Title</label><input id="f_concept_title" value="' + s(concept.title) + '" /></div>'
+    + '<div class="field"><label>Paragraphs (HTML allowed)</label>'
+    + '<div class="dyn-list" id="conceptParas">'
+    + (concept.paragraphs || []).map(function(p) {
+        return '<div class="dyn-item concept-para"><textarea rows="3">' + s(p) + '</textarea>'
+          + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+      }).join('')
+    + '</div><button class="btn-add" onclick="addConceptPara()">+ Add paragraph</button></div>'
+    + '<div class="field"><label>Specs Table</label>'
+    + '<div class="dyn-list" id="conceptSpecs">'
+    + (concept.specs || []).map(function(spec) {
+        return '<div class="dyn-item concept-spec">'
+          + '<input value="' + s(spec.key) + '" placeholder="Key" />'
+          + '<input value="' + s(spec.value) + '" placeholder="Value" />'
+          + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+      }).join('')
+    + '</div><button class="btn-add" onclick="addConceptSpec()">+ Add row</button></div>'
+    + '</div></div>'
+
+    // Sell Banner
+    + '<div class="section-card">'
+    + '<div class="section-card__header" onclick="toggleSection(this)">'
+    + '<div class="section-card__title">📣 Sell Banner (optional)</div>'
+    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__body">'
+    + '<div class="field"><label><input type="checkbox" id="f_sell_show" ' + (sell.show ? 'checked' : '') + ' /> Show sell banner section</label></div>'
+    + imgField('f_sell_image', sell.image, 'Background Image (1920×800)')
+    + '<div class="field"><label>Title</label><input id="f_sell_title" value="' + s(sell.title) + '" /></div>'
+    + '<div class="field"><label>Subtitle</label><input id="f_sell_subtitle" value="' + s(sell.subtitle) + '" /></div>'
+    + '</div></div>'
+
+    // Amenities
+    + '<div class="section-card">'
+    + '<div class="section-card__header" onclick="toggleSection(this)">'
+    + '<div class="section-card__title">✨ Amenities</div>'
+    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__body">'
+    + '<div class="field"><label>Section Title</label><input id="f_amenities_title" value="' + s(amen.title) + '" /></div>'
+    + imgField('f_amenities_image', amen.image, 'Amenities Image (800×600)')
+    + '<div class="field"><label>Amenity List</label>'
+    + '<div class="dyn-list" id="amenitiesList">'
+    + (amen.items || []).map(function(item) {
+        return '<div class="dyn-item amenity-item">'
+          + '<input value="' + s(item) + '" placeholder="Amenity" />'
+          + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+      }).join('')
+    + '</div><button class="btn-add" onclick="addAmenity()">+ Add amenity</button></div>'
+    + '</div></div>'
+
+    // Catalogue
+    + '<div class="section-card">'
+    + '<div class="section-card__header" onclick="toggleSection(this)">'
+    + '<div class="section-card__title">📁 Catalogue</div>'
+    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__body">'
+    + imgField('f_catalogue_image', cat.image, 'Catalogue Image (800×600)')
+    + '<div class="field"><label>Tags</label>'
+    + '<div class="dyn-list" id="catTags">'
+    + (cat.tags || []).map(function(tag) {
+        return '<div class="dyn-item cat-tag">'
+          + '<input value="' + s(tag) + '" placeholder="e.g. Floor Plans" />'
+          + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+      }).join('')
+    + '</div><button class="btn-add" onclick="addCatTag()">+ Add tag</button></div>'
+    + '</div></div>'
+
+    // Layouts
+    + '<div class="section-card">'
+    + '<div class="section-card__header" onclick="toggleSection(this)">'
+    + '<div class="section-card__title">🏠 Layouts</div>'
+    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__body">'
+    + '<div class="dyn-list" id="layoutsList">'
+    + (d.layouts || []).map(function(l) {
+        return '<div class="sub-card layout-card">'
+          + '<div class="sub-card__header">'
+          +   '<span class="sub-card__title">' + s(l.name) + '</span>'
+          +   '<button class="btn btn-danger" style="padding:4px 10px;font-size:12px" onclick="removeItem(this)">Remove</button>'
+          + '</div>'
+          + '<div class="field-row">'
+          +   '<div class="field"><label>Unit Type</label><input value="' + s(l.name) + '" placeholder="Studio" /></div>'
+          +   '<div class="field"><label>Price From</label><input value="' + s(l.price_from) + '" placeholder="$105,000" /></div>'
+          + '</div>'
+          + '<div class="dyn-list">'
+          + (l.specs || []).map(function(spec) {
+              return '<div class="dyn-item layout-spec">'
+                + '<input value="' + s(spec.key) + '" placeholder="Spec key" />'
+                + '<input value="' + s(spec.value) + '" placeholder="Spec value" />'
+                + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+            }).join('')
+          + '</div>'
+          + '<button class="btn-add" onclick="addLayoutSpec(this)">+ Add spec row</button>'
+          + '</div>';
+      }).join('')
+    + '</div>'
+    + '<button class="btn-add" onclick="addLayout()">+ Add layout type</button>'
+    + '</div></div>'
+
+    // ROI
+    + '<div class="section-card">'
+    + '<div class="section-card__header" onclick="toggleSection(this)">'
+    + '<div class="section-card__title">💰 ROI / Investment</div>'
+    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__body">'
+    + '<div class="field"><label>Section Title</label><input id="f_roi_title" value="' + s(d.roi && d.roi.title) + '" /></div>'
+    + '<div class="field"><label>ROI Table Rows</label>'
+    + '<div class="dyn-list" id="roiRows">'
+    + ((d.roi && d.roi.rows) || []).map(function(r) {
+        return '<div class="dyn-item roi-row">'
+          + '<input value="' + s(r.type) + '" placeholder="Type" />'
+          + '<input value="' + s(r.size) + '" placeholder="Size" />'
+          + '<input value="' + s(r.price) + '" placeholder="Price" />'
+          + '<input value="' + s(r.roi) + '" placeholder="ROI" />'
+          + '<input value="' + s(r.annual_income) + '" placeholder="Annual" />'
+          + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+      }).join('')
+    + '</div><button class="btn-add" onclick="addRoiRow()">+ Add row</button></div>'
+    + '</div></div>'
+
+    // Gallery
+    + '<div class="section-card">'
+    + '<div class="section-card__header" onclick="toggleSection(this)">'
+    + '<div class="section-card__title">🖼 Gallery</div>'
+    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__body">'
+    + '<div class="field"><label>Images (5+ recommended, 1200×750)</label>'
+    + '<div class="dyn-list" id="galleryImages">'
+    + ((d.gallery && d.gallery.images) || []).map(function(img, idx) {
+        var id = 'gimg_' + idx;
+        return '<div class="dyn-item gallery-img">'
+          + '<input id="' + id + '" value="' + s(img) + '" placeholder="https://... or Upload" oninput="updateImgThumb(\'' + id + '\')" />'
+          + '<label class="btn-upload" title="Upload image">📎'
+          +   '<input type="file" accept="image/*" onchange="uploadImage(\'' + id + '\',this)" />'
+          + '</label>'
+          + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+          + '</div>';
+      }).join('')
+    + '</div>'
+    + '<button class="btn-add" onclick="addGalleryImg()">+ Add image</button>'
+    + '</div></div></div>'
+
+    // Location
+    + '<div class="section-card">'
+    + '<div class="section-card__header" onclick="toggleSection(this)">'
+    + '<div class="section-card__title">📍 Location</div>'
+    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__body">'
+    + '<div class="field"><label>Section Title</label><input id="f_location_title" value="' + s(loc.title) + '" /></div>'
+    + '<div class="field"><label>Description</label><textarea id="f_location_desc" rows="3">' + s(loc.description) + '</textarea></div>'
+    + '<div class="field"><label>Distances</label>'
+    + '<div class="dyn-list" id="distances">'
+    + (loc.distances || []).map(function(dist) {
+        return '<div class="dyn-item distance-row">'
+          + '<input value="' + s(dist.place) + '" placeholder="Place" />'
+          + '<input value="' + s(dist.time) + '" placeholder="Time" />'
+          + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+      }).join('')
+    + '</div><button class="btn-add" onclick="addDistance()">+ Add distance</button></div>'
+    + '<div class="field"><label>Google Maps Embed URL</label><input id="f_map_embed" value="' + s(loc.map_embed) + '" placeholder="https://www.google.com/maps/embed?..." /></div>'
+    + '</div></div>'
+
+    // Developer
+    + '<div class="section-card">'
+    + '<div class="section-card__header" onclick="toggleSection(this)">'
+    + '<div class="section-card__title">🏢 Developer</div>'
+    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__body">'
+    + '<div class="field"><label>Developer Name</label><input id="f_dev_name" value="' + s(dev.name) + '" /></div>'
+    + imgField('f_dev_image', dev.image, 'Developer Image (800×600)')
+    + '<div class="field"><label>Description</label><textarea id="f_dev_desc" rows="3">' + s(dev.description) + '</textarea></div>'
+    + '<div class="field"><label>Key Facts</label>'
+    + '<div class="dyn-list" id="devFacts">'
+    + (dev.facts || []).map(function(f) {
+        return '<div class="dyn-item dev-fact">'
+          + '<input value="' + s(f.key) + '" placeholder="Key" />'
+          + '<input value="' + s(f.value) + '" placeholder="Value" />'
+          + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+      }).join('')
+    + '</div><button class="btn-add" onclick="addDevFact()">+ Add fact</button></div>'
+    + '</div></div>'
+
+    // Contact
+    + '<div class="section-card">'
+    + '<div class="section-card__header" onclick="toggleSection(this)">'
+    + '<div class="section-card__title">📞 Contact</div>'
+    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__body">'
+    + '<div class="field"><label>Address</label><input id="f_contact_address" value="' + s(contact.address) + '" /></div>'
+    + '<div class="field-row">'
+    + '<div class="field"><label>Email</label><input id="f_contact_email" type="email" value="' + s(contact.email) + '" /></div>'
+    + '<div class="field"><label>Website</label><input id="f_contact_website" value="' + s(contact.website) + '" placeholder="www.anavasamui.com" /></div>'
+    + '</div></div></div>'
+
+    + '</div><!-- /form-sections -->'
+
+    // Deploy result
+    + '<div class="deploy-result" id="deployResult">'
+    + '<h4>🎉 Deployed successfully!</h4>'
+    + '<div id="deployLinks"></div>'
+    + '</div>';
+}
+
+// ── Helper: safe string ───────────────────────────────────
+function s(v) {
+  if(v === null || v === undefined) return '';
+  return String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Default empty data ────────────────────────────────────
+function defaultData() {
+  return {
+    project_slug: '', project_name: '', meta_title: '', meta_description: '', crm_webhook: '',
+    hero: { image: '', title: '', description: '', stats: [{value:'',label:''},{value:'',label:''},{value:'',label:''},{value:'',label:''}] },
+    concept: { title: '', paragraphs: [''], specs: [{key:'',value:''}] },
+    sell_banner: { image: '', title: '', subtitle: '', show: false },
+    amenities: { image: '', title: 'World-Class Amenities', items: [''] },
+    catalogue: { image: '', tags: ['Floor Plans','Pricing'] },
+    layouts: [{ name: '', price_from: '', specs: [{key:'Unit Size',value:''},{key:'View',value:''},{key:'Furnishing',value:'Fully Furnished'}] }],
+    roi: { title: 'Investment Returns', rows: [{type:'',size:'',price:'',roi:'',annual_income:''}] },
+    gallery: { images: ['','','','',''] },
+    location: { title: 'Prime Location', description: '', distances: [{place:'',time:''}], map_embed: '' },
+    developer: { image: '', name: '', description: '', facts: [{key:'',value:''}] },
+    contact: { address: '', email: '', website: '' }
+  };
+}
+
+// ── Start ────────────────────────────────────────────────
+initAuth();
+</script>
+</body>
+</html>
