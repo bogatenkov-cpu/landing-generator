@@ -11,6 +11,11 @@ const { deploy } = require('./deploy.js');
 
 const PORT = process.env.PORT || 3333;
 
+// Validate slug: only lowercase letters, digits, dashes
+function isValidSlug(slug) {
+  return typeof slug === 'string' && /^[a-z0-9][a-z0-9-]{0,100}$/.test(slug);
+}
+
 function loadEnv() {
   const envPath = path.join(__dirname, '.env');
   if (!fs.existsSync(envPath)) return;
@@ -37,7 +42,7 @@ function parseBody(req, maxBytes = 25 * 1024 * 1024) {
       body += chunk;
     });
     req.on('end', () => {
-      try { resolve(JSON.parse(body)); } catch(e) { resolve({}); }
+      try { resolve(JSON.parse(body)); } catch(e) { reject(new Error('Invalid JSON body')); }
     });
     req.on('error', reject);
   });
@@ -61,7 +66,8 @@ function claudeRequest(body, apiKey) {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
         'anthropic-version': '2023-06-01'
-      }
+      },
+      timeout: 120000
     }, res => {
       let buf = '';
       res.on('data', chunk => buf += chunk);
@@ -70,6 +76,7 @@ function claudeRequest(body, apiKey) {
         catch(e) { reject(new Error('Claude API parse error: ' + buf.slice(0, 200))); }
       });
     });
+    req.on('timeout', () => { req.destroy(); reject(new Error('Claude API timeout (120s)')); });
     req.on('error', reject);
     req.write(data);
     req.end();
@@ -191,6 +198,7 @@ const server = http.createServer(async (req, res) => {
     const parts = url.pathname.replace('/api/image/', '').split('/');
     if (parts.length >= 2) {
       const slug = parts[0];
+      if (!isValidSlug(slug)) { res.writeHead(400); res.end('Invalid slug'); return; }
       const filename = path.basename(parts.slice(1).join('/'));
       const imgPath = path.join(__dirname, 'data', slug, 'images', filename);
       if (fs.existsSync(imgPath)) {
@@ -226,6 +234,7 @@ const server = http.createServer(async (req, res) => {
   // Load project data
   if (req.method === 'GET' && url.pathname.startsWith('/api/project/')) {
     const slug = url.pathname.replace('/api/project/', '');
+    if (!isValidSlug(slug)) { res.writeHead(400, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Invalid slug' })); return; }
     const jsonPath = path.join(__dirname, 'data', `${slug}.json`);
     if (!fs.existsSync(jsonPath)) { res.writeHead(404); res.end('Not found'); return; }
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -245,6 +254,7 @@ const server = http.createServer(async (req, res) => {
     const { slug, filename, data } = body;
     try {
       if (!slug || !filename || !data) throw new Error('slug, filename and data are required');
+      if (!isValidSlug(slug)) throw new Error('Invalid slug format');
       const safe = path.basename(filename).replace(/[^a-zA-Z0-9._-]/g, '_');
       const imgDir = path.join(__dirname, 'data', slug, 'images');
       fs.mkdirSync(imgDir, { recursive: true });
@@ -278,6 +288,7 @@ const server = http.createServer(async (req, res) => {
     try {
       const slug = data.project_slug;
       if (!slug) throw new Error('project_slug is required');
+      if (!isValidSlug(slug)) throw new Error('Invalid slug format (lowercase letters, digits, dashes only)');
       fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
       fs.writeFileSync(path.join(__dirname, 'data', `${slug}.json`), JSON.stringify(data, null, 2), 'utf8');
       const html = generateHTML(data);
@@ -312,8 +323,14 @@ const server = http.createServer(async (req, res) => {
 
   // Deploy
   if (req.method === 'POST' && url.pathname === '/api/deploy') {
-    const { slug } = await parseBody(req);
+    let body;
+    try { body = await parseBody(req); } catch(e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message })); return;
+    }
+    const { slug } = body;
     try {
+      if (!isValidSlug(slug)) throw new Error('Invalid slug format');
       const distPath = path.join(__dirname, 'dist', slug, 'index.html');
       if (!fs.existsSync(distPath)) throw new Error(`Run save first for ${slug}`);
       const html = fs.readFileSync(distPath, 'utf8');
@@ -333,7 +350,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`\n🚀 Landing Generator running at http://localhost:${PORT}\n`);
-  console.log(`🔑 ANTHROPIC_API_KEY: ${process.env.ANTHROPIC_API_KEY ? 'SET (' + process.env.ANTHROPIC_API_KEY.slice(0,10) + '...)' : 'NOT SET'}`);
+  console.log(`🔑 ANTHROPIC_API_KEY: ${process.env.ANTHROPIC_API_KEY ? 'SET' : 'NOT SET'}`);
   if (process.env.ADMIN_PASSWORD) {
     console.log(`🔒 Password protection: ON\n`);
   } else {
