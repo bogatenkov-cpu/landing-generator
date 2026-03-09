@@ -125,7 +125,7 @@ IMPORTANT RULES:
 Return ONLY the JSON object, no markdown, no explanation.`;
 
   let response = await claudeRequest({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 8000,
     tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 10 }],
     messages: [{ role: 'user', content: prompt }]
