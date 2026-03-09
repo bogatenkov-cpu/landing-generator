@@ -26,7 +26,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .main{display:flex;flex-direction:column;min-height:100vh}
 .topbar{background:#fff;border-bottom:1px solid #e5e7eb;padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
 .topbar__title{font-size:15px;font-weight:600;color:#111}
-.topbar__actions{display:flex;gap:10px}
+.topbar__actions{display:flex;gap:10px;align-items:center}
 .btn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:.15s}
 .btn-outline{background:transparent;border:1.5px solid #d1d5db;color:#444}
 .btn-outline:hover{border-color:#9ca3af;color:#111}
@@ -122,6 +122,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .login-box .btn-signin{width:100%;padding:11px;background:#2f5050;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
 .login-box .btn-signin:hover{background:#253f3f}
 .login-err{color:#dc2626;font-size:12px;margin-top:10px;min-height:16px}
+
+/* Editor language switcher */
+.editor-lang-bar{display:flex;align-items:center;gap:10px;padding:12px 20px;background:#f8f9fa;border-bottom:1px solid #e5e7eb;border-radius:8px;margin-bottom:16px}
+.editor-lang-bar__label{font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.04em}
+.editor-lang-bar__btns{display:flex;gap:0;border:1.5px solid #e5e7eb;border-radius:6px;overflow:hidden}
+.editor-lang-btn{padding:6px 16px;font-size:13px;font-weight:600;border:none;cursor:pointer;background:#fff;color:#6b7280;transition:.15s}
+.editor-lang-btn:not(:last-child){border-right:1px solid #e5e7eb}
+.editor-lang-btn.active{background:#2f5050;color:#fff}
+.editor-lang-btn:hover:not(.active){background:#f3f4f6}
+
+/* Checkbox row */
+.checkbox-row{display:flex;gap:16px;align-items:center}
+.checkbox-row label{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#374151;cursor:pointer;text-transform:none;letter-spacing:0}
+.checkbox-row input[type=checkbox]{width:16px;height:16px;cursor:pointer}
+
+/* Form field editor rows */
+.ff-row{display:grid;grid-template-columns:1fr 100px 1fr 60px 40px;gap:8px;align-items:center}
+.ff-row input,.ff-row select{padding:7px 10px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:13px}
+.ff-row label{font-size:12px;display:flex;align-items:center;gap:4px;justify-content:center}
 </style>
 </head>
 <body>
@@ -129,7 +148,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <!-- Sidebar -->
   <aside class="sidebar">
-    <div class="sidebar__logo">🏗 Landing Generator</div>
+    <div class="sidebar__logo">Landing Generator</div>
     <button class="sidebar__new" onclick="newProject()">+ New Project</button>
     <div class="sidebar__list" id="projectList">
       <div class="sidebar__empty">Loading...</div>
@@ -141,9 +160,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="topbar">
       <div class="topbar__title" id="topbarTitle">Select or create a project</div>
       <div class="topbar__actions" id="topbarActions" style="display:none">
-        <button class="btn btn-outline" onclick="previewProject()">👁 Preview</button>
-        <button class="btn btn-primary" onclick="saveProject()">💾 Save</button>
-        <button class="btn btn-gold" id="deployBtn" onclick="deployProject()">🚀 Deploy</button>
+        <button class="btn btn-outline" onclick="previewProject()">Preview</button>
+        <button class="btn btn-primary" onclick="saveProject()">Save</button>
+        <button class="btn btn-gold" id="deployBtn" onclick="deployProject()">Deploy</button>
       </div>
     </div>
 
@@ -173,6 +192,81 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <script>
 var currentSlug = null;
 var _pass = localStorage.getItem('admin_pass') || '';
+
+// ── Multi-language state ─────────────────────────────────
+var _langs = ['en'];
+var _editorLang = 'en';
+var _mlStore = {}; // { en: {id: value}, ru: {id: value} }
+var _mlSeq = 0;
+
+function mlId() { return 'ml_' + (_mlSeq++); }
+
+// Extract display value from possibly multi-lang val
+function mlVal(val) {
+  if (!val) return '';
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object' && !Array.isArray(val)) return val[_editorLang] || val.en || Object.values(val)[0] || '';
+  return String(val);
+}
+
+// Initialize _mlStore for a field from data value
+function mlInit(id, val) {
+  _langs.forEach(function(l) {
+    if (!_mlStore[l]) _mlStore[l] = {};
+    if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
+      _mlStore[l][id] = val[l] || '';
+    } else {
+      _mlStore[l][id] = (val || '');
+    }
+  });
+}
+
+// Save current DOM values of all [data-ml] inputs to _mlStore
+function saveMlState() {
+  var els = document.querySelectorAll('[data-ml]');
+  els.forEach(function(el) {
+    var id = el.id;
+    if (!id) return;
+    if (!_mlStore[_editorLang]) _mlStore[_editorLang] = {};
+    _mlStore[_editorLang][id] = el.value;
+  });
+}
+
+// Load values from _mlStore into [data-ml] inputs
+function loadMlState(lang) {
+  var store = _mlStore[lang] || {};
+  var els = document.querySelectorAll('[data-ml]');
+  els.forEach(function(el) {
+    var id = el.id;
+    if (!id) return;
+    el.value = store[id] !== undefined ? store[id] : '';
+  });
+}
+
+// Switch editor language
+function switchEditorLang(lang) {
+  if (lang === _editorLang) return;
+  saveMlState();
+  _editorLang = lang;
+  loadMlState(lang);
+  // Update buttons
+  document.querySelectorAll('.editor-lang-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+}
+
+// Collect a field value: string if single lang, {en,ru} if multi
+function collectMl(id) {
+  if (_langs.length === 1) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+  var obj = {};
+  _langs.forEach(function(l) {
+    obj[l] = (_mlStore[l] && _mlStore[l][id] !== undefined) ? _mlStore[l][id].trim() : '';
+  });
+  return obj;
+}
 
 // ── Auth ──────────────────────────────────────────────────
 function apiFetch(url, opts) {
@@ -238,6 +332,10 @@ function renderProjectList(projects) {
 // ── New project ───────────────────────────────────────────
 function newProject() {
   currentSlug = null;
+  _langs = ['en'];
+  _editorLang = 'en';
+  _mlStore = {};
+  _mlSeq = 0;
   renderForm(defaultData());
   document.getElementById('topbarTitle').textContent = 'New Project';
   document.getElementById('topbarActions').style.display = 'flex';
@@ -252,6 +350,10 @@ async function loadProject(slug) {
     if (r.status === 401) { showLogin(); return; }
     var data = await r.json();
     currentSlug = slug;
+    _langs = data.languages && data.languages.length ? data.languages : ['en'];
+    _editorLang = _langs[0];
+    _mlStore = {};
+    _mlSeq = 0;
     renderForm(data);
     document.getElementById('topbarTitle').textContent = data.project_name;
     document.getElementById('topbarActions').style.display = 'flex';
@@ -264,13 +366,11 @@ async function loadProject(slug) {
 function getImgSrc(val) {
   if (!val) return '';
   if (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('//')) return val;
-  // relative path like "images/hero.jpg" — serve from server
   var slug = (document.getElementById('f_slug') || {}).value || '';
   var fname = val.replace(/^images\//, '');
   return slug ? '/api/image/' + slug + '/' + fname : val;
 }
 
-// Returns HTML for an image field with URL input + upload button + thumbnail
 function imgField(id, value, label, placeholder) {
   var src = value ? getImgSrc(value) : '';
   return '<div class="field">'
@@ -279,7 +379,7 @@ function imgField(id, value, label, placeholder) {
     +   '<input id="' + id + '" value="' + s(value) + '" placeholder="' + s(placeholder || 'https://... or Upload') + '"'
     +   ' oninput="updateImgThumb(\'' + id + '\')" />'
     +   '<label class="btn-upload" title="Upload from file">'
-    +     '📎 Upload'
+    +     'Upload'
     +     '<input type="file" accept="image/*" onchange="uploadImage(\'' + id + '\',this)" />'
     +   '</label>'
     + '</div>'
@@ -340,54 +440,85 @@ async function uploadImage(inputId, fileInput) {
   }
 }
 
+// ── Multi-lang input helper ───────────────────────────────
+// Returns input HTML with data-ml attribute, initializes _mlStore
+function mlInput(id, val, placeholder) {
+  mlInit(id, val);
+  return '<input id="' + id + '" data-ml value="' + s(mlVal(val)) + '" placeholder="' + s(placeholder || '') + '" />';
+}
+function mlTextarea(id, val, placeholder, rows) {
+  mlInit(id, val);
+  return '<textarea id="' + id + '" data-ml rows="' + (rows||3) + '" placeholder="' + s(placeholder || '') + '">' + s(mlVal(val)) + '</textarea>';
+}
+
 // ── Collect form data ─────────────────────────────────────
 function collectFormData() {
+  // Save current editor lang state first
+  saveMlState();
+
   function v(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
   function checked(id) { var el = document.getElementById(id); return el ? el.checked : false; }
 
+  // Collect selected languages
+  var langs = [];
+  if (checked('lang_en')) langs.push('en');
+  if (checked('lang_ru')) langs.push('ru');
+  if (!langs.length) langs = ['en'];
+
   var heroStats = [];
   document.querySelectorAll('.hero-stat').forEach(function(row) {
-    var inputs = row.querySelectorAll('input[type=text],input:not([type])');
-    if(inputs[0] && inputs[0].value) heroStats.push({ value: inputs[0].value.trim(), label: inputs[1].value.trim() });
+    var inputs = row.querySelectorAll('input[data-ml]');
+    var valId = inputs[0] ? inputs[0].id : null;
+    var lblId = inputs[1] ? inputs[1].id : null;
+    if(valId && (v(valId) || (_mlStore.en && _mlStore.en[valId]))) {
+      heroStats.push({ value: collectMl(valId), label: collectMl(lblId) });
+    }
   });
 
   var conceptSpecs = [];
   document.querySelectorAll('.concept-spec').forEach(function(row) {
-    var inputs = row.querySelectorAll('input[type=text],input:not([type])');
-    if(inputs[0] && inputs[0].value) conceptSpecs.push({ key: inputs[0].value.trim(), value: inputs[1].value.trim() });
+    var inputs = row.querySelectorAll('input[data-ml]');
+    var kId = inputs[0] ? inputs[0].id : null;
+    var vId = inputs[1] ? inputs[1].id : null;
+    if(kId && (v(kId) || (_mlStore.en && _mlStore.en[kId]))) {
+      conceptSpecs.push({ key: collectMl(kId), value: collectMl(vId) });
+    }
   });
 
   var amenities = [];
-  document.querySelectorAll('.amenity-item input[type=text],.amenity-item input:not([type])').forEach(function(inp) {
-    if(inp.value.trim()) amenities.push(inp.value.trim());
+  document.querySelectorAll('.amenity-item input[data-ml]').forEach(function(inp) {
+    if(inp.value.trim() || (_mlStore.en && _mlStore.en[inp.id])) amenities.push(collectMl(inp.id));
   });
 
   var catTags = [];
-  document.querySelectorAll('.cat-tag input[type=text],.cat-tag input:not([type])').forEach(function(inp) {
-    if(inp.value.trim()) catTags.push(inp.value.trim());
+  document.querySelectorAll('.cat-tag input[data-ml]').forEach(function(inp) {
+    if(inp.value.trim() || (_mlStore.en && _mlStore.en[inp.id])) catTags.push(collectMl(inp.id));
   });
 
   var layouts = [];
   document.querySelectorAll('.layout-card').forEach(function(card) {
-    var inputs = card.querySelectorAll('input[type=text],input:not([type])');
-    var name = inputs[0] ? inputs[0].value.trim() : '';
-    var price = inputs[1] ? inputs[1].value.trim() : '';
-    if(!name) return;
+    var nameInp = card.querySelector('.layout-name');
+    var priceInp = card.querySelector('.layout-price');
+    if(!nameInp || !nameInp.value.trim()) return;
     var specs = [];
     card.querySelectorAll('.layout-spec').forEach(function(row) {
-      var si = row.querySelectorAll('input[type=text],input:not([type])');
-      if(si[0] && si[0].value.trim()) specs.push({ key: si[0].value.trim(), value: si[1].value.trim() });
+      var si = row.querySelectorAll('input[data-ml]');
+      if(si[0] && (si[0].value.trim() || (_mlStore.en && _mlStore.en[si[0].id]))) {
+        specs.push({ key: collectMl(si[0].id), value: collectMl(si[1].id) });
+      }
     });
-    layouts.push({ name: name, price_from: price, specs: specs });
+    layouts.push({ name: collectMl(nameInp.id), price_from: collectMl(priceInp.id), specs: specs });
   });
 
   var roiRows = [];
   document.querySelectorAll('.roi-row').forEach(function(row) {
-    var inputs = row.querySelectorAll('input[type=text],input:not([type])');
-    if(inputs[0] && inputs[0].value.trim()) roiRows.push({
-      type: inputs[0].value.trim(), size: inputs[1].value.trim(),
-      price: inputs[2].value.trim(), roi: inputs[3].value.trim(), annual_income: inputs[4].value.trim()
-    });
+    var inputs = row.querySelectorAll('input[data-ml]');
+    if(inputs[0] && (inputs[0].value.trim() || (_mlStore.en && _mlStore.en[inputs[0].id]))) {
+      roiRows.push({
+        type: collectMl(inputs[0].id), size: collectMl(inputs[1].id),
+        price: collectMl(inputs[2].id), roi: collectMl(inputs[3].id), annual_income: collectMl(inputs[4].id)
+      });
+    }
   });
 
   var galleryImages = [];
@@ -397,47 +528,68 @@ function collectFormData() {
 
   var distances = [];
   document.querySelectorAll('.distance-row').forEach(function(row) {
-    var inputs = row.querySelectorAll('input[type=text],input:not([type])');
-    if(inputs[0] && inputs[0].value.trim()) distances.push({ place: inputs[0].value.trim(), time: inputs[1].value.trim() });
+    var inputs = row.querySelectorAll('input[data-ml]');
+    if(inputs[0] && (inputs[0].value.trim() || (_mlStore.en && _mlStore.en[inputs[0].id]))) {
+      distances.push({ place: collectMl(inputs[0].id), time: collectMl(inputs[1].id) });
+    }
   });
 
   var devFacts = [];
   document.querySelectorAll('.dev-fact').forEach(function(row) {
-    var inputs = row.querySelectorAll('input[type=text],input:not([type])');
-    if(inputs[0] && inputs[0].value.trim()) devFacts.push({ key: inputs[0].value.trim(), value: inputs[1].value.trim() });
+    var inputs = row.querySelectorAll('input[data-ml]');
+    if(inputs[0] && (inputs[0].value.trim() || (_mlStore.en && _mlStore.en[inputs[0].id]))) {
+      devFacts.push({ key: collectMl(inputs[0].id), value: collectMl(inputs[1].id) });
+    }
   });
 
   var paragraphs = [];
-  document.querySelectorAll('.concept-para textarea').forEach(function(ta) {
-    if(ta.value.trim()) paragraphs.push(ta.value.trim());
+  document.querySelectorAll('.concept-para textarea[data-ml]').forEach(function(ta) {
+    if(ta.value.trim() || (_mlStore.en && _mlStore.en[ta.id])) paragraphs.push(collectMl(ta.id));
+  });
+
+  // Collect form fields
+  var formFields = [];
+  document.querySelectorAll('.ff-item').forEach(function(row) {
+    var nameInp = row.querySelector('.ff-name');
+    var typeInp = row.querySelector('.ff-type');
+    var phInp = row.querySelector('.ff-placeholder');
+    var reqInp = row.querySelector('.ff-required');
+    if (nameInp && nameInp.value.trim()) {
+      var ff = { name: nameInp.value.trim(), type: typeInp ? typeInp.value : 'text', required: reqInp ? reqInp.checked : false };
+      if (phInp) ff.placeholder = collectMl(phInp.id);
+      formFields.push(ff);
+    }
   });
 
   return {
     project_slug: v('f_slug'),
     project_name: v('f_name'),
-    meta_title: v('f_meta_title'),
-    meta_description: v('f_meta_desc'),
+    languages: langs,
+    currency: v('f_currency'),
+    meta_title: collectMl('f_meta_title'),
+    meta_description: collectMl('f_meta_desc'),
     crm_webhook: v('f_webhook'),
+    form_fields: formFields.length ? formFields : undefined,
     hero: {
       image: v('f_hero_image'),
-      title: v('f_hero_title'),
-      description: v('f_hero_desc'),
+      title: collectMl('f_hero_title'),
+      description: collectMl('f_hero_desc'),
       stats: heroStats
     },
     concept: {
-      title: v('f_concept_title'),
+      title: collectMl('f_concept_title'),
       paragraphs: paragraphs,
       specs: conceptSpecs
     },
     sell_banner: {
       image: v('f_sell_image'),
-      title: v('f_sell_title'),
-      subtitle: v('f_sell_subtitle'),
+      title: collectMl('f_sell_title'),
+      subtitle: collectMl('f_sell_subtitle'),
       show: checked('f_sell_show')
     },
     amenities: {
       image: v('f_amenities_image'),
-      title: v('f_amenities_title'),
+      title: collectMl('f_amenities_title'),
       items: amenities
     },
     catalogue: {
@@ -445,18 +597,18 @@ function collectFormData() {
       tags: catTags
     },
     layouts: layouts,
-    roi: { title: v('f_roi_title'), rows: roiRows },
+    roi: { title: collectMl('f_roi_title'), rows: roiRows },
     gallery: { images: galleryImages },
     location: {
-      title: v('f_location_title'),
-      description: v('f_location_desc'),
+      title: collectMl('f_location_title'),
+      description: collectMl('f_location_desc'),
       distances: distances,
       map_embed: v('f_map_embed')
     },
     developer: {
       image: v('f_dev_image'),
-      name: v('f_dev_name'),
-      description: v('f_dev_desc'),
+      name: collectMl('f_dev_name'),
+      description: collectMl('f_dev_desc'),
       facts: devFacts
     },
     contact: {
@@ -479,7 +631,7 @@ async function saveProject() {
       currentSlug = res.slug;
       document.getElementById('topbarTitle').textContent = data.project_name || res.slug;
       loadProjects();
-      showStatus('Saved ✓', 'ok');
+      showStatus('Saved', 'ok');
     } else { showStatus(res.error, 'err'); }
   } catch(e) { showStatus(e.message, 'err'); }
 }
@@ -495,7 +647,7 @@ async function previewProject() {
     frame.style.display = 'block';
     document.getElementById('content').style.display = 'none';
     frame.srcdoc = html;
-    document.getElementById('topbarTitle').textContent = '← Back  |  ' + (data.project_name || 'Preview');
+    document.getElementById('topbarTitle').textContent = 'Back  |  ' + (data.project_name || 'Preview');
     document.getElementById('topbarTitle').style.cursor = 'pointer';
     document.getElementById('topbarTitle').onclick = closePreview;
   } catch(e) { showStatus(e.message,'err'); }
@@ -512,7 +664,6 @@ function closePreview() {
 async function deployProject() {
   var data = collectFormData();
   if(!data.project_slug) { alert('Fill in the Project Slug field first'); return; }
-  // Save first
   var saveR = await apiFetch('/api/save', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
   if (saveR.status === 401) { showLogin(); return; }
   var saveData = await saveR.json();
@@ -528,18 +679,18 @@ async function deployProject() {
     if (r.status === 401) { showLogin(); return; }
     var res = await r.json();
     if(res.ok) {
-      showStatus('Deployed! 🎉', 'ok');
+      showStatus('Deployed!', 'ok');
       var result = document.getElementById('deployResult');
       result.style.display = 'block';
       document.getElementById('deployLinks').innerHTML =
-        '<a href="' + res.deployUrl + '" target="_blank">🌐 ' + res.deployUrl + '</a><br>'
-        + '<a href="' + res.githubUrl + '" target="_blank">📦 ' + res.githubUrl + '</a>';
+        '<a href="' + res.deployUrl + '" target="_blank">' + res.deployUrl + '</a><br>'
+        + '<a href="' + res.githubUrl + '" target="_blank">' + res.githubUrl + '</a>';
     } else {
       showStatus('Deploy failed: ' + res.error, 'err');
     }
   } catch(e) { showStatus('Deploy error: ' + e.message, 'err'); }
   btn.disabled = false;
-  btn.innerHTML = '🚀 Deploy';
+  btn.innerHTML = 'Deploy';
 }
 
 function showStatus(msg, type) {
@@ -560,93 +711,155 @@ function addItem(containerId, html) {
 function removeItem(btn) { btn.closest('.dyn-item, .sub-card').remove(); }
 
 function addHeroStat() {
+  var id1 = mlId(), id2 = mlId();
+  mlInit(id1, ''); mlInit(id2, '');
   addItem('heroStats', '<div class="dyn-item hero-stat">'
-    + '<input placeholder="Value (e.g. From $105,000)" />'
-    + '<input placeholder="Label (e.g. Starting Price)" />'
-    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '<input id="' + id1 + '" data-ml placeholder="Value (e.g. From $105,000)" />'
+    + '<input id="' + id2 + '" data-ml placeholder="Label (e.g. Starting Price)" />'
+    + '<button class="btn-rm" onclick="removeItem(this)">x</button>'
     + '</div>');
 }
 function addConceptSpec() {
+  var id1 = mlId(), id2 = mlId();
+  mlInit(id1, ''); mlInit(id2, '');
   addItem('conceptSpecs', '<div class="dyn-item concept-spec">'
-    + '<input placeholder="Key (e.g. Location)" />'
-    + '<input placeholder="Value (e.g. Bangrak Beach)" />'
-    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '<input id="' + id1 + '" data-ml placeholder="Key (e.g. Location)" />'
+    + '<input id="' + id2 + '" data-ml placeholder="Value (e.g. Bangrak Beach)" />'
+    + '<button class="btn-rm" onclick="removeItem(this)">x</button>'
     + '</div>');
 }
 function addAmenity() {
+  var id1 = mlId();
+  mlInit(id1, '');
   addItem('amenitiesList', '<div class="dyn-item amenity-item">'
-    + '<input placeholder="e.g. 2,000 m² wrap-around pool" />'
-    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '<input id="' + id1 + '" data-ml placeholder="e.g. 2,000 m2 wrap-around pool" />'
+    + '<button class="btn-rm" onclick="removeItem(this)">x</button>'
     + '</div>');
 }
 function addCatTag() {
+  var id1 = mlId();
+  mlInit(id1, '');
   addItem('catTags', '<div class="dyn-item cat-tag">'
-    + '<input placeholder="e.g. Floor Plans" />'
-    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '<input id="' + id1 + '" data-ml placeholder="e.g. Floor Plans" />'
+    + '<button class="btn-rm" onclick="removeItem(this)">x</button>'
     + '</div>');
 }
 function addLayout() {
+  var nId = mlId(), pId = mlId(), s1 = mlId(), s2 = mlId();
+  mlInit(nId, ''); mlInit(pId, ''); mlInit(s1, ''); mlInit(s2, '');
   addItem('layoutsList', '<div class="sub-card layout-card">'
     + '<div class="sub-card__header">'
     +   '<span class="sub-card__title">Layout</span>'
     +   '<button class="btn btn-danger" style="padding:4px 10px;font-size:12px" onclick="removeItem(this)">Remove</button>'
     + '</div>'
     + '<div class="field-row">'
-    +   '<div class="field"><label>Unit Type</label><input placeholder="e.g. Studio" /></div>'
-    +   '<div class="field"><label>Price From</label><input placeholder="e.g. $105,000" /></div>'
+    +   '<div class="field"><label>Unit Type</label><input id="' + nId + '" class="layout-name" data-ml placeholder="e.g. Studio" /></div>'
+    +   '<div class="field"><label>Price From</label><input id="' + pId + '" class="layout-price" data-ml placeholder="e.g. $105,000" /></div>'
     + '</div>'
     + '<div class="dyn-list">'
-    +   '<div class="dyn-item layout-spec"><input placeholder="Spec key"/><input placeholder="Spec value"/><button class="btn-rm" onclick="removeItem(this)">×</button></div>'
+    +   '<div class="dyn-item layout-spec"><input id="' + s1 + '" data-ml placeholder="Spec key"/><input id="' + s2 + '" data-ml placeholder="Spec value"/><button class="btn-rm" onclick="removeItem(this)">x</button></div>'
     + '</div>'
     + '<button class="btn-add" onclick="addLayoutSpec(this)">+ Add spec row</button>'
     + '</div>');
 }
 function addLayoutSpec(btn) {
+  var id1 = mlId(), id2 = mlId();
+  mlInit(id1, ''); mlInit(id2, '');
   var list = btn.closest('.sub-card').querySelector('.dyn-list');
   var div = document.createElement('div');
   div.className = 'dyn-item layout-spec';
-  div.innerHTML = '<input placeholder="Spec key"/><input placeholder="Spec value"/><button class="btn-rm" onclick="removeItem(this)">×</button>';
+  div.innerHTML = '<input id="' + id1 + '" data-ml placeholder="Spec key"/><input id="' + id2 + '" data-ml placeholder="Spec value"/><button class="btn-rm" onclick="removeItem(this)">x</button>';
   list.appendChild(div);
 }
 function addRoiRow() {
+  var ids = [mlId(), mlId(), mlId(), mlId(), mlId()];
+  ids.forEach(function(id) { mlInit(id, ''); });
   addItem('roiRows', '<div class="dyn-item roi-row">'
-    + '<input placeholder="Type (Studio)" />'
-    + '<input placeholder="Size (28-29m²)" />'
-    + '<input placeholder="Price ($105k)" />'
-    + '<input placeholder="ROI (6%)" />'
-    + '<input placeholder="Annual ($6,300)" />'
-    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '<input id="' + ids[0] + '" data-ml placeholder="Type (Studio)" />'
+    + '<input id="' + ids[1] + '" data-ml placeholder="Size (28-29m2)" />'
+    + '<input id="' + ids[2] + '" data-ml placeholder="Price ($105k)" />'
+    + '<input id="' + ids[3] + '" data-ml placeholder="ROI (6%)" />'
+    + '<input id="' + ids[4] + '" data-ml placeholder="Annual ($6,300)" />'
+    + '<button class="btn-rm" onclick="removeItem(this)">x</button>'
     + '</div>');
 }
 function addGalleryImg() {
   var id = 'gimg_' + Date.now();
   addItem('galleryImages', '<div class="dyn-item gallery-img">'
     + '<input id="' + id + '" placeholder="https://... or Upload" oninput="updateImgThumb(\'' + id + '\')" />'
-    + '<label class="btn-upload" title="Upload image">📎'
+    + '<label class="btn-upload" title="Upload image">Upload'
     +   '<input type="file" accept="image/*" onchange="uploadImage(\'' + id + '\',this)" />'
     + '</label>'
-    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '<button class="btn-rm" onclick="removeItem(this)">x</button>'
     + '</div>');
 }
 function addDistance() {
+  var id1 = mlId(), id2 = mlId();
+  mlInit(id1, ''); mlInit(id2, '');
   addItem('distances', '<div class="dyn-item distance-row">'
-    + '<input placeholder="Place" />'
-    + '<input placeholder="Time (e.g. 5 min drive)" />'
-    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '<input id="' + id1 + '" data-ml placeholder="Place" />'
+    + '<input id="' + id2 + '" data-ml placeholder="Time (e.g. 5 min drive)" />'
+    + '<button class="btn-rm" onclick="removeItem(this)">x</button>'
     + '</div>');
 }
 function addDevFact() {
+  var id1 = mlId(), id2 = mlId();
+  mlInit(id1, ''); mlInit(id2, '');
   addItem('devFacts', '<div class="dyn-item dev-fact">'
-    + '<input placeholder="Key" />'
-    + '<input placeholder="Value" />'
-    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '<input id="' + id1 + '" data-ml placeholder="Key" />'
+    + '<input id="' + id2 + '" data-ml placeholder="Value" />'
+    + '<button class="btn-rm" onclick="removeItem(this)">x</button>'
     + '</div>');
 }
 function addConceptPara() {
+  var id1 = mlId();
+  mlInit(id1, '');
   addItem('conceptParas', '<div class="dyn-item concept-para">'
-    + '<textarea placeholder="Paragraph text (HTML allowed: &lt;strong&gt;bold&lt;/strong&gt;)" rows="3"></textarea>'
-    + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+    + '<textarea id="' + id1 + '" data-ml placeholder="Paragraph text (HTML: &lt;strong&gt;bold&lt;/strong&gt;)" rows="3"></textarea>'
+    + '<button class="btn-rm" onclick="removeItem(this)">x</button>'
     + '</div>');
+}
+function addFormField() {
+  var phId = mlId();
+  mlInit(phId, '');
+  addItem('formFieldsList', '<div class="dyn-item ff-item">'
+    + '<div class="ff-row">'
+    + '<input class="ff-name" placeholder="Field name (e.g. phone)" />'
+    + '<select class="ff-type"><option value="text">Text</option><option value="email">Email</option><option value="tel">Phone</option></select>'
+    + '<input id="' + phId + '" class="ff-placeholder" data-ml placeholder="Placeholder text" />'
+    + '<label><input type="checkbox" class="ff-required" checked /> Req</label>'
+    + '<button class="btn-rm" onclick="removeItem(this)">x</button>'
+    + '</div></div>');
+}
+
+// ── Language checkbox change handler ──────────────────────
+function onLangChange() {
+  saveMlState();
+  var newLangs = [];
+  if (document.getElementById('lang_en') && document.getElementById('lang_en').checked) newLangs.push('en');
+  if (document.getElementById('lang_ru') && document.getElementById('lang_ru').checked) newLangs.push('ru');
+  if (!newLangs.length) { newLangs = ['en']; document.getElementById('lang_en').checked = true; }
+  _langs = newLangs;
+  // Ensure _mlStore has entries for all langs
+  _langs.forEach(function(l) { if (!_mlStore[l]) _mlStore[l] = {}; });
+  // If current editor lang not in _langs, switch
+  if (_langs.indexOf(_editorLang) === -1) {
+    _editorLang = _langs[0];
+    loadMlState(_editorLang);
+  }
+  // Show/hide lang switcher bar
+  var bar = document.getElementById('editorLangBar');
+  if (bar) {
+    if (_langs.length > 1) {
+      bar.style.display = 'flex';
+      bar.innerHTML = '<span class="editor-lang-bar__label">Editing language:</span>'
+        + '<div class="editor-lang-bar__btns">'
+        + _langs.map(function(l) { return '<button type="button" class="editor-lang-btn' + (l === _editorLang ? ' active' : '') + '" data-lang="' + l + '" onclick="switchEditorLang(\'' + l + '\')">' + l.toUpperCase() + '</button>'; }).join('')
+        + '</div>';
+    } else {
+      bar.style.display = 'none';
+    }
+  }
 }
 
 // ── Toggle section card ───────────────────────────────────
@@ -656,6 +869,10 @@ function toggleSection(header) {
 
 // ── Render form ───────────────────────────────────────────
 function renderForm(d) {
+  _mlSeq = 0;
+  _mlStore = {};
+  _langs.forEach(function(l) { _mlStore[l] = {}; });
+
   var content = document.getElementById('content');
   var hero = d.hero || {};
   var concept = d.concept || {};
@@ -665,6 +882,8 @@ function renderForm(d) {
   var loc = d.location || {};
   var dev = d.developer || {};
   var contact = d.contact || {};
+  var formFields = d.form_fields || [];
+  var multiLang = _langs.length > 1;
 
   content.innerHTML = ''
     + '<div id="formStatus" class="status"></div>'
@@ -672,42 +891,61 @@ function renderForm(d) {
 
     // AI Fill bar
     + '<div class="ai-bar">'
-    + '<input id="aiQuery" placeholder="Enter project name or URL (e.g. ANAVA Samui or https://anavasamui.com)" />'
-    + '<button class="btn-ai" id="aiFillBtn" onclick="aiFill()">✨ AI Fill</button>'
+    + '<input id="aiQuery" placeholder="Enter project name or URL (e.g. ANAVA Samui)" />'
+    + '<button class="btn-ai" id="aiFillBtn" onclick="aiFill()">AI Fill</button>'
     + '<span class="ai-status" id="aiStatus"></span>'
+    + '</div>'
+
+    // Editor language switcher (shown when >1 language)
+    + '<div class="editor-lang-bar" id="editorLangBar" style="display:' + (multiLang ? 'flex' : 'none') + '">'
+    + (multiLang ? '<span class="editor-lang-bar__label">Editing language:</span>'
+      + '<div class="editor-lang-bar__btns">'
+      + _langs.map(function(l) { return '<button type="button" class="editor-lang-btn' + (l === _editorLang ? ' active' : '') + '" data-lang="' + l + '" onclick="switchEditorLang(\'' + l + '\')">' + l.toUpperCase() + '</button>'; }).join('')
+      + '</div>' : '')
     + '</div>'
 
     // Basic Info
     + '<div class="section-card">'
     + '<div class="section-card__header" onclick="toggleSection(this)">'
-    + '<div class="section-card__title">⚙️ Basic Info & CRM</div>'
-    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__title">Basic Info & Settings</div>'
+    + '<span class="section-card__chevron">&#9660;</span></div>'
     + '<div class="section-card__body">'
     + '<div class="field-row">'
     + '<div class="field"><label>Project Slug *</label><input id="f_slug" value="' + s(d.project_slug) + '" placeholder="anava-samui" /></div>'
     + '<div class="field"><label>Project Name *</label><input id="f_name" value="' + s(d.project_name) + '" placeholder="ANAVA Samui" /></div>'
     + '</div>'
-    + '<div class="field"><label>Meta Title</label><input id="f_meta_title" value="' + s(d.meta_title) + '" /></div>'
-    + '<div class="field"><label>Meta Description</label><textarea id="f_meta_desc" rows="2">' + s(d.meta_description) + '</textarea></div>'
+    + '<div class="field-row">'
+    + '<div class="field"><label>Languages</label>'
+    + '<div class="checkbox-row">'
+    + '<label><input type="checkbox" id="lang_en" ' + (_langs.indexOf('en') >= 0 ? 'checked' : '') + ' onchange="onLangChange()" /> EN (English)</label>'
+    + '<label><input type="checkbox" id="lang_ru" ' + (_langs.indexOf('ru') >= 0 ? 'checked' : '') + ' onchange="onLangChange()" /> RU (Russian)</label>'
+    + '</div></div>'
+    + '<div class="field"><label>Currency</label>'
+    + '<select id="f_currency"><option value="USD"' + ((d.currency||'USD')==='USD'?' selected':'') + '>USD ($)</option><option value="THB"' + (d.currency==='THB'?' selected':'') + '>THB (฿)</option><option value="EUR"' + (d.currency==='EUR'?' selected':'') + '>EUR (&#8364;)</option></select>'
+    + '</div></div>'
+    + '<div class="field"><label>Meta Title</label>' + mlInput('f_meta_title', d.meta_title, 'SEO Title') + '</div>'
+    + '<div class="field"><label>Meta Description</label>' + mlTextarea('f_meta_desc', d.meta_description, 'SEO Description', 2) + '</div>'
     + '<div class="field"><label>CRM Webhook URL</label><input id="f_webhook" value="' + s(d.crm_webhook) + '" placeholder="https://tranio.ru/lead-management/tilda_to_lead/.../" /></div>'
     + '</div></div>'
 
     // Hero
     + '<div class="section-card">'
     + '<div class="section-card__header" onclick="toggleSection(this)">'
-    + '<div class="section-card__title">🖼 Hero Section</div>'
-    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__title">Hero Section</div>'
+    + '<span class="section-card__chevron">&#9660;</span></div>'
     + '<div class="section-card__body">'
-    + imgField('f_hero_image', hero.image, 'Hero Image (1920×1080)')
-    + '<div class="field"><label>Title</label><input id="f_hero_title" value="' + s(hero.title) + '" /></div>'
-    + '<div class="field"><label>Description</label><textarea id="f_hero_desc" rows="3">' + s(hero.description) + '</textarea></div>'
+    + imgField('f_hero_image', hero.image, 'Hero Image (1920x1080)')
+    + '<div class="field"><label>Title</label>' + mlInput('f_hero_title', hero.title, 'Main heading') + '</div>'
+    + '<div class="field"><label>Description</label>' + mlTextarea('f_hero_desc', hero.description, 'Hero description', 3) + '</div>'
     + '<div class="field"><label>Stats (4 badges)</label>'
     + '<div class="dyn-list" id="heroStats">'
     + (hero.stats || []).map(function(stat) {
+        var id1 = mlId(), id2 = mlId();
+        mlInit(id1, stat.value); mlInit(id2, stat.label);
         return '<div class="dyn-item hero-stat">'
-          + '<input value="' + s(stat.value) + '" placeholder="Value" />'
-          + '<input value="' + s(stat.label) + '" placeholder="Label" />'
-          + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+          + '<input id="' + id1 + '" data-ml value="' + s(mlVal(stat.value)) + '" placeholder="Value" />'
+          + '<input id="' + id2 + '" data-ml value="' + s(mlVal(stat.label)) + '" placeholder="Label" />'
+          + '<button class="btn-rm" onclick="removeItem(this)">x</button>'
           + '</div>';
       }).join('')
     + '</div>'
@@ -717,24 +955,28 @@ function renderForm(d) {
     // Concept
     + '<div class="section-card">'
     + '<div class="section-card__header" onclick="toggleSection(this)">'
-    + '<div class="section-card__title">📝 Concept Section</div>'
-    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__title">Concept Section</div>'
+    + '<span class="section-card__chevron">&#9660;</span></div>'
     + '<div class="section-card__body">'
-    + '<div class="field"><label>Section Title</label><input id="f_concept_title" value="' + s(concept.title) + '" /></div>'
+    + '<div class="field"><label>Section Title</label>' + mlInput('f_concept_title', concept.title, 'Concept title') + '</div>'
     + '<div class="field"><label>Paragraphs (HTML allowed)</label>'
     + '<div class="dyn-list" id="conceptParas">'
     + (concept.paragraphs || []).map(function(p) {
-        return '<div class="dyn-item concept-para"><textarea rows="3">' + s(p) + '</textarea>'
-          + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+        var id1 = mlId();
+        mlInit(id1, p);
+        return '<div class="dyn-item concept-para"><textarea id="' + id1 + '" data-ml rows="3">' + s(mlVal(p)) + '</textarea>'
+          + '<button class="btn-rm" onclick="removeItem(this)">x</button></div>';
       }).join('')
     + '</div><button class="btn-add" onclick="addConceptPara()">+ Add paragraph</button></div>'
     + '<div class="field"><label>Specs Table</label>'
     + '<div class="dyn-list" id="conceptSpecs">'
     + (concept.specs || []).map(function(spec) {
+        var id1 = mlId(), id2 = mlId();
+        mlInit(id1, spec.key); mlInit(id2, spec.value);
         return '<div class="dyn-item concept-spec">'
-          + '<input value="' + s(spec.key) + '" placeholder="Key" />'
-          + '<input value="' + s(spec.value) + '" placeholder="Value" />'
-          + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+          + '<input id="' + id1 + '" data-ml value="' + s(mlVal(spec.key)) + '" placeholder="Key" />'
+          + '<input id="' + id2 + '" data-ml value="' + s(mlVal(spec.value)) + '" placeholder="Value" />'
+          + '<button class="btn-rm" onclick="removeItem(this)">x</button></div>';
       }).join('')
     + '</div><button class="btn-add" onclick="addConceptSpec()">+ Add row</button></div>'
     + '</div></div>'
@@ -742,29 +984,31 @@ function renderForm(d) {
     // Sell Banner
     + '<div class="section-card">'
     + '<div class="section-card__header" onclick="toggleSection(this)">'
-    + '<div class="section-card__title">📣 Sell Banner (optional)</div>'
-    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__title">Sell Banner (optional)</div>'
+    + '<span class="section-card__chevron">&#9660;</span></div>'
     + '<div class="section-card__body">'
     + '<div class="field"><label><input type="checkbox" id="f_sell_show" ' + (sell.show ? 'checked' : '') + ' /> Show sell banner section</label></div>'
-    + imgField('f_sell_image', sell.image, 'Background Image (1920×800)')
-    + '<div class="field"><label>Title</label><input id="f_sell_title" value="' + s(sell.title) + '" /></div>'
-    + '<div class="field"><label>Subtitle</label><input id="f_sell_subtitle" value="' + s(sell.subtitle) + '" /></div>'
+    + imgField('f_sell_image', sell.image, 'Background Image (1920x800)')
+    + '<div class="field"><label>Title</label>' + mlInput('f_sell_title', sell.title, 'Banner title') + '</div>'
+    + '<div class="field"><label>Subtitle</label>' + mlInput('f_sell_subtitle', sell.subtitle, 'Banner subtitle') + '</div>'
     + '</div></div>'
 
     // Amenities
     + '<div class="section-card">'
     + '<div class="section-card__header" onclick="toggleSection(this)">'
-    + '<div class="section-card__title">✨ Amenities</div>'
-    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__title">Amenities</div>'
+    + '<span class="section-card__chevron">&#9660;</span></div>'
     + '<div class="section-card__body">'
-    + '<div class="field"><label>Section Title</label><input id="f_amenities_title" value="' + s(amen.title) + '" /></div>'
-    + imgField('f_amenities_image', amen.image, 'Amenities Image (800×600)')
+    + '<div class="field"><label>Section Title</label>' + mlInput('f_amenities_title', amen.title, 'Amenities section title') + '</div>'
+    + imgField('f_amenities_image', amen.image, 'Amenities Image (800x600)')
     + '<div class="field"><label>Amenity List</label>'
     + '<div class="dyn-list" id="amenitiesList">'
     + (amen.items || []).map(function(item) {
+        var id1 = mlId();
+        mlInit(id1, item);
         return '<div class="dyn-item amenity-item">'
-          + '<input value="' + s(item) + '" placeholder="Amenity" />'
-          + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+          + '<input id="' + id1 + '" data-ml value="' + s(mlVal(item)) + '" placeholder="Amenity" />'
+          + '<button class="btn-rm" onclick="removeItem(this)">x</button></div>';
       }).join('')
     + '</div><button class="btn-add" onclick="addAmenity()">+ Add amenity</button></div>'
     + '</div></div>'
@@ -772,16 +1016,18 @@ function renderForm(d) {
     // Catalogue
     + '<div class="section-card">'
     + '<div class="section-card__header" onclick="toggleSection(this)">'
-    + '<div class="section-card__title">📁 Catalogue</div>'
-    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__title">Catalogue</div>'
+    + '<span class="section-card__chevron">&#9660;</span></div>'
     + '<div class="section-card__body">'
-    + imgField('f_catalogue_image', cat.image, 'Catalogue Image (800×600)')
+    + imgField('f_catalogue_image', cat.image, 'Catalogue Image (800x600)')
     + '<div class="field"><label>Tags</label>'
     + '<div class="dyn-list" id="catTags">'
     + (cat.tags || []).map(function(tag) {
+        var id1 = mlId();
+        mlInit(id1, tag);
         return '<div class="dyn-item cat-tag">'
-          + '<input value="' + s(tag) + '" placeholder="e.g. Floor Plans" />'
-          + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+          + '<input id="' + id1 + '" data-ml value="' + s(mlVal(tag)) + '" placeholder="e.g. Floor Plans" />'
+          + '<button class="btn-rm" onclick="removeItem(this)">x</button></div>';
       }).join('')
     + '</div><button class="btn-add" onclick="addCatTag()">+ Add tag</button></div>'
     + '</div></div>'
@@ -789,26 +1035,30 @@ function renderForm(d) {
     // Layouts
     + '<div class="section-card">'
     + '<div class="section-card__header" onclick="toggleSection(this)">'
-    + '<div class="section-card__title">🏠 Layouts</div>'
-    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__title">Layouts</div>'
+    + '<span class="section-card__chevron">&#9660;</span></div>'
     + '<div class="section-card__body">'
     + '<div class="dyn-list" id="layoutsList">'
     + (d.layouts || []).map(function(l) {
+        var nId = mlId(), pId = mlId();
+        mlInit(nId, l.name); mlInit(pId, l.price_from);
         return '<div class="sub-card layout-card">'
           + '<div class="sub-card__header">'
-          +   '<span class="sub-card__title">' + s(l.name) + '</span>'
+          +   '<span class="sub-card__title">' + s(mlVal(l.name)) + '</span>'
           +   '<button class="btn btn-danger" style="padding:4px 10px;font-size:12px" onclick="removeItem(this)">Remove</button>'
           + '</div>'
           + '<div class="field-row">'
-          +   '<div class="field"><label>Unit Type</label><input value="' + s(l.name) + '" placeholder="Studio" /></div>'
-          +   '<div class="field"><label>Price From</label><input value="' + s(l.price_from) + '" placeholder="$105,000" /></div>'
+          +   '<div class="field"><label>Unit Type</label><input id="' + nId + '" class="layout-name" data-ml value="' + s(mlVal(l.name)) + '" placeholder="Studio" /></div>'
+          +   '<div class="field"><label>Price From</label><input id="' + pId + '" class="layout-price" data-ml value="' + s(mlVal(l.price_from)) + '" placeholder="$105,000" /></div>'
           + '</div>'
           + '<div class="dyn-list">'
           + (l.specs || []).map(function(spec) {
+              var skId = mlId(), svId = mlId();
+              mlInit(skId, spec.key); mlInit(svId, spec.value);
               return '<div class="dyn-item layout-spec">'
-                + '<input value="' + s(spec.key) + '" placeholder="Spec key" />'
-                + '<input value="' + s(spec.value) + '" placeholder="Spec value" />'
-                + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+                + '<input id="' + skId + '" data-ml value="' + s(mlVal(spec.key)) + '" placeholder="Spec key" />'
+                + '<input id="' + svId + '" data-ml value="' + s(mlVal(spec.value)) + '" placeholder="Spec value" />'
+                + '<button class="btn-rm" onclick="removeItem(this)">x</button></div>';
             }).join('')
           + '</div>'
           + '<button class="btn-add" onclick="addLayoutSpec(this)">+ Add spec row</button>'
@@ -821,20 +1071,22 @@ function renderForm(d) {
     // ROI
     + '<div class="section-card">'
     + '<div class="section-card__header" onclick="toggleSection(this)">'
-    + '<div class="section-card__title">💰 ROI / Investment</div>'
-    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__title">ROI / Investment</div>'
+    + '<span class="section-card__chevron">&#9660;</span></div>'
     + '<div class="section-card__body">'
-    + '<div class="field"><label>Section Title</label><input id="f_roi_title" value="' + s(d.roi && d.roi.title) + '" /></div>'
+    + '<div class="field"><label>Section Title</label>' + mlInput('f_roi_title', d.roi && d.roi.title, 'Investment Returns') + '</div>'
     + '<div class="field"><label>ROI Table Rows</label>'
     + '<div class="dyn-list" id="roiRows">'
     + ((d.roi && d.roi.rows) || []).map(function(r) {
+        var ids = [mlId(), mlId(), mlId(), mlId(), mlId()];
+        mlInit(ids[0], r.type); mlInit(ids[1], r.size); mlInit(ids[2], r.price); mlInit(ids[3], r.roi); mlInit(ids[4], r.annual_income);
         return '<div class="dyn-item roi-row">'
-          + '<input value="' + s(r.type) + '" placeholder="Type" />'
-          + '<input value="' + s(r.size) + '" placeholder="Size" />'
-          + '<input value="' + s(r.price) + '" placeholder="Price" />'
-          + '<input value="' + s(r.roi) + '" placeholder="ROI" />'
-          + '<input value="' + s(r.annual_income) + '" placeholder="Annual" />'
-          + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+          + '<input id="' + ids[0] + '" data-ml value="' + s(mlVal(r.type)) + '" placeholder="Type" />'
+          + '<input id="' + ids[1] + '" data-ml value="' + s(mlVal(r.size)) + '" placeholder="Size" />'
+          + '<input id="' + ids[2] + '" data-ml value="' + s(mlVal(r.price)) + '" placeholder="Price" />'
+          + '<input id="' + ids[3] + '" data-ml value="' + s(mlVal(r.roi)) + '" placeholder="ROI" />'
+          + '<input id="' + ids[4] + '" data-ml value="' + s(mlVal(r.annual_income)) + '" placeholder="Annual" />'
+          + '<button class="btn-rm" onclick="removeItem(this)">x</button></div>';
       }).join('')
     + '</div><button class="btn-add" onclick="addRoiRow()">+ Add row</button></div>'
     + '</div></div>'
@@ -842,19 +1094,19 @@ function renderForm(d) {
     // Gallery
     + '<div class="section-card">'
     + '<div class="section-card__header" onclick="toggleSection(this)">'
-    + '<div class="section-card__title">🖼 Gallery</div>'
-    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__title">Gallery</div>'
+    + '<span class="section-card__chevron">&#9660;</span></div>'
     + '<div class="section-card__body">'
-    + '<div class="field"><label>Images (5+ recommended, 1200×750)</label>'
+    + '<div class="field"><label>Images (5+ recommended, 1200x750)</label>'
     + '<div class="dyn-list" id="galleryImages">'
     + ((d.gallery && d.gallery.images) || []).map(function(img, idx) {
         var id = 'gimg_' + idx;
         return '<div class="dyn-item gallery-img">'
           + '<input id="' + id + '" value="' + s(img) + '" placeholder="https://... or Upload" oninput="updateImgThumb(\'' + id + '\')" />'
-          + '<label class="btn-upload" title="Upload image">📎'
+          + '<label class="btn-upload" title="Upload image">Upload'
           +   '<input type="file" accept="image/*" onchange="uploadImage(\'' + id + '\',this)" />'
           + '</label>'
-          + '<button class="btn-rm" onclick="removeItem(this)">×</button>'
+          + '<button class="btn-rm" onclick="removeItem(this)">x</button>'
           + '</div>';
       }).join('')
     + '</div>'
@@ -864,18 +1116,20 @@ function renderForm(d) {
     // Location
     + '<div class="section-card">'
     + '<div class="section-card__header" onclick="toggleSection(this)">'
-    + '<div class="section-card__title">📍 Location</div>'
-    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__title">Location</div>'
+    + '<span class="section-card__chevron">&#9660;</span></div>'
     + '<div class="section-card__body">'
-    + '<div class="field"><label>Section Title</label><input id="f_location_title" value="' + s(loc.title) + '" /></div>'
-    + '<div class="field"><label>Description</label><textarea id="f_location_desc" rows="3">' + s(loc.description) + '</textarea></div>'
+    + '<div class="field"><label>Section Title</label>' + mlInput('f_location_title', loc.title, 'Prime Location') + '</div>'
+    + '<div class="field"><label>Description</label>' + mlTextarea('f_location_desc', loc.description, 'Location description', 3) + '</div>'
     + '<div class="field"><label>Distances</label>'
     + '<div class="dyn-list" id="distances">'
     + (loc.distances || []).map(function(dist) {
+        var id1 = mlId(), id2 = mlId();
+        mlInit(id1, dist.place); mlInit(id2, dist.time);
         return '<div class="dyn-item distance-row">'
-          + '<input value="' + s(dist.place) + '" placeholder="Place" />'
-          + '<input value="' + s(dist.time) + '" placeholder="Time" />'
-          + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+          + '<input id="' + id1 + '" data-ml value="' + s(mlVal(dist.place)) + '" placeholder="Place" />'
+          + '<input id="' + id2 + '" data-ml value="' + s(mlVal(dist.time)) + '" placeholder="Time" />'
+          + '<button class="btn-rm" onclick="removeItem(this)">x</button></div>';
       }).join('')
     + '</div><button class="btn-add" onclick="addDistance()">+ Add distance</button></div>'
     + '<div class="field"><label>Google Maps Embed URL</label><input id="f_map_embed" value="' + s(loc.map_embed) + '" placeholder="https://www.google.com/maps/embed?..." /></div>'
@@ -884,19 +1138,21 @@ function renderForm(d) {
     // Developer
     + '<div class="section-card">'
     + '<div class="section-card__header" onclick="toggleSection(this)">'
-    + '<div class="section-card__title">🏢 Developer</div>'
-    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__title">Developer</div>'
+    + '<span class="section-card__chevron">&#9660;</span></div>'
     + '<div class="section-card__body">'
-    + '<div class="field"><label>Developer Name</label><input id="f_dev_name" value="' + s(dev.name) + '" /></div>'
-    + imgField('f_dev_image', dev.image, 'Developer Image (800×600)')
-    + '<div class="field"><label>Description</label><textarea id="f_dev_desc" rows="3">' + s(dev.description) + '</textarea></div>'
+    + '<div class="field"><label>Developer Name</label>' + mlInput('f_dev_name', dev.name, 'Developer Name') + '</div>'
+    + imgField('f_dev_image', dev.image, 'Developer Image (800x600)')
+    + '<div class="field"><label>Description</label>' + mlTextarea('f_dev_desc', dev.description, 'About developer', 3) + '</div>'
     + '<div class="field"><label>Key Facts</label>'
     + '<div class="dyn-list" id="devFacts">'
     + (dev.facts || []).map(function(f) {
+        var id1 = mlId(), id2 = mlId();
+        mlInit(id1, f.key); mlInit(id2, f.value);
         return '<div class="dyn-item dev-fact">'
-          + '<input value="' + s(f.key) + '" placeholder="Key" />'
-          + '<input value="' + s(f.value) + '" placeholder="Value" />'
-          + '<button class="btn-rm" onclick="removeItem(this)">×</button></div>';
+          + '<input id="' + id1 + '" data-ml value="' + s(mlVal(f.key)) + '" placeholder="Key" />'
+          + '<input id="' + id2 + '" data-ml value="' + s(mlVal(f.value)) + '" placeholder="Value" />'
+          + '<button class="btn-rm" onclick="removeItem(this)">x</button></div>';
       }).join('')
     + '</div><button class="btn-add" onclick="addDevFact()">+ Add fact</button></div>'
     + '</div></div>'
@@ -904,20 +1160,43 @@ function renderForm(d) {
     // Contact
     + '<div class="section-card">'
     + '<div class="section-card__header" onclick="toggleSection(this)">'
-    + '<div class="section-card__title">📞 Contact</div>'
-    + '<span class="section-card__chevron">▼</span></div>'
+    + '<div class="section-card__title">Contact</div>'
+    + '<span class="section-card__chevron">&#9660;</span></div>'
     + '<div class="section-card__body">'
     + '<div class="field"><label>Address</label><input id="f_contact_address" value="' + s(contact.address) + '" /></div>'
     + '<div class="field-row">'
     + '<div class="field"><label>Email</label><input id="f_contact_email" type="email" value="' + s(contact.email) + '" /></div>'
-    + '<div class="field"><label>Website</label><input id="f_contact_website" value="' + s(contact.website) + '" placeholder="www.anavasamui.com" /></div>'
+    + '<div class="field"><label>Website</label><input id="f_contact_website" value="' + s(contact.website) + '" placeholder="www.example.com" /></div>'
     + '</div></div></div>'
+
+    // Form Fields
+    + '<div class="section-card">'
+    + '<div class="section-card__header" onclick="toggleSection(this)">'
+    + '<div class="section-card__title">Form Fields (Contact Form)</div>'
+    + '<span class="section-card__chevron">&#9660;</span></div>'
+    + '<div class="section-card__body">'
+    + '<p style="font-size:12px;color:#6b7280;margin-bottom:8px">Customize form fields on the landing page. Leave empty for defaults (Name, Phone, Email).</p>'
+    + '<div class="dyn-list" id="formFieldsList">'
+    + (formFields.length ? formFields : []).map(function(ff) {
+        var phId = mlId();
+        mlInit(phId, ff.placeholder || '');
+        return '<div class="dyn-item ff-item"><div class="ff-row">'
+          + '<input class="ff-name" value="' + s(ff.name) + '" placeholder="Field name" />'
+          + '<select class="ff-type"><option value="text"' + (ff.type==='text'?' selected':'') + '>Text</option><option value="email"' + (ff.type==='email'?' selected':'') + '>Email</option><option value="tel"' + (ff.type==='tel'?' selected':'') + '>Phone</option></select>'
+          + '<input id="' + phId + '" class="ff-placeholder" data-ml value="' + s(mlVal(ff.placeholder || '')) + '" placeholder="Placeholder text" />'
+          + '<label><input type="checkbox" class="ff-required"' + (ff.required ? ' checked' : '') + ' /> Req</label>'
+          + '<button class="btn-rm" onclick="removeItem(this)">x</button>'
+          + '</div></div>';
+      }).join('')
+    + '</div>'
+    + '<button class="btn-add" onclick="addFormField()">+ Add field</button>'
+    + '</div></div>'
 
     + '</div><!-- /form-sections -->'
 
     // Deploy result
     + '<div class="deploy-result" id="deployResult">'
-    + '<h4>🎉 Deployed successfully!</h4>'
+    + '<h4>Deployed successfully!</h4>'
     + '<div id="deployLinks"></div>'
     + '</div>';
 }
@@ -925,13 +1204,20 @@ function renderForm(d) {
 // ── Helper: safe string ───────────────────────────────────
 function s(v) {
   if(v === null || v === undefined) return '';
+  if(typeof v === 'object') return s(mlVal(v));
   return String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // ── Default empty data ────────────────────────────────────
 function defaultData() {
   return {
-    project_slug: '', project_name: '', meta_title: '', meta_description: '', crm_webhook: '',
+    project_slug: '', project_name: '', languages: ['en'], currency: 'USD',
+    meta_title: '', meta_description: '', crm_webhook: '',
+    form_fields: [
+      { name: 'name', type: 'text', placeholder: 'Your name', required: true },
+      { name: 'phone', type: 'tel', placeholder: 'Phone number', required: true },
+      { name: 'email', type: 'email', placeholder: 'Email', required: false }
+    ],
     hero: { image: '', title: '', description: '', stats: [{value:'',label:''},{value:'',label:''},{value:'',label:''},{value:'',label:''}] },
     concept: { title: '', paragraphs: [''], specs: [{key:'',value:''}] },
     sell_banner: { image: '', title: '', subtitle: '', show: false },
@@ -951,6 +1237,14 @@ async function aiFill() {
   var query = document.getElementById('aiQuery').value.trim();
   if (!query) { alert('Enter a project name or URL'); return; }
 
+  // Collect current languages
+  var langs = [];
+  var langEn = document.getElementById('lang_en');
+  var langRu = document.getElementById('lang_ru');
+  if (langEn && langEn.checked) langs.push('en');
+  if (langRu && langRu.checked) langs.push('ru');
+  if (!langs.length) langs = ['en'];
+
   var btn = document.getElementById('aiFillBtn');
   var status = document.getElementById('aiStatus');
   btn.disabled = true;
@@ -961,12 +1255,16 @@ async function aiFill() {
     var r = await apiFetch('/api/ai-fill', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: query })
+      body: JSON.stringify({ query: query, languages: langs })
     });
     if (r.status === 401) { showLogin(); return; }
     var res = await r.json();
     if (res.ok && res.data) {
       currentSlug = res.data.project_slug || null;
+      _langs = res.data.languages || langs;
+      _editorLang = _langs[0];
+      _mlStore = {};
+      _mlSeq = 0;
       renderForm(res.data);
       document.getElementById('topbarTitle').textContent = res.data.project_name || 'AI Generated';
       document.getElementById('topbarActions').style.display = 'flex';
@@ -974,14 +1272,14 @@ async function aiFill() {
       status.textContent = '';
     } else {
       showStatus('AI error: ' + (res.error || 'Unknown error'), 'err');
-      status.textContent = 'Error — try again';
+      status.textContent = 'Error - try again';
     }
   } catch(e) {
     showStatus('AI error: ' + e.message, 'err');
-    status.textContent = 'Error — try again';
+    status.textContent = 'Error - try again';
   }
   btn.disabled = false;
-  btn.innerHTML = '✨ AI Fill';
+  btn.innerHTML = 'AI Fill';
 }
 
 // ── Start ────────────────────────────────────────────────

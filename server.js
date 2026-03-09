@@ -83,25 +83,65 @@ function claudeRequest(body, apiKey) {
   });
 }
 
-async function aiFillProject(query, apiKey) {
+async function aiFillProject(query, apiKey, languages) {
+  languages = languages && languages.length ? languages : ['en'];
+  const multiLang = languages.length > 1;
+
   const jsonSchema = JSON.stringify({
     project_slug: "lowercase-dash-name",
     project_name: "Display Name",
-    meta_title: "SEO title",
-    meta_description: "SEO description",
+    languages: languages,
+    meta_title: multiLang ? {en: "SEO title EN", ru: "SEO заголовок"} : "SEO title",
+    meta_description: multiLang ? {en: "SEO desc EN", ru: "SEO описание"} : "SEO description",
     crm_webhook: "",
-    hero: { image: "URL", title: "Main heading", description: "2-3 sentences", stats: [{ value: "From $X", label: "Starting Price" }] },
-    concept: { title: "Section title", paragraphs: ["paragraph with <strong>bold</strong> highlights"], specs: [{ key: "Location", value: "Area Name" }] },
+    hero: {
+      image: "URL",
+      title: multiLang ? {en: "Main heading", ru: "Главный заголовок"} : "Main heading",
+      description: multiLang ? {en: "2-3 sentences", ru: "2-3 предложения"} : "2-3 sentences",
+      stats: [{ value: multiLang ? {en: "From $X", ru: "От $X"} : "From $X", label: multiLang ? {en: "Starting Price", ru: "Цена от"} : "Starting Price" }]
+    },
+    concept: {
+      title: multiLang ? {en: "Section title", ru: "Название секции"} : "Section title",
+      paragraphs: multiLang ? [{en: "paragraph EN with <strong>bold</strong>", ru: "параграф RU с <strong>выделением</strong>"}] : ["paragraph with <strong>bold</strong>"],
+      specs: [{ key: multiLang ? {en: "Location", ru: "Расположение"} : "Location", value: multiLang ? {en: "Area Name", ru: "Название района"} : "Area Name" }]
+    },
     sell_banner: { image: "", title: "", subtitle: "", show: false },
-    amenities: { image: "URL", title: "World-Class Amenities", items: ["amenity 1"] },
-    catalogue: { image: "", tags: ["Floor Plans", "Pricing", "Investment Returns"] },
-    layouts: [{ name: "Studio", price_from: "$105,000", specs: [{ key: "Unit Size", value: "28-29 m²" }] }],
-    roi: { title: "Investment Returns", rows: [{ type: "Studio", size: "28 m²", price: "$105,000", roi: "6%", annual_income: "$6,300" }] },
+    amenities: {
+      image: "URL",
+      title: multiLang ? {en: "World-Class Amenities", ru: "Инфраструктура мирового класса"} : "World-Class Amenities",
+      items: multiLang ? [{en: "amenity EN", ru: "удобство RU"}] : ["amenity"]
+    },
+    catalogue: { image: "", tags: multiLang ? [{en: "Floor Plans", ru: "Планировки"}] : ["Floor Plans", "Pricing"] },
+    layouts: [{
+      name: multiLang ? {en: "Studio", ru: "Студия"} : "Studio",
+      price_from: "$105,000",
+      specs: [{ key: multiLang ? {en: "Unit Size", ru: "Площадь"} : "Unit Size", value: "28-29 m²" }]
+    }],
+    roi: {
+      title: multiLang ? {en: "Investment Returns", ru: "Доходность инвестиций"} : "Investment Returns",
+      rows: [{ type: "Studio", size: "28 m²", price: "$105,000", roi: "6%", annual_income: "$6,300" }]
+    },
     gallery: { images: ["URL1", "URL2"] },
-    location: { title: "Prime Location", description: "Location description", distances: [{ place: "Airport", time: "15 min" }], map_embed: "https://www.google.com/maps/embed?..." },
-    developer: { image: "URL", name: "Developer Name", description: "About developer", facts: [{ key: "Founded", value: "2010" }] },
+    location: {
+      title: multiLang ? {en: "Prime Location", ru: "Расположение"} : "Prime Location",
+      description: multiLang ? {en: "Location desc EN", ru: "Описание расположения"} : "Location description",
+      distances: [{ place: multiLang ? {en: "Airport", ru: "Аэропорт"} : "Airport", time: multiLang ? {en: "15 min", ru: "15 мин"} : "15 min" }],
+      map_embed: "https://www.google.com/maps/embed?..."
+    },
+    developer: {
+      image: "URL",
+      name: "Developer Name",
+      description: multiLang ? {en: "About developer EN", ru: "О застройщике"} : "About developer",
+      facts: [{ key: multiLang ? {en: "Founded", ru: "Основан"} : "Founded", value: "2010" }]
+    },
     contact: { address: "Address", email: "email@example.com", website: "www.example.com" }
   });
+
+  const langInstruction = multiLang
+    ? `- ALL text fields must be objects with keys for each language: ${JSON.stringify(languages)} (e.g. {"en": "English text", "ru": "Русский текст"})
+- Write natural, professional text in each language (not machine translation)
+- project_slug, project_name, images, URLs, prices, map_embed stay as plain strings`
+    : '- Write all text in English';
 
   const prompt = `You are a real estate data researcher for Tranio (international real estate broker).
 The user wants to create a landing page for a property development project.
@@ -126,14 +166,14 @@ IMPORTANT RULES:
 - For developer.facts provide 4-6 facts
 - For map_embed create a Google Maps embed URL for the project location
 - All prices in USD
-- Write all text in English
+${langInstruction}
 - If you cannot find specific data, make a reasonable estimate based on similar projects in the area and mark with [estimated]
 
 Return ONLY the JSON object, no markdown, no explanation.`;
 
   let response = await claudeRequest({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 8000,
+    max_tokens: multiLang ? 16000 : 8000,
     tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 10 }],
     messages: [{ role: 'user', content: prompt }]
   }, apiKey);
@@ -320,12 +360,12 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: e.message })); return;
     }
-    const { query } = body;
+    const { query, languages } = body;
     try {
       if (!query) throw new Error('query is required (project name or URL)');
       const apiKey = process.env.ANTHROPIC_API_KEY;
       if (!apiKey) throw new Error('ANTHROPIC_API_KEY not set');
-      const result = await aiFillProject(query, apiKey);
+      const result = await aiFillProject(query, apiKey, languages);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: true, data: result }));
     } catch(e) {
