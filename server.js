@@ -6,7 +6,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { generateHTML } = require('./generate.js');
+const { generateHTML, TEMPLATES } = require('./generate.js');
 const { deploy } = require('./deploy.js');
 
 const PORT = process.env.PORT || 3333;
@@ -250,6 +250,14 @@ const server = http.createServer(async (req, res) => {
       }
     }
     res.writeHead(404); res.end('Not found');
+    return;
+  }
+
+  // List templates
+  if (req.method === 'GET' && url.pathname === '/api/templates') {
+    const list = Object.values(TEMPLATES).map(t => ({ id: t.id, name: t.name, description: t.description, colors: t.colors }));
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(list));
     return;
   }
 

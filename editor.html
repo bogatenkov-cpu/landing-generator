@@ -141,6 +141,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ff-row{display:grid;grid-template-columns:1fr 100px 1fr 60px 40px;gap:8px;align-items:center}
 .ff-row input,.ff-row select{padding:7px 10px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:13px}
 .ff-row label{font-size:12px;display:flex;align-items:center;gap:4px;justify-content:center}
+
+/* Template picker */
+.template-picker{margin-bottom:16px}
+.template-picker__title{font-size:13px;font-weight:600;color:#374151;margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}
+.template-picker__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.template-card{border:2px solid #e5e7eb;border-radius:10px;padding:12px;cursor:pointer;transition:.2s;background:#fff}
+.template-card:hover{border-color:#bfa177;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.template-card.active{border-color:#2f5050;box-shadow:0 0 0 2px rgba(47,80,80,.2)}
+.template-card__swatches{display:flex;gap:4px;margin-bottom:8px}
+.template-card__swatch{width:24px;height:24px;border-radius:6px;border:1px solid rgba(0,0,0,.1)}
+.template-card__name{font-size:13px;font-weight:600;color:#1f2937}
+.template-card__desc{font-size:11px;color:#6b7280;margin-top:2px}
+@media(max-width:900px){.template-picker__grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -197,6 +210,43 @@ var _pass = localStorage.getItem('admin_pass') || '';
 var _langs = ['en'];
 var _editorLang = 'en';
 var _mlStore = {}; // { en: {id: value}, ru: {id: value} }
+var _selectedTemplate = 'default';
+
+// Template definitions (mirrored from generate.js)
+var TEMPLATES = {
+  'default':            { name: 'Tranio Classic',       desc: 'Teal & cream, clean and professional',    primary: '#2F5050', accent: '#BFA177', bg: '#F2EDE6' },
+  'anchan-indigo':      { name: 'Anchan Indigo',        desc: 'Indigo & gold, elegant luxury',           primary: '#2C3E6B', accent: '#C9A96E', bg: '#F5F2ED' },
+  'angsana-oceanview':  { name: 'Angsana Oceanview',    desc: 'Navy blue & gold, premium resort',        primary: '#0b1a2e', accent: '#c9a96e', bg: '#f5f2ed' },
+  'asi-village':        { name: 'Asi Village',           desc: 'Forest green & gold, eco-luxury',         primary: '#1a3c34', accent: '#c9a96e', bg: '#efeae0' },
+  'arise-vibe':         { name: 'Arise Vibe',           desc: 'Dark green & gold, modern tropical',      primary: '#1a3a2a', accent: '#c8a96e', bg: '#f0eeeb' },
+  'annara':             { name: 'Annara',                desc: 'Sage green & sand, warm sophistication',  primary: '#5a7a64', accent: '#c8a96e', bg: '#f5f0e8' }
+};
+
+function selectTemplate(id) {
+  _selectedTemplate = id;
+  document.querySelectorAll('.template-card').forEach(function(el) {
+    el.classList.toggle('active', el.dataset.tmpl === id);
+  });
+}
+
+function buildTemplatePicker() {
+  var html = '<div class="template-picker"><div class="template-picker__title">Design Template</div><div class="template-picker__grid">';
+  Object.keys(TEMPLATES).forEach(function(id) {
+    var t = TEMPLATES[id];
+    var active = id === _selectedTemplate ? ' active' : '';
+    html += '<div class="template-card' + active + '" data-tmpl="' + id + '" onclick="selectTemplate(\'' + id + '\')">'
+      + '<div class="template-card__swatches">'
+      + '<div class="template-card__swatch" style="background:' + t.primary + '"></div>'
+      + '<div class="template-card__swatch" style="background:' + t.accent + '"></div>'
+      + '<div class="template-card__swatch" style="background:' + t.bg + '"></div>'
+      + '</div>'
+      + '<div class="template-card__name">' + t.name + '</div>'
+      + '<div class="template-card__desc">' + t.desc + '</div>'
+      + '</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
 var _mlSeq = 0;
 
 function mlId() { return 'ml_' + (_mlSeq++); }
@@ -334,6 +384,7 @@ function newProject() {
   currentSlug = null;
   _langs = ['en'];
   _editorLang = 'en';
+  _selectedTemplate = 'default';
   _mlStore = {};
   _mlSeq = 0;
   renderForm(defaultData());
@@ -352,6 +403,7 @@ async function loadProject(slug) {
     currentSlug = slug;
     _langs = data.languages && data.languages.length ? data.languages : ['en'];
     _editorLang = _langs[0];
+    _selectedTemplate = data.template || 'default';
     _mlStore = {};
     _mlSeq = 0;
     renderForm(data);
@@ -564,6 +616,7 @@ function collectFormData() {
   return {
     project_slug: v('f_slug'),
     project_name: v('f_name'),
+    template: _selectedTemplate,
     languages: langs,
     currency: v('f_currency'),
     meta_title: collectMl('f_meta_title'),
@@ -903,6 +956,9 @@ function renderForm(d) {
       + _langs.map(function(l) { return '<button type="button" class="editor-lang-btn' + (l === _editorLang ? ' active' : '') + '" data-lang="' + l + '" onclick="switchEditorLang(\'' + l + '\')">' + l.toUpperCase() + '</button>'; }).join('')
       + '</div>' : '')
     + '</div>'
+
+    // Template picker
+    + buildTemplatePicker()
 
     // Basic Info
     + '<div class="section-card">'

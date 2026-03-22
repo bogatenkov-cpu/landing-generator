@@ -8,6 +8,122 @@
 const fs = require('fs');
 const path = require('path');
 
+// ── Template Definitions ───────────────────────────────────────────
+const TEMPLATES = {
+  default: {
+    id: 'default',
+    name: 'Tranio Classic',
+    description: 'Teal & cream, clean and professional',
+    colors: {
+      cream: '#F2EDE6', 'cream-light': '#FAF8F5',
+      teal: '#2F5050', 'teal-dark': '#253F3F',
+      gold: '#BFA177', 'gold-hover': '#A8895F',
+      'text-dark': '#2C2C2C', 'text-mid': '#4A4A4A', 'text-muted': '#888',
+      white: '#FFF', border: 'rgba(0,0,0,.12)'
+    },
+    fonts: {
+      heading: "'Open Sans', sans-serif",
+      body: "'Open Sans', sans-serif",
+      ui: "'Poppins', sans-serif"
+    },
+    fontImport: "https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&family=Poppins:wght@400;500;600;700&display=swap"
+  },
+  'anchan-indigo': {
+    id: 'anchan-indigo',
+    name: 'Anchan Indigo',
+    description: 'Indigo & gold, elegant luxury',
+    colors: {
+      cream: '#F5F2ED', 'cream-light': '#FAF8F5',
+      teal: '#2C3E6B', 'teal-dark': '#1A1F3A',
+      gold: '#C9A96E', 'gold-hover': '#B8944F',
+      'text-dark': '#2C2C2C', 'text-mid': '#3A3A4A', 'text-muted': '#7A7A8A',
+      white: '#FFF', border: 'rgba(0,0,0,.12)'
+    },
+    fonts: {
+      heading: "'Cormorant Garamond', Georgia, serif",
+      body: "'Outfit', sans-serif",
+      ui: "'Outfit', sans-serif"
+    },
+    fontImport: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap"
+  },
+  'angsana-oceanview': {
+    id: 'angsana-oceanview',
+    name: 'Angsana Oceanview',
+    description: 'Navy blue & gold, premium resort',
+    colors: {
+      cream: '#f5f2ed', 'cream-light': '#FAF8F5',
+      teal: '#0b1a2e', 'teal-dark': '#071220',
+      gold: '#c9a96e', 'gold-hover': '#b8944f',
+      'text-dark': '#2c2c2c', 'text-mid': '#4A4A4A', 'text-muted': '#6b6b6b',
+      white: '#FFF', border: 'rgba(0,0,0,.08)'
+    },
+    fonts: {
+      heading: "'Cormorant Garamond', Georgia, serif",
+      body: "'Outfit', sans-serif",
+      ui: "'Outfit', sans-serif"
+    },
+    fontImport: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap"
+  },
+  'asi-village': {
+    id: 'asi-village',
+    name: 'Asi Village',
+    description: 'Forest green & gold, eco-luxury',
+    colors: {
+      cream: '#efeae0', 'cream-light': '#f8f6f1',
+      teal: '#1a3c34', 'teal-dark': '#0d1b16',
+      gold: '#c9a96e', 'gold-hover': '#b08d4a',
+      'text-dark': '#2C2C2C', 'text-mid': '#4A4A4A', 'text-muted': '#6b6b6b',
+      white: '#FFF', border: 'rgba(0,0,0,.12)'
+    },
+    fonts: {
+      heading: "'Playfair Display', Georgia, serif",
+      body: "'Inter', sans-serif",
+      ui: "'Inter', sans-serif"
+    },
+    fontImport: "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+  },
+  'arise-vibe': {
+    id: 'arise-vibe',
+    name: 'Arise Vibe',
+    description: 'Dark green & gold, modern tropical',
+    colors: {
+      cream: '#f0eeeb', 'cream-light': '#f8f6f3',
+      teal: '#1a3a2a', 'teal-dark': '#0f2419',
+      gold: '#c8a96e', 'gold-hover': '#b08d4a',
+      'text-dark': '#2C2C2C', 'text-mid': '#3d3a34', 'text-muted': '#78746c',
+      white: '#FFF', border: 'rgba(0,0,0,.12)'
+    },
+    fonts: {
+      heading: "'Playfair Display', Georgia, serif",
+      body: "'Inter', sans-serif",
+      ui: "'Inter', sans-serif"
+    },
+    fontImport: "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+  },
+  annara: {
+    id: 'annara',
+    name: 'Annara',
+    description: 'Sage green & sand, warm sophistication',
+    colors: {
+      cream: '#f5f0e8', 'cream-light': '#fafaf7',
+      teal: '#5a7a64', 'teal-dark': '#3d5a45',
+      gold: '#c8a96e', 'gold-hover': '#b08d4a',
+      'text-dark': '#2d2d2d', 'text-mid': '#4A4A4A', 'text-muted': '#6b6b6b',
+      white: '#FFF', border: 'rgba(0,0,0,.12)'
+    },
+    fonts: {
+      heading: "'Cormorant Garamond', Georgia, serif",
+      body: "'Outfit', sans-serif",
+      ui: "'Outfit', sans-serif"
+    },
+    fontImport: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap"
+  }
+};
+
+function getTemplate(id) {
+  return TEMPLATES[id] || TEMPLATES.default;
+}
+
 function esc(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -193,6 +309,7 @@ function buildPrivacy(langs, lightStyle) {
 
 function generateHTML(data) {
   const d = data;
+  const tmpl = getTemplate(d.template);
   const langs = d.languages && d.languages.length ? d.languages : ['en'];
   const defaultLang = langs[0];
   const multiLang = langs.length > 1;
@@ -241,9 +358,9 @@ function generateHTML(data) {
   <meta name="description" content="${tAttr(d.meta_description, langs)}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="${esc(tmpl.fontImport)}" rel="stylesheet" />
   <style>
-    :root{--cream:#F2EDE6;--cream-light:#FAF8F5;--teal:#2F5050;--teal-dark:#253F3F;--gold:#BFA177;--gold-hover:#A8895F;--text-dark:#2C2C2C;--text-mid:#4A4A4A;--text-muted:#888;--white:#FFF;--border:rgba(0,0,0,.12);--font-heading:'Open Sans',sans-serif;--font-body:'Open Sans',sans-serif;--font-ui:'Poppins',sans-serif;--px:clamp(24px,6vw,120px)}
+    :root{--cream:${tmpl.colors.cream};--cream-light:${tmpl.colors['cream-light']};--teal:${tmpl.colors.teal};--teal-dark:${tmpl.colors['teal-dark']};--gold:${tmpl.colors.gold};--gold-hover:${tmpl.colors['gold-hover']};--text-dark:${tmpl.colors['text-dark']};--text-mid:${tmpl.colors['text-mid']};--text-muted:${tmpl.colors['text-muted']};--white:${tmpl.colors.white};--border:${tmpl.colors.border};--font-heading:${tmpl.fonts.heading};--font-body:${tmpl.fonts.body};--font-ui:${tmpl.fonts.ui};--px:clamp(24px,6vw,120px)}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
     body{font-family:var(--font-body);background:var(--cream-light);color:var(--text-dark);overflow-x:hidden}
@@ -704,5 +821,5 @@ function main() {
   }
 }
 
-module.exports = { generateHTML };
+module.exports = { generateHTML, TEMPLATES };
 if (require.main === module) main();
