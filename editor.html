@@ -764,15 +764,21 @@ async function previewProject() {
     var frame = document.getElementById('previewFrame');
     frame.style.display = 'block';
     document.getElementById('content').style.display = 'none';
-    frame.srcdoc = html;
-    document.getElementById('topbarTitle').textContent = 'Back  |  ' + (data.project_name || 'Preview');
+    // Use blob URL instead of srcdoc for large HTML
+    var blob = new Blob([html], { type: 'text/html; charset=utf-8' });
+    frame.src = URL.createObjectURL(blob);
+    var pname = typeof data.project_name === 'object' ? (data.project_name.en || data.project_name.ru || '') : (data.project_name || '');
+    document.getElementById('topbarTitle').textContent = '\u2190 Back  |  ' + (pname || 'Preview');
     document.getElementById('topbarTitle').style.cursor = 'pointer';
     document.getElementById('topbarTitle').onclick = closePreview;
   } catch(e) { showStatus(e.message,'err'); }
 }
 
 function closePreview() {
-  document.getElementById('previewFrame').style.display = 'none';
+  var frame = document.getElementById('previewFrame');
+  if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
+  frame.src = '';
+  frame.style.display = 'none';
   document.getElementById('content').style.display = 'block';
   document.getElementById('topbarTitle').onclick = null;
   document.getElementById('topbarTitle').style.cursor = '';
