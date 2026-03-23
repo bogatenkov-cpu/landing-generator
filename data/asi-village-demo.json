@@ -1,0 +1,448 @@
+{
+  "project_slug": "asi-village-demo",
+  "project_name": { "en": "Asi Village", "ru": "Asi Village" },
+  "template": "asi-village",
+  "languages": ["en", "ru"],
+  "currency": "THB",
+  "meta_title": { "en": "Asi Village in Phuket", "ru": "Asi Village на Пхукете" },
+  "meta_description": {
+    "en": "Asi Village is an exclusive luxury villa project in Phuket. The project features well-designed layouts and comprehensive infrastructure. An excellent opportunity for comfortable living and investment.",
+    "ru": "Asi Village — эксклюзивный роскошный проект вилл на Пхукете. В проекте продуманы удобные планировки и развитая инфраструктура. Отличная возможность для комфортной жизни и инвестиций."
+  },
+  "canonical_url": "https://asivillage.com/",
+  "crm_webhook": "",
+  "hero": {
+    "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80&fit=crop",
+    "badge": { "en": "Exclusive Phuket Villas", "ru": "Эксклюзивные виллы на Пхукете" },
+    "title": { "en": "Asi Village", "ru": "Asi Village" },
+    "description": {
+      "en": "An exclusive luxury villa project in Phuket with well-designed layouts, comprehensive infrastructure, and an exceptional investment opportunity.",
+      "ru": "Эксклюзивный проект роскошных вилл на Пхукете с продуманными планировками, развитой инфраструктурой и отличными возможностями для инвестиций."
+    },
+    "stats": [
+      {
+        "value": "12.5M",
+        "label": { "en": "Starting price, THB", "ru": "Цена от, THB" }
+      },
+      {
+        "value": "8%",
+        "label": { "en": "Expected yield", "ru": "Ожидаемая доходность" }
+      },
+      {
+        "value": "2027",
+        "label": { "en": "Handover year", "ru": "Год сдачи" }
+      },
+      {
+        "value": "Villas",
+        "label": { "en": "Property type", "ru": "Тип недвижимости" }
+      }
+    ]
+  },
+  "concept": {
+    "label": { "en": "About the Project", "ru": "О проекте" },
+    "title": { "en": "Asi Village Concept", "ru": "Концепция Asi Village" },
+    "image": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80&fit=crop",
+    "paragraphs": [
+      {
+        "en": "Asi Village is a thoughtfully crafted luxury villa community nestled in one of Phuket's most sought-after locations. Every detail — from architectural design to landscape planning — is created to deliver an unmatched lifestyle experience.",
+        "ru": "Asi Village — это тщательно продуманный комплекс роскошных вилл в одном из самых востребованных районов Пхукета. Каждая деталь — от архитектурного дизайна до ландшафтного планирования — создана для непревзойдённого качества жизни."
+      }
+    ],
+    "specs": [
+      {
+        "key": { "en": "Premium Materials", "ru": "Премиальные материалы" },
+        "value": {
+          "en": "Premium construction materials ensuring durability and elegant aesthetics throughout every villa.",
+          "ru": "Премиальные строительные материалы, обеспечивающие долговечность и элегантную эстетику каждой виллы."
+        }
+      },
+      {
+        "key": { "en": "Award-Winning Architecture", "ru": "Отмеченная наградами архитектура" },
+        "value": {
+          "en": "Distinctive design blending modern luxury with tropical living, recognized by international architecture awards.",
+          "ru": "Уникальный дизайн, сочетающий современную роскошь с тропическим образом жизни, отмеченный международными архитектурными наградами."
+        }
+      },
+      {
+        "key": { "en": "Eco-Friendly Solutions", "ru": "Экологичные решения" },
+        "value": {
+          "en": "Sustainable building practices with solar panels, rainwater harvesting, and energy-efficient systems.",
+          "ru": "Экологичные строительные решения: солнечные панели, сбор дождевой воды и энергоэффективные системы."
+        }
+      },
+      {
+        "key": { "en": "Smart Home Technology", "ru": "Технология «Умный дом»" },
+        "value": {
+          "en": "Integrated smart home systems for lighting, climate control, security, and entertainment in every villa.",
+          "ru": "Интегрированные системы «Умный дом» для управления освещением, климатом, безопасностью и развлечениями в каждой вилле."
+        }
+      }
+    ]
+  },
+  "amenities": {
+    "label": { "en": "Lifestyle", "ru": "Стиль жизни" },
+    "title": { "en": "Asi Village Amenities", "ru": "Удобства в Asi Village" },
+    "description": {
+      "en": "Enjoy a curated selection of world-class amenities designed for modern luxury living in the heart of Phuket.",
+      "ru": "Наслаждайтесь тщательно подобранным набором удобств мирового класса, созданных для современной роскошной жизни в сердце Пхукета."
+    },
+    "image": "https://images.unsplash.com/photo-1572331165267-854da2b021b1?w=600&q=80&fit=crop",
+    "items": [
+      {
+        "icon": "fitness",
+        "title": { "en": "Fitness Center", "ru": "Фитнес-центр" },
+        "description": {
+          "en": "State-of-the-art gym with premium equipment and personal training",
+          "ru": "Современный зал с премиальным оборудованием и персональными тренировками"
+        },
+        "image": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80&fit=crop"
+      },
+      {
+        "icon": "pool",
+        "title": { "en": "Swimming Pool", "ru": "Бассейн" },
+        "description": {
+          "en": "Infinity pool with sun deck and poolside lounge area",
+          "ru": "Инфинити-бассейн с солнечной палубой и зоной отдыха"
+        },
+        "image": "https://images.unsplash.com/photo-1572331165267-854da2b021b1?w=600&q=80&fit=crop"
+      },
+      {
+        "icon": "garden",
+        "title": { "en": "Tropical Gardens", "ru": "Тропические сады" },
+        "description": {
+          "en": "Landscaped gardens with walking paths and meditation zones",
+          "ru": "Ландшафтные сады с дорожками для прогулок и зонами медитации"
+        },
+        "image": "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=600&q=80&fit=crop"
+      },
+      {
+        "icon": "security",
+        "title": { "en": "24/7 Security", "ru": "Охрана 24/7" },
+        "description": {
+          "en": "Gated community with CCTV surveillance and security patrol",
+          "ru": "Закрытая территория с видеонаблюдением и патрулированием"
+        },
+        "image": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=80&fit=crop"
+      },
+      {
+        "icon": "clubhouse",
+        "title": { "en": "Clubhouse", "ru": "Клубный дом" },
+        "description": {
+          "en": "Exclusive residents' clubhouse with dining and event spaces",
+          "ru": "Эксклюзивный клубный дом с зонами для обедов и мероприятий"
+        },
+        "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80&fit=crop"
+      },
+      {
+        "icon": "parking",
+        "title": { "en": "Parking", "ru": "Парковка" },
+        "description": {
+          "en": "Private covered parking for each villa with EV charging",
+          "ru": "Крытая парковка для каждой виллы с зарядкой для электромобилей"
+        },
+        "image": "https://images.unsplash.com/photo-1506521781263-d8422e82f27a?w=600&q=80&fit=crop"
+      },
+      {
+        "icon": "playground",
+        "title": { "en": "Kids Playground", "ru": "Детская площадка" },
+        "description": {
+          "en": "Safe and engaging play areas designed for children of all ages",
+          "ru": "Безопасные и увлекательные зоны для детей всех возрастов"
+        },
+        "image": "https://images.unsplash.com/photo-1566454825481-9c31bd88c36f?w=600&q=80&fit=crop"
+      },
+      {
+        "icon": "concierge",
+        "title": { "en": "Concierge", "ru": "Консьерж-сервис" },
+        "description": {
+          "en": "Full property management and concierge services available",
+          "ru": "Полное управление недвижимостью и услуги консьержа"
+        },
+        "image": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80&fit=crop"
+      }
+    ]
+  },
+  "catalogue": {
+    "image": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=80&fit=crop",
+    "tags": [
+      { "en": "Floor Plans", "ru": "Планировки" },
+      { "en": "Pricing", "ru": "Цены" },
+      { "en": "Finishes", "ru": "Отделка" },
+      { "en": "Investment Prospectus", "ru": "Инвестиционный проспект" }
+    ]
+  },
+  "layouts": [
+    {
+      "name": { "en": "Villa Type A — 2 Bedrooms", "ru": "Вилла Тип A — 2 спальни" },
+      "subtitle": { "en": "Compact luxury with private pool", "ru": "Компактная роскошь с частным бассейном" },
+      "price_from": { "en": "12,500,000 THB", "ru": "12 500 000 THB" },
+      "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80&fit=crop",
+      "badge": "",
+      "bedrooms": "2",
+      "area": "150",
+      "area_unit": { "en": "Sq.m.", "ru": "Кв.м." },
+      "bathrooms": "2",
+      "price": "฿12.5M",
+      "price_label": { "en": "from", "ru": "от" },
+      "specs": [
+        {
+          "key": { "en": "Living area", "ru": "Жилая площадь" },
+          "value": { "en": "150 sq.m.", "ru": "150 кв.м." }
+        },
+        {
+          "key": { "en": "Bedrooms", "ru": "Спальни" },
+          "value": { "en": "2", "ru": "2" }
+        },
+        {
+          "key": { "en": "Bathrooms", "ru": "Ванные комнаты" },
+          "value": { "en": "2", "ru": "2" }
+        },
+        {
+          "key": { "en": "Private pool", "ru": "Собственный бассейн" },
+          "value": { "en": "Yes", "ru": "Да" }
+        }
+      ]
+    },
+    {
+      "name": { "en": "Villa Type B — 3 Bedrooms", "ru": "Вилла Тип B — 3 спальни" },
+      "subtitle": { "en": "Spacious family residence", "ru": "Просторная семейная резиденция" },
+      "price_from": { "en": "18,900,000 THB", "ru": "18 900 000 THB" },
+      "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80&fit=crop",
+      "badge": { "en": "Popular", "ru": "Популярная" },
+      "bedrooms": "3",
+      "area": "220",
+      "area_unit": { "en": "Sq.m.", "ru": "Кв.м." },
+      "bathrooms": "3",
+      "price": "฿18.9M",
+      "price_label": { "en": "from", "ru": "от" },
+      "specs": [
+        {
+          "key": { "en": "Living area", "ru": "Жилая площадь" },
+          "value": { "en": "220 sq.m.", "ru": "220 кв.м." }
+        },
+        {
+          "key": { "en": "Bedrooms", "ru": "Спальни" },
+          "value": { "en": "3", "ru": "3" }
+        },
+        {
+          "key": { "en": "Bathrooms", "ru": "Ванные комнаты" },
+          "value": { "en": "3", "ru": "3" }
+        },
+        {
+          "key": { "en": "Private pool", "ru": "Собственный бассейн" },
+          "value": { "en": "Yes", "ru": "Да" }
+        }
+      ]
+    },
+    {
+      "name": { "en": "Villa Type C — 4 Bedrooms", "ru": "Вилла Тип C — 4 спальни" },
+      "subtitle": { "en": "Grand estate with panoramic views", "ru": "Гранд-резиденция с панорамным видом" },
+      "price_from": { "en": "29,500,000 THB", "ru": "29 500 000 THB" },
+      "image": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80&fit=crop",
+      "badge": { "en": "Premium", "ru": "Премиум" },
+      "bedrooms": "4",
+      "area": "350",
+      "area_unit": { "en": "Sq.m.", "ru": "Кв.м." },
+      "bathrooms": "4",
+      "price": "฿29.5M",
+      "price_label": { "en": "from", "ru": "от" },
+      "specs": [
+        {
+          "key": { "en": "Living area", "ru": "Жилая площадь" },
+          "value": { "en": "350 sq.m.", "ru": "350 кв.м." }
+        },
+        {
+          "key": { "en": "Bedrooms", "ru": "Спальни" },
+          "value": { "en": "4", "ru": "4" }
+        },
+        {
+          "key": { "en": "Bathrooms", "ru": "Ванные комнаты" },
+          "value": { "en": "4", "ru": "4" }
+        },
+        {
+          "key": { "en": "Private pool", "ru": "Собственный бассейн" },
+          "value": { "en": "Yes", "ru": "Да" }
+        }
+      ]
+    }
+  ],
+  "roi": {
+    "title": { "en": "Investment Potential", "ru": "Инвестиционный потенциал" },
+    "subtitle": {
+      "en": "Phuket's thriving tourism market ensures strong rental yields and long-term capital appreciation for Asi Village owners.",
+      "ru": "Процветающий туристический рынок Пхукета обеспечивает высокую арендную доходность и долгосрочный рост капитала для владельцев Asi Village."
+    },
+    "columns": [
+      { "en": "Villa Type", "ru": "Тип виллы" },
+      { "en": "Price (THB)", "ru": "Цена (THB)" },
+      { "en": "Monthly Rent (THB)", "ru": "Аренда / мес. (THB)" },
+      { "en": "Annual Yield", "ru": "Годовая доходность" },
+      { "en": "5-Year Growth", "ru": "Рост за 5 лет" },
+      { "en": "ROI (5 Years)", "ru": "ROI (5 лет)" }
+    ],
+    "rows": [
+      {
+        "type": { "en": "Villa Type A — 2 Bed", "ru": "Вилла Тип A — 2 спальни" },
+        "price": "12,500,000",
+        "monthly_rent": "85,000",
+        "annual_yield": "8.2%",
+        "growth_5y": "+36%",
+        "roi_5y": "77%"
+      },
+      {
+        "type": { "en": "Villa Type B — 3 Bed", "ru": "Вилла Тип B — 3 спальни" },
+        "price": "18,900,000",
+        "monthly_rent": "125,000",
+        "annual_yield": "7.9%",
+        "growth_5y": "+40%",
+        "roi_5y": "80%"
+      },
+      {
+        "type": { "en": "Villa Type C — 4 Bed", "ru": "Вилла Тип C — 4 спальни" },
+        "price": "29,500,000",
+        "monthly_rent": "200,000",
+        "annual_yield": "8.1%",
+        "growth_5y": "+44%",
+        "roi_5y": "85%"
+      }
+    ],
+    "disclaimer": {
+      "en": "* Projected figures based on current market trends. Actual returns may vary.",
+      "ru": "* Прогнозные данные на основе текущих рыночных тенденций. Фактическая доходность может отличаться."
+    }
+  },
+  "gallery": {
+    "label": { "en": "Visual Tour", "ru": "Визуальный тур" },
+    "title": { "en": "Project Gallery", "ru": "Галерея проекта" },
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&q=80&fit=crop",
+        "alt": { "en": "Asi Village exterior", "ru": "Экстерьер Asi Village" }
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600&q=80&fit=crop",
+        "alt": { "en": "Villa interior living room", "ru": "Интерьер гостиной" }
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=600&q=80&fit=crop",
+        "alt": { "en": "Villa pool area", "ru": "Зона бассейна" }
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=600&q=80&fit=crop",
+        "alt": { "en": "Bedroom design", "ru": "Дизайн спальни" }
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=600&q=80&fit=crop",
+        "alt": { "en": "Kitchen and dining", "ru": "Кухня и столовая" }
+      }
+    ]
+  },
+  "location": {
+    "label": { "en": "Prime Area", "ru": "Лучший район" },
+    "title": { "en": "Asi Village Location", "ru": "Расположение Asi Village" },
+    "description": {
+      "en": "Strategically located in Phuket, Asi Village offers easy access to beaches, international schools, shopping centers, and healthcare facilities.",
+      "ru": "Стратегически расположенный на Пхукете, Asi Village предлагает удобный доступ к пляжам, международным школам, торговым центрам и медицинским учреждениям."
+    },
+    "distances": [
+      {
+        "icon": "airport",
+        "place": { "en": "Phuket International Airport", "ru": "Международный аэропорт Пхукета" },
+        "time": { "en": "25 min", "ru": "25 мин" },
+        "title": { "en": "Phuket International Airport", "ru": "Международный аэропорт Пхукета" },
+        "detail": { "en": "25 minutes drive", "ru": "25 минут на автомобиле" }
+      },
+      {
+        "icon": "beach",
+        "place": { "en": "Nearest Beach", "ru": "Ближайший пляж" },
+        "time": { "en": "10 min", "ru": "10 мин" },
+        "title": { "en": "Nearest Beach", "ru": "Ближайший пляж" },
+        "detail": { "en": "10 minutes drive", "ru": "10 минут на автомобиле" }
+      },
+      {
+        "icon": "school",
+        "place": { "en": "International Schools", "ru": "Международные школы" },
+        "time": { "en": "15 min", "ru": "15 мин" },
+        "title": { "en": "International Schools", "ru": "Международные школы" },
+        "detail": { "en": "15 minutes drive", "ru": "15 минут на автомобиле" }
+      },
+      {
+        "icon": "shopping",
+        "place": { "en": "Shopping & Entertainment (Central Phuket)", "ru": "Шопинг и развлечения (Central Phuket)" },
+        "time": { "en": "20 min", "ru": "20 мин" },
+        "title": { "en": "Shopping & Entertainment", "ru": "Шопинг и развлечения" },
+        "detail": { "en": "Central Phuket — 20 minutes", "ru": "Central Phuket — 20 минут" }
+      },
+      {
+        "icon": "hospital",
+        "place": { "en": "Bangkok Hospital Phuket", "ru": "Bangkok Hospital Phuket" },
+        "time": { "en": "15 min", "ru": "15 мин" },
+        "title": { "en": "Bangkok Hospital Phuket", "ru": "Bangkok Hospital Phuket" },
+        "detail": { "en": "15 minutes drive", "ru": "15 минут на автомобиле" }
+      }
+    ],
+    "map_embed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63266.48!2d98.33!3d7.88!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x305031d84ec2ba55%3A0xa87347de22a0d1ad!2sPhuket!5e0!3m2!1sen!2sth!4v1700000000000!5m2!1sen!2sth"
+  },
+  "developer": {
+    "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80&fit=crop",
+    "name": { "en": "Built by Experts", "ru": "Построено экспертами" },
+    "description": {
+      "en": "Asi Village is developed by an experienced team specializing in premium real estate across Southeast Asia. With a proven track record of delivering luxury projects in Phuket, the developer is known for meticulous attention to quality, on-time delivery, and innovative architectural design that harmonizes with the natural landscape.",
+      "ru": "Asi Village создан опытной командой, специализирующейся на премиальной недвижимости Юго-Восточной Азии. С подтверждённым опытом реализации проектов класса люкс на Пхукете, застройщик известен безупречным вниманием к качеству, своевременной сдачей объектов и инновационным архитектурным дизайном, гармонирующим с природным ландшафтом."
+    },
+    "facts": [
+      {
+        "key": { "en": "Experience", "ru": "Опыт" },
+        "value": { "en": "15+ years in premium real estate", "ru": "15+ лет в премиальной недвижимости" }
+      },
+      {
+        "key": { "en": "Portfolio", "ru": "Портфолио" },
+        "value": { "en": "20+ completed projects", "ru": "20+ завершённых проектов" }
+      },
+      {
+        "key": { "en": "Delivery", "ru": "Сдача" },
+        "value": { "en": "100% on-time delivery record", "ru": "100% сдача объектов в срок" }
+      }
+    ]
+  },
+  "contact": {
+    "phone": "+66 (0) 00-000-0000",
+    "whatsapp": "+66000000000",
+    "email": "info@asivillage.com",
+    "website": "asivillage.com",
+    "address": { "en": "Phuket, Thailand", "ru": "Пхукет, Таиланд" }
+  },
+  "cta": {
+    "title": {
+      "en": "Ready to Discover Your Dream Villa?",
+      "ru": "Готовы найти виллу своей мечты?"
+    },
+    "description": {
+      "en": "Get exclusive access to floor plans, pricing, and availability. Our team is ready to assist you with every step of the process.",
+      "ru": "Получите эксклюзивный доступ к планировкам, ценам и наличию. Наша команда готова помочь вам на каждом этапе."
+    },
+    "highlights": [
+      {
+        "en": "Free consultation with no obligations",
+        "ru": "Бесплатная консультация без обязательств"
+      },
+      {
+        "en": "Response within 24 hours",
+        "ru": "Ответ в течение 24 часов"
+      },
+      {
+        "en": "Secure and confidential",
+        "ru": "Безопасно и конфиденциально"
+      }
+    ],
+    "form_title": {
+      "en": "Get a Free Consultation",
+      "ru": "Бесплатная консультация"
+    },
+    "form_subtitle": {
+      "en": "Fill in the form and we'll get back to you shortly",
+      "ru": "Заполните форму, и мы свяжемся с вами в ближайшее время"
+    }
+  },
+  "sell_banner": { "show": false, "image": "", "title": "", "subtitle": "" }
+}

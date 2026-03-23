@@ -1,0 +1,438 @@
+{
+  "project_slug": "angsana-oceanview-demo",
+  "project_name": { "en": "Angsana Oceanview Residences", "ru": "Angsana Oceanview Residences" },
+  "template": "angsana-oceanview",
+  "languages": ["en", "ru"],
+  "currency": "THB",
+  "meta_title": { "en": "Angsana Oceanview Residences in Laguna, Phuket", "ru": "Angsana Oceanview Residences на Пхукете" },
+  "meta_description": {
+    "en": "Angsana Oceanview Residences is an exclusive residential complex in Laguna, Phuket. The project features well-designed layouts and comprehensive infrastructure. An excellent opportunity for comfortable living and investment.",
+    "ru": "Angsana Oceanview Residences — эксклюзивный жилой комплекс в районе Лагуна на Пхукете. В проекте продуманы удобные планировки и развитая инфраструктура. Отличная возможность для комфортной жизни и инвестиций."
+  },
+  "canonical_url": "https://angsana-oceanview.com/",
+  "crm_webhook": "",
+  "hero": {
+    "image": "https://images.unsplash.com/photo-1540541338287-41700c1d5c28?w=1920&q=80&fit=crop",
+    "badge": { "en": "Laguna Phuket \u2022 Branded Residences", "ru": "Лагуна Пхукет \u2022 Брендовые резиденции" },
+    "title": { "en": "Angsana Oceanview Residences", "ru": "Angsana Oceanview Residences" },
+    "description": {
+      "en": "Refined living where tropical serenity meets world-class hospitality. Premium residences within the iconic Laguna Phuket integrated resort.",
+      "ru": "Утончённая жизнь на стыке тропического спокойствия и гостеприимства мирового класса. Премиальные резиденции в составе легендарного курорта Лагуна Пхукет."
+    },
+    "stats": [
+      {
+        "value": "42.5M",
+        "label": { "en": "Starting price, THB", "ru": "Цена от, THB" }
+      },
+      {
+        "value": "5%",
+        "label": { "en": "Guaranteed return", "ru": "Гарантированный доход" }
+      },
+      {
+        "value": "149",
+        "label": { "en": "Residences", "ru": "Резиденций" }
+      },
+      {
+        "value": "1,000",
+        "label": { "en": "Acres of resort", "ru": "Акров курорта" }
+      }
+    ]
+  },
+  "concept": {
+    "title": { "en": "Angsana Oceanview Residences Concept", "ru": "Концепция Angsana Oceanview Residences" },
+    "paragraphs": [
+      {
+        "en": "A collection of thoughtfully designed residences nestled within the prestigious Laguna Phuket complex. Three low-rise buildings harmoniously blend with the lush tropical landscape, offering spacious two- and three-bedroom homes with private pools and panoramic vistas stretching from verdant gardens to the Andaman Sea horizon.",
+        "ru": "Коллекция тщательно спроектированных резиденций в составе престижного комплекса Лагуна Пхукет. Три малоэтажных здания гармонично вписаны в тропический ландшафт. Просторные квартиры с двумя и тремя спальнями, собственным бассейном и панорамными видами на сады и Андаманское море."
+      }
+    ],
+    "specs": [
+      {
+        "key": { "en": "Branded Living", "ru": "Брендовое жильё" },
+        "value": {
+          "en": "Backed by the legendary Banyan Tree Group hospitality standards",
+          "ru": "Стандарты гостеприимства легендарной группы Banyan Tree"
+        }
+      },
+      {
+        "key": { "en": "Freehold Title", "ru": "Фрихолд" },
+        "value": {
+          "en": "Secure ownership structure for international buyers",
+          "ru": "Надёжная структура собственности для иностранных покупателей"
+        }
+      },
+      {
+        "key": { "en": "Private Pool", "ru": "Свой бассейн" },
+        "value": {
+          "en": "Every residence features its own private swimming pool",
+          "ru": "Каждая резиденция оснащена собственным бассейном"
+        }
+      },
+      {
+        "key": { "en": "209\u2013395 m\u00b2", "ru": "209\u2013395 м\u00b2" },
+        "value": {
+          "en": "Generous layouts from two to three bedrooms with duplex penthouses",
+          "ru": "Просторные планировки от двух до трёх спален и дуплекс-пентхаусы"
+        }
+      }
+    ]
+  },
+  "amenities": {
+    "title": { "en": "Angsana Oceanview Residences Amenities", "ru": "Удобства в Angsana Oceanview Residences" },
+    "description": {
+      "en": "Residents enjoy seamless access to a full spectrum of five-star facilities, from world-class wellness to gourmet dining — all within steps of your front door.",
+      "ru": "Резиденты пользуются полным спектром пятизвёздочных удобств — от оздоровительного центра мирового уровня до изысканных ресторанов — буквально в нескольких шагах от порога."
+    },
+    "image": "https://images.unsplash.com/photo-1540541338287-41700c1d5c28?w=600&q=80&fit=crop",
+    "items": [
+      {
+        "title": { "en": "Infinity Pool & Beach Club", "ru": "Инфинити-бассейн и пляжный клуб" },
+        "description": {
+          "en": "Resort-style swimming pools with stunning seaview panoramas and a private beach club at Bang Tao Beach for sun-drenched relaxation.",
+          "ru": "Курортные бассейны с захватывающими панорамами моря и приватный пляжный клуб на берегу Банг Тао для безмятежного отдыха."
+        },
+        "image": "https://images.unsplash.com/photo-1540541338287-41700c1d5c28?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "Spa & Wellness Centre", "ru": "Спа и велнес-центр" },
+        "description": {
+          "en": "Award-winning Angsana Spa treatments, a state-of-the-art fitness centre, yoga pavilion, and holistic wellness programs for complete rejuvenation.",
+          "ru": "Отмеченный наградами спа Angsana, современный фитнес-центр, павильон для йоги и холистические программы оздоровления."
+        },
+        "image": "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "Concierge Services", "ru": "Консьерж-сервис" },
+        "description": {
+          "en": "Dedicated 24/7 concierge team handling everything from restaurant reservations and airport transfers to bespoke island experiences.",
+          "ru": "Персональная команда консьержей 24/7: бронирование ресторанов, трансферы из аэропорта, организация эксклюзивных островных впечатлений."
+        },
+        "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "Kids Club & Family Area", "ru": "Детский клуб и семейная зона" },
+        "description": {
+          "en": "Supervised children's play zones, a dedicated kids' pool, and family-oriented activities making it a paradise for guests of all ages.",
+          "ru": "Игровые площадки под присмотром, детский бассейн и семейные активности — рай для гостей всех возрастов."
+        },
+        "image": "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "Golf & Recreation", "ru": "Гольф и активный отдых" },
+        "description": {
+          "en": "Complimentary membership to the Laguna Golf Phuket — an 18-hole championship course surrounded by dramatic mountain and lagoon scenery.",
+          "ru": "Бесплатное членство в Laguna Golf Phuket — чемпионское 18-луночное поле в окружении гор и лагун."
+        },
+        "image": "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "24/7 Security & Parking", "ru": "Охрана 24/7 и парковка" },
+        "description": {
+          "en": "Round-the-clock security with CCTV surveillance, controlled access, and covered parking facilities ensure complete peace of mind.",
+          "ru": "Круглосуточная охрана с видеонаблюдением, контролируемый доступ и крытая парковка для полного спокойствия."
+        },
+        "image": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=80&fit=crop"
+      }
+    ]
+  },
+  "catalogue": {
+    "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80&fit=crop",
+    "tags": [
+      { "en": "Floor Plans", "ru": "Планировки" },
+      { "en": "Pricing", "ru": "Цены" },
+      { "en": "Finishes", "ru": "Отделка" },
+      { "en": "Investment Prospectus", "ru": "Инвестиционный проспект" }
+    ]
+  },
+  "layouts": [
+    {
+      "name": { "en": "Two-Bedroom Residence", "ru": "Резиденция с двумя спальнями" },
+      "description": {
+        "en": "Spacious open-plan living areas flow seamlessly onto generous balconies, while two en-suite bedrooms ensure privacy and comfort. Each unit comes with a private pool and dedicated parking.",
+        "ru": "Просторные гостиные открытой планировки плавно переходят в большие балконы. Две спальни с собственными ванными комнатами обеспечивают приватность и комфорт. Каждый юнит оснащён бассейном и парковочным местом."
+      },
+      "price_from": { "en": "\u0e3f42.5M", "ru": "\u0e3f42,5 млн" },
+      "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80&fit=crop",
+      "specs": [
+        {
+          "key": { "en": "Living area", "ru": "Площадь" },
+          "value": { "en": "209 m\u00b2", "ru": "209 м\u00b2" }
+        },
+        {
+          "key": { "en": "Bedrooms", "ru": "Спальни" },
+          "value": { "en": "2", "ru": "2" }
+        },
+        {
+          "key": { "en": "Bathrooms", "ru": "Ванные" },
+          "value": { "en": "2", "ru": "2" }
+        },
+        {
+          "key": { "en": "Private pool", "ru": "Собственный бассейн" },
+          "value": { "en": "Yes", "ru": "Да" }
+        }
+      ]
+    },
+    {
+      "name": { "en": "Three-Bedroom Residence", "ru": "Резиденция с тремя спальнями" },
+      "description": {
+        "en": "The ultimate family retreat, featuring expansive living and dining areas, a fully equipped kitchen, three luxurious bedroom suites, and generous outdoor terraces with a private pool overlooking tropical gardens.",
+        "ru": "Идеальное семейное пространство с просторной гостиной и столовой, полностью оборудованной кухней, тремя роскошными спальнями и открытыми террасами с собственным бассейном на фоне тропических садов."
+      },
+      "price_from": { "en": "\u0e3f72M", "ru": "\u0e3f72 млн" },
+      "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80&fit=crop",
+      "specs": [
+        {
+          "key": { "en": "Living area", "ru": "Площадь" },
+          "value": { "en": "395 m\u00b2", "ru": "395 м\u00b2" }
+        },
+        {
+          "key": { "en": "Bedrooms", "ru": "Спальни" },
+          "value": { "en": "3", "ru": "3" }
+        },
+        {
+          "key": { "en": "Bathrooms", "ru": "Ванные" },
+          "value": { "en": "3", "ru": "3" }
+        },
+        {
+          "key": { "en": "Private pool", "ru": "Собственный бассейн" },
+          "value": { "en": "Yes", "ru": "Да" }
+        }
+      ]
+    },
+    {
+      "name": { "en": "Duplex Penthouse", "ru": "Дуплекс-пентхаус" },
+      "description": {
+        "en": "Crown jewels of the development \u2014 soaring double-height ceilings, wrap-around terraces with 180-degree views, a private rooftop pool, and two levels of refined living space designed for those who accept nothing less than extraordinary.",
+        "ru": "Жемчужина проекта \u2014 двухуровневые апартаменты с высокими потолками, панорамными террасами с видом на 180\u00b0, собственным бассейном на крыше и двумя уровнями изысканного жилого пространства для тех, кто не приемлет компромиссов."
+      },
+      "price_from": { "en": "\u0e3f100.9M", "ru": "\u0e3f100,9 млн" },
+      "image": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80&fit=crop",
+      "specs": [
+        {
+          "key": { "en": "Living area", "ru": "Площадь" },
+          "value": { "en": "233 m\u00b2", "ru": "233 м\u00b2" }
+        },
+        {
+          "key": { "en": "Bedrooms", "ru": "Спальни" },
+          "value": { "en": "2", "ru": "2" }
+        },
+        {
+          "key": { "en": "Bathrooms", "ru": "Ванные" },
+          "value": { "en": "2", "ru": "2" }
+        },
+        {
+          "key": { "en": "Private rooftop pool", "ru": "Бассейн на крыше" },
+          "value": { "en": "Yes", "ru": "Да" }
+        }
+      ]
+    }
+  ],
+  "roi": {
+    "title": { "en": "Investment Opportunity", "ru": "Инвестиционные возможности" },
+    "subtitle": {
+      "en": "Phuket's property market continues to attract global investors seeking both lifestyle value and strong rental yields within one of Southeast Asia's most visited resort destinations.",
+      "ru": "Рынок недвижимости Пхукета привлекает инвесторов со всего мира сочетанием образа жизни и высокой арендной доходности на одном из самых посещаемых курортных направлений Юго-Восточной Азии."
+    },
+    "columns": [
+      { "en": "Residence Type", "ru": "Тип резиденции" },
+      { "en": "Price (THB)", "ru": "Цена (THB)" },
+      { "en": "Guaranteed Return", "ru": "Гарант. доход" },
+      { "en": "Personal Use", "ru": "Личное проживание" },
+      { "en": "Revenue Share", "ru": "Доля дохода" },
+      { "en": "Club Membership", "ru": "Членство в клубе" }
+    ],
+    "rows": [
+      {
+        "type": { "en": "2-Bed Residence", "ru": "Резиденция 2 спальни" },
+        "price": "42,500,000",
+        "monthly_rent": "177,000",
+        "annual_yield": "5%",
+        "growth_5y": "60 days",
+        "roi_5y": "33% net revenue"
+      },
+      {
+        "type": { "en": "3-Bed Residence", "ru": "Резиденция 3 спальни" },
+        "price": "72,000,000",
+        "monthly_rent": "300,000",
+        "annual_yield": "5%",
+        "growth_5y": "60 days",
+        "roi_5y": "33% net revenue"
+      },
+      {
+        "type": { "en": "Duplex Penthouse", "ru": "Дуплекс-пентхаус" },
+        "price": "100,900,000",
+        "monthly_rent": "420,000",
+        "annual_yield": "5%",
+        "growth_5y": "60 days",
+        "roi_5y": "33% net revenue"
+      }
+    ],
+    "highlights": [
+      {
+        "title": { "en": "5% Guaranteed Return", "ru": "5% гарантированный доход" },
+        "description": {
+          "en": "Secure annual income with a five-year guaranteed rental return program managed by Banyan Tree hospitality professionals.",
+          "ru": "Стабильный ежегодный доход по программе гарантированной аренды на пять лет под управлением профессионалов Banyan Tree."
+        }
+      },
+      {
+        "title": { "en": "60 Days Personal Use", "ru": "60 дней личного проживания" },
+        "description": {
+          "en": "Enjoy your residence for up to 60 days per year while it generates rental income the rest of the time.",
+          "ru": "Пользуйтесь резиденцией до 60 дней в году, пока она приносит арендный доход в остальное время."
+        }
+      },
+      {
+        "title": { "en": "Sanctuary Club Membership", "ru": "Членство в Sanctuary Club" },
+        "description": {
+          "en": "Exclusive global privileges across Banyan Tree, Angsana, Cassia, and Dhawa resorts, spas, and galleries worldwide.",
+          "ru": "Эксклюзивные привилегии по всему миру в отелях и спа Banyan Tree, Angsana, Cassia и Dhawa."
+        }
+      },
+      {
+        "title": { "en": "Flexible Revenue Model", "ru": "Гибкая модель дохода" },
+        "description": {
+          "en": "Alternatively, opt for a performance-based model earning 33% of net room revenue from the hotel rental pool.",
+          "ru": "Альтернативный вариант — модель с долей дохода: 33% от чистой выручки отельного арендного пула."
+        }
+      }
+    ],
+    "disclaimer": {
+      "en": "* Projected figures based on current market trends. Actual returns may vary.",
+      "ru": "* Прогнозные данные на основе текущих рыночных тенденций. Фактическая доходность может отличаться."
+    }
+  },
+  "gallery": {
+    "images": [
+      "https://images.unsplash.com/photo-1540541338287-41700c1d5c28?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=600&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?w=900&q=80&fit=crop"
+    ]
+  },
+  "location": {
+    "title": { "en": "Angsana Oceanview Residences Location", "ru": "Расположение Angsana Oceanview Residences" },
+    "description": {
+      "en": "Situated within the renowned Laguna Phuket integrated resort \u2014 a 1,000-acre tropical paradise fronting Bang Tao Beach on Phuket's coveted west coast. The area combines natural beauty with sophisticated infrastructure, creating an ideal setting for both permanent living and holiday retreats.",
+      "ru": "Резиденции расположены в составе знаменитого интегрированного курорта Лагуна Пхукет \u2014 тропического рая площадью более 400 гектаров на берегу пляжа Банг Тао. Район сочетает природную красоту с развитой инфраструктурой, идеально подходя как для постоянного проживания, так и для отдыха."
+    },
+    "distances": [
+      {
+        "place": { "en": "Bang Tao Beach", "ru": "Пляж Банг Тао" },
+        "time": { "en": "1.4 km", "ru": "1,4 км" }
+      },
+      {
+        "place": { "en": "Laguna Golf Club", "ru": "Гольф-клуб Лагуна" },
+        "time": { "en": "3 km", "ru": "3 км" }
+      },
+      {
+        "place": { "en": "Boat Avenue Shopping", "ru": "Boat Avenue (шоппинг)" },
+        "time": { "en": "5 km", "ru": "5 км" }
+      },
+      {
+        "place": { "en": "Phuket International Airport", "ru": "Аэропорт Пхукета" },
+        "time": { "en": "20 km", "ru": "20 км" }
+      },
+      {
+        "place": { "en": "Phuket Town", "ru": "Пхукет-таун" },
+        "time": { "en": "25 km", "ru": "25 км" }
+      },
+      {
+        "place": { "en": "International Schools", "ru": "Международные школы" },
+        "time": { "en": "10 km", "ru": "10 км" }
+      }
+    ],
+    "map_embed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3951.8!2d98.2960!3d7.9880!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zN8KwNTknMTcuMyJOIDk4wrAxNyc0NS42IkU!5e0!3m2!1sen!2sth!4v1"
+  },
+  "faq": {
+    "title": { "en": "Frequently Asked Questions", "ru": "Часто задаваемые вопросы" },
+    "items": [
+      {
+        "question": {
+          "en": "What types of residences are available at Angsana Oceanview Residences?",
+          "ru": "Какие типы резиденций доступны в Angsana Oceanview Residences?"
+        },
+        "answer": {
+          "en": "The development offers two-bedroom and three-bedroom residences ranging from 209 to 395 square metres, as well as exclusive duplex penthouses on the top floors. Every unit includes a private swimming pool, spacious balconies, and premium interior finishes.",
+          "ru": "В проекте представлены квартиры с двумя и тремя спальнями площадью от 209 до 395 квадратных метров, а также эксклюзивные дуплекс-пентхаусы на верхних этажах. Каждый юнит оснащён собственным бассейном, просторными балконами и отделкой премиум-класса."
+        }
+      },
+      {
+        "question": {
+          "en": "What ownership structure is available for foreign buyers?",
+          "ru": "Какая структура собственности доступна для иностранных покупателей?"
+        },
+        "answer": {
+          "en": "Freehold ownership is available through a Thai Company structure. The project team provides full guidance on the legal framework, company formation, and the seamless acquisition process for international buyers.",
+          "ru": "Доступна полная собственность (фрихолд) через тайскую компанию. Команда проекта обеспечивает полное сопровождение по юридическим аспектам, регистрации компании и процессу приобретения для иностранных покупателей."
+        }
+      },
+      {
+        "question": {
+          "en": "How does the rental management program work?",
+          "ru": "Как работает программа управления арендой?"
+        },
+        "answer": {
+          "en": "Owners can opt for a guaranteed rental return program offering 5% annual income for five years, with 60 days of complimentary personal use. Alternatively, a flexible revenue-sharing model provides 33% of net room income managed by Banyan Tree's professional hospitality team.",
+          "ru": "Владельцы могут выбрать программу гарантированного дохода \u2014 5% годовых в течение пяти лет с 60 днями бесплатного проживания. Альтернатива \u2014 гибкая модель с долей дохода: 33% от чистой выручки арендного пула под управлением профессиональной команды Banyan Tree."
+        }
+      },
+      {
+        "question": {
+          "en": "What privileges come with ownership?",
+          "ru": "Какие привилегии получают владельцы?"
+        },
+        "answer": {
+          "en": "Owners receive complimentary Sanctuary Club Membership with global resort privileges, Laguna Golf Phuket family membership, and a five-year Angsana Vacation Club membership granting access to Banyan Tree, Angsana, and Cassia properties worldwide.",
+          "ru": "Владельцы получают бесплатное членство в Sanctuary Club с привилегиями в курортах по всему миру, семейное членство в Laguna Golf Phuket и пятилетнее членство в Angsana Vacation Club с доступом к отелям Banyan Tree, Angsana и Cassia."
+        }
+      },
+      {
+        "question": {
+          "en": "What are the nearby attractions and facilities?",
+          "ru": "Что находится рядом с комплексом?"
+        },
+        "answer": {
+          "en": "Within the Laguna complex you'll find restaurants, spas, golf courses, and a beach club. Bang Tao Beach is just 1.4 km away. Boat Avenue shopping village, international schools, and Phuket International Airport are all within a short drive.",
+          "ru": "На территории комплекса Лагуна \u2014 рестораны, спа, гольф-поля и пляжный клуб. Пляж Банг Тао \u2014 всего в 1,4 км. Торговая деревня Boat Avenue, международные школы и аэропорт Пхукета \u2014 в пределах быстрой поездки."
+        }
+      }
+    ]
+  },
+  "developer": {
+    "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80&fit=crop",
+    "name": { "en": "Banyan Tree Group", "ru": "Banyan Tree Group" },
+    "description": {
+      "en": "One of the world's most acclaimed hospitality brands. Founded in 1984, the group manages an international portfolio of premium resorts, hotels, residences, and spas across four distinctive brands \u2014 Banyan Tree, Angsana, Cassia, and Dhawa \u2014 setting the benchmark for sustainable luxury tourism.",
+      "ru": "Один из самых признанных гостиничных брендов мира. Основанная в 1984 году группа управляет международным портфолио премиальных курортов, отелей, резиденций и спа-центров под четырьмя брендами \u2014 Banyan Tree, Angsana, Cassia и Dhawa \u2014 задавая стандарты устойчивого люксового туризма."
+    },
+    "facts": [
+      {
+        "key": { "en": "Experience", "ru": "Опыт" },
+        "value": { "en": "40+ years of excellence", "ru": "40+ лет безупречной репутации" }
+      },
+      {
+        "key": { "en": "Portfolio", "ru": "Портфолио" },
+        "value": { "en": "70+ hotels & resorts", "ru": "70+ отелей и курортов" }
+      },
+      {
+        "key": { "en": "Presence", "ru": "Присутствие" },
+        "value": { "en": "24 countries", "ru": "24 страны присутствия" }
+      },
+      {
+        "key": { "en": "Brands", "ru": "Бренды" },
+        "value": { "en": "4 global brands", "ru": "4 глобальных бренда" }
+      }
+    ]
+  },
+  "contact": {
+    "phone": "+66 81 328 0582",
+    "whatsapp": "+66813280582",
+    "email": "info@angsana-oceanview.com",
+    "website": "angsana-oceanview.com"
+  },
+  "sell_banner": { "show": false, "image": "", "title": "", "subtitle": "" }
+}

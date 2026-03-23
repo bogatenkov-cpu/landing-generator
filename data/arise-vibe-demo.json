@@ -1,0 +1,463 @@
+{
+  "project_slug": "arise-vibe-demo",
+  "project_name": { "en": "Arise Vibe", "ru": "Arise Vibe" },
+  "template": "arise-vibe",
+  "languages": ["en", "ru"],
+  "currency": "USD",
+  "meta_title": { "en": "Arise Vibe in Phuket", "ru": "Arise Vibe на Пхукете" },
+  "meta_description": {
+    "en": "Arise Vibe is a modern residential complex in Phuket. The project features well-designed layouts and comprehensive infrastructure. An excellent opportunity for comfortable living and investment.",
+    "ru": "Arise Vibe — современный жилой комплекс на Пхукете. В проекте продуманы удобные планировки и развитая инфраструктура. Отличная возможность для комфортной жизни и инвестиций."
+  },
+  "canonical_url": "https://arisevibe.com/",
+  "crm_webhook": "",
+  "hero": {
+    "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80&fit=crop",
+    "tagline": { "en": "Premium Living in Phuket", "ru": "Премиальная жизнь на Пхукете" },
+    "title": { "en": "Arise Vibe", "ru": "Arise Vibe" },
+    "description": {
+      "en": "A modern residential complex where sophisticated design meets tropical serenity. Your gateway to comfortable living and smart investment in Phuket.",
+      "ru": "Современный жилой комплекс, где изысканный дизайн встречается с тропическим спокойствием. Ваш путь к комфортной жизни и выгодным инвестициям на Пхукете."
+    },
+    "stats": [
+      { "value": "7%", "label": { "en": "Annual ROI", "ru": "Годовой ROI" } },
+      { "value": "2026", "label": { "en": "Completion", "ru": "Сдача объекта" } },
+      { "value": "350+", "label": { "en": "Units", "ru": "Юнитов" } }
+    ]
+  },
+  "concept": {
+    "label": { "en": "About the Project", "ru": "О проекте" },
+    "title": { "en": "Arise Vibe Concept", "ru": "Концепция Arise Vibe" },
+    "paragraphs": [
+      {
+        "en": "A thoughtfully designed residential complex that blends modern architecture with the natural beauty of Phuket. Every detail is crafted for your comfort and well-being.",
+        "ru": "Продуманный жилой комплекс, сочетающий современную архитектуру с природной красотой Пхукета. Каждая деталь создана для вашего комфорта и благополучия."
+      }
+    ],
+    "cards": [
+      {
+        "image": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80&fit=crop",
+        "title": { "en": "Contemporary Architecture", "ru": "Современная архитектура" },
+        "text": {
+          "en": "Clean lines and open spaces harmonize with lush tropical surroundings, creating a sanctuary of modern elegance.",
+          "ru": "Чистые линии и открытые пространства гармонируют с пышной тропической природой, создавая оазис современной элегантности."
+        },
+        "size": "large"
+      },
+      {
+        "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&q=80&fit=crop",
+        "title": { "en": "Premium Finishes", "ru": "Премиальная отделка" },
+        "text": {
+          "en": "High-quality materials and meticulous attention to detail in every apartment.",
+          "ru": "Высококачественные материалы и внимание к деталям в каждой квартире."
+        },
+        "size": "normal"
+      },
+      {
+        "image": "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=600&q=80&fit=crop",
+        "title": { "en": "Tropical Living", "ru": "Тропическая жизнь" },
+        "text": {
+          "en": "Surrounded by nature with year-round warm climate and stunning views.",
+          "ru": "В окружении природы с круглогодичным теплым климатом и потрясающими видами."
+        },
+        "size": "normal"
+      }
+    ],
+    "specs": [
+      {
+        "key": { "en": "Location", "ru": "Расположение" },
+        "value": {
+          "en": "Cherngtalay, Thalang District, near Bang Tao Beach — one of Phuket's most prestigious areas.",
+          "ru": "Черненгталай, район Таланг, рядом с пляжем Банг Тао — один из самых престижных районов Пхукета."
+        }
+      },
+      {
+        "key": { "en": "Total Units", "ru": "Всего юнитов" },
+        "value": {
+          "en": "350+ apartments ranging from studios to two-bedroom residences.",
+          "ru": "350+ квартир — от студий до двухкомнатных резиденций."
+        }
+      },
+      {
+        "key": { "en": "Completion", "ru": "Сдача" },
+        "value": {
+          "en": "Expected handover in 2026 with full infrastructure and landscaping.",
+          "ru": "Ожидаемая сдача в 2026 году с полной инфраструктурой и ландшафтом."
+        }
+      },
+      {
+        "key": { "en": "Investment Return", "ru": "Возврат инвестиций" },
+        "value": {
+          "en": "Projected annual ROI of 7–8.7% from rental income in Phuket's thriving tourism market.",
+          "ru": "Прогнозируемый годовой ROI 7–8,7% от арендного дохода на растущем туристическом рынке Пхукета."
+        }
+      }
+    ]
+  },
+  "amenities": {
+    "label": { "en": "Facilities", "ru": "Инфраструктура" },
+    "title": { "en": "Arise Vibe Amenities", "ru": "Удобства в Arise Vibe" },
+    "description": {
+      "en": "Everything you need for a comfortable and active lifestyle, all within the complex grounds.",
+      "ru": "Все необходимое для комфортного и активного образа жизни на территории комплекса."
+    },
+    "image": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80&fit=crop",
+    "items": [
+      {
+        "icon": "pool",
+        "title": { "en": "Infinity Pool", "ru": "Панорамный бассейн" },
+        "description": {
+          "en": "Rooftop infinity pool with panoramic views of the Andaman Sea.",
+          "ru": "Бассейн-инфинити на крыше с видом на Андаманское море."
+        },
+        "image": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80&fit=crop"
+      },
+      {
+        "icon": "coworking",
+        "title": { "en": "Co-Working Space", "ru": "Коворкинг" },
+        "description": {
+          "en": "Modern workspace with high-speed internet for remote professionals.",
+          "ru": "Современное рабочее пространство с высокоскоростным интернетом."
+        },
+        "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80&fit=crop"
+      },
+      {
+        "icon": "fitness",
+        "title": { "en": "Fitness Center", "ru": "Фитнес-центр" },
+        "description": {
+          "en": "Fully equipped gym with personal training and yoga studio.",
+          "ru": "Полностью оборудованный тренажерный зал с йога-студией."
+        },
+        "image": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80&fit=crop"
+      },
+      {
+        "icon": "security",
+        "title": { "en": "24/7 Security", "ru": "Охрана 24/7" },
+        "description": {
+          "en": "Round-the-clock security with CCTV and smart access control.",
+          "ru": "Круглосуточная охрана с видеонаблюдением и системой контроля доступа."
+        },
+        "image": "https://images.unsplash.com/photo-1558002038-1055907df827?w=600&q=80&fit=crop"
+      },
+      {
+        "icon": "kids",
+        "title": { "en": "Kids Area", "ru": "Детская зона" },
+        "description": {
+          "en": "Safe playground and children's club with supervised activities.",
+          "ru": "Безопасная игровая площадка и детский клуб с организованными занятиями."
+        },
+        "image": "https://images.unsplash.com/photo-1566454544259-f4b94c3d758c?w=600&q=80&fit=crop"
+      },
+      {
+        "icon": "spa",
+        "title": { "en": "Spa & Wellness", "ru": "Спа и велнес" },
+        "description": {
+          "en": "Thai spa, sauna, and relaxation lounge for ultimate rejuvenation.",
+          "ru": "Тайский спа, сауна и зона релаксации для полного восстановления."
+        },
+        "image": "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80&fit=crop"
+      }
+    ]
+  },
+  "catalogue": {
+    "image": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=80&fit=crop",
+    "tags": [
+      { "en": "Floor Plans", "ru": "Планировки" },
+      { "en": "Pricing", "ru": "Цены" },
+      { "en": "Finishes", "ru": "Отделка" },
+      { "en": "Investment Prospectus", "ru": "Инвестиционный проспект" }
+    ]
+  },
+  "layouts": [
+    {
+      "title": { "en": "Studio", "ru": "Студия" },
+      "image": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80&fit=crop",
+      "price": { "en": "From $89,000", "ru": "От $89 000" },
+      "featured": false,
+      "popular": false,
+      "features": [
+        { "en": "Area: 28–35 m²", "ru": "Площадь: 28–35 м²" },
+        { "en": "Balcony with garden view", "ru": "Балкон с видом на сад" },
+        { "en": "Fully furnished", "ru": "Полная меблировка" }
+      ],
+      "specs": [
+        {
+          "key": { "en": "Area", "ru": "Площадь" },
+          "value": { "en": "28–35 sq.m.", "ru": "28–35 кв.м." }
+        },
+        {
+          "key": { "en": "View", "ru": "Вид" },
+          "value": { "en": "Garden view", "ru": "Вид на сад" }
+        },
+        {
+          "key": { "en": "Balcony", "ru": "Балкон" },
+          "value": { "en": "Yes", "ru": "Да" }
+        },
+        {
+          "key": { "en": "Furnishing", "ru": "Меблировка" },
+          "value": { "en": "Fully furnished", "ru": "Полная меблировка" }
+        }
+      ]
+    },
+    {
+      "title": { "en": "1 Bedroom", "ru": "1 Спальня" },
+      "image": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80&fit=crop",
+      "price": { "en": "From $145,000", "ru": "От $145 000" },
+      "featured": true,
+      "popular": true,
+      "features": [
+        { "en": "Area: 45–55 m²", "ru": "Площадь: 45–55 м²" },
+        { "en": "Sea or pool view", "ru": "Вид на море или бассейн" },
+        { "en": "Walk-in closet", "ru": "Гардеробная комната" }
+      ],
+      "specs": [
+        {
+          "key": { "en": "Area", "ru": "Площадь" },
+          "value": { "en": "45–55 sq.m.", "ru": "45–55 кв.м." }
+        },
+        {
+          "key": { "en": "View", "ru": "Вид" },
+          "value": { "en": "Sea or pool view", "ru": "Вид на море или бассейн" }
+        },
+        {
+          "key": { "en": "Walk-in closet", "ru": "Гардеробная" },
+          "value": { "en": "Yes", "ru": "Да" }
+        },
+        {
+          "key": { "en": "Furnishing", "ru": "Меблировка" },
+          "value": { "en": "Fully furnished", "ru": "Полная меблировка" }
+        }
+      ]
+    },
+    {
+      "title": { "en": "2 Bedrooms", "ru": "2 Спальни" },
+      "image": "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=600&q=80&fit=crop",
+      "price": { "en": "From $230,000", "ru": "От $230 000" },
+      "featured": false,
+      "popular": false,
+      "features": [
+        { "en": "Area: 70–85 m²", "ru": "Площадь: 70–85 м²" },
+        { "en": "Panoramic sea view", "ru": "Панорамный вид на море" },
+        { "en": "Private terrace", "ru": "Собственная терраса" }
+      ],
+      "specs": [
+        {
+          "key": { "en": "Area", "ru": "Площадь" },
+          "value": { "en": "70–85 sq.m.", "ru": "70–85 кв.м." }
+        },
+        {
+          "key": { "en": "View", "ru": "Вид" },
+          "value": { "en": "Panoramic sea view", "ru": "Панорамный вид на море" }
+        },
+        {
+          "key": { "en": "Private terrace", "ru": "Собственная терраса" },
+          "value": { "en": "Yes", "ru": "Да" }
+        },
+        {
+          "key": { "en": "Furnishing", "ru": "Меблировка" },
+          "value": { "en": "Fully furnished", "ru": "Полная меблировка" }
+        }
+      ]
+    }
+  ],
+  "roi": {
+    "label": { "en": "Returns", "ru": "Доходность" },
+    "title": { "en": "Investment Opportunity", "ru": "Инвестиционные возможности" },
+    "subtitle": {
+      "en": "Phuket's real estate market offers attractive returns for investors. Here's what you can expect with Arise Vibe.",
+      "ru": "Рынок недвижимости Пхукета предлагает привлекательную доходность для инвесторов. Вот что вы можете ожидать от Arise Vibe."
+    },
+    "description": {
+      "en": "Phuket's real estate market offers attractive returns for investors. Here's what you can expect with Arise Vibe.",
+      "ru": "Рынок недвижимости Пхукета предлагает привлекательную доходность для инвесторов. Вот что вы можете ожидать от Arise Vibe."
+    },
+    "columns": [
+      { "en": "Unit Type", "ru": "Тип юнита" },
+      { "en": "Price (USD)", "ru": "Цена (USD)" },
+      { "en": "Monthly Rental", "ru": "Аренда/мес." },
+      { "en": "Annual Income", "ru": "Годовой доход" },
+      { "en": "ROI", "ru": "ROI" },
+      { "en": "5-Year Growth", "ru": "Рост за 5 лет" }
+    ],
+    "rows": [
+      {
+        "type": { "en": "Studio", "ru": "Студия" },
+        "unit_type": { "en": "Studio", "ru": "Студия" },
+        "price": "$89,000",
+        "monthly_rent": "$650",
+        "monthly_rental": "$650",
+        "annual_income": "$7,800",
+        "annual_yield": "8.7%",
+        "roi": "8.7%",
+        "growth_5y": "+35%",
+        "roi_5y": "$7,800"
+      },
+      {
+        "type": { "en": "1 Bedroom", "ru": "1 Спальня" },
+        "unit_type": { "en": "1 Bedroom", "ru": "1 Спальня" },
+        "price": "$145,000",
+        "monthly_rent": "$1,050",
+        "monthly_rental": "$1,050",
+        "annual_income": "$12,600",
+        "annual_yield": "8.6%",
+        "roi": "8.6%",
+        "growth_5y": "+38%",
+        "roi_5y": "$12,600"
+      },
+      {
+        "type": { "en": "2 Bedrooms", "ru": "2 Спальни" },
+        "unit_type": { "en": "2 Bedrooms", "ru": "2 Спальни" },
+        "price": "$230,000",
+        "monthly_rent": "$1,600",
+        "monthly_rental": "$1,600",
+        "annual_income": "$19,200",
+        "annual_yield": "8.3%",
+        "roi": "8.3%",
+        "growth_5y": "+40%",
+        "roi_5y": "$19,200"
+      }
+    ],
+    "cta_text": {
+      "en": "Want a personalized investment calculation?",
+      "ru": "Хотите персональный расчет инвестиций?"
+    },
+    "disclaimer": {
+      "en": "* Projected figures based on current market trends. Actual returns may vary.",
+      "ru": "* Прогнозные данные на основе текущих рыночных тенденций. Фактическая доходность может отличаться."
+    }
+  },
+  "gallery": {
+    "label": { "en": "Photo Gallery", "ru": "Фотогалерея" },
+    "title": { "en": "Arise Vibe Gallery", "ru": "Галерея Arise Vibe" },
+    "description": {
+      "en": "Explore the beauty and elegance of Arise Vibe through our curated photo collection.",
+      "ru": "Откройте для себя красоту и элегантность Arise Vibe через нашу фотоколлекцию."
+    },
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80&fit=crop",
+        "caption": { "en": "Infinity Pool", "ru": "Панорамный бассейн" },
+        "size": "tall"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80&fit=crop",
+        "caption": { "en": "Spa & Wellness", "ru": "Спа и велнес" },
+        "size": "normal"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=900&q=80&fit=crop",
+        "caption": { "en": "Architecture", "ru": "Архитектура" },
+        "size": "tall"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=600&q=80&fit=crop",
+        "caption": { "en": "Fitness Center", "ru": "Фитнес-центр" },
+        "size": "normal"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80&fit=crop",
+        "caption": { "en": "Villa Exterior", "ru": "Экстерьер виллы" },
+        "size": "normal"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=80&fit=crop",
+        "caption": { "en": "Interior Design", "ru": "Дизайн интерьера" },
+        "size": "wide"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&q=80&fit=crop",
+        "caption": { "en": "Tropical Gardens", "ru": "Тропические сады" },
+        "size": "wide"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80&fit=crop",
+        "caption": { "en": "Living Space", "ru": "Жилое пространство" },
+        "size": "normal"
+      }
+    ]
+  },
+  "location": {
+    "label": { "en": "Where We Are", "ru": "Где мы находимся" },
+    "title": { "en": "Arise Vibe Location", "ru": "Расположение Arise Vibe" },
+    "description": {
+      "en": "Strategically located in Phuket with easy access to beaches, shopping, dining, and international schools.",
+      "ru": "Стратегически удобное расположение на Пхукете с легким доступом к пляжам, торговым центрам, ресторанам и международным школам."
+    },
+    "distances": [
+      {
+        "time": { "en": "5 min", "ru": "5 мин" },
+        "place": { "en": "Bang Tao Beach", "ru": "Пляж Банг Тао" }
+      },
+      {
+        "time": { "en": "7 min", "ru": "7 мин" },
+        "place": { "en": "Boat Avenue Shopping", "ru": "Boat Avenue Shopping" }
+      },
+      {
+        "time": { "en": "10 min", "ru": "10 мин" },
+        "place": { "en": "Central Phuket Mall", "ru": "Central Phuket Mall" }
+      },
+      {
+        "time": { "en": "12 min", "ru": "12 мин" },
+        "place": { "en": "Bangkok Hospital Phuket", "ru": "Bangkok Hospital Phuket" }
+      },
+      {
+        "time": { "en": "15 min", "ru": "15 мин" },
+        "place": { "en": "British International School", "ru": "British International School" }
+      },
+      {
+        "time": { "en": "25 min", "ru": "25 мин" },
+        "place": { "en": "Phuket International Airport", "ru": "Международный аэропорт Пхукета" }
+      }
+    ],
+    "map_embed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63266.39551472508!2d98.28882454128059!3d7.880207138498498!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3050318227b6d34b%3A0x74cb59ed3a3a19a!2sBang%20Tao%20Beach!5e0!3m2!1sen!2sth!4v1700000000000!5m2!1sen!2sth"
+  },
+  "developer": {
+    "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80&fit=crop",
+    "name": { "en": "Built by Experts", "ru": "Построено экспертами" },
+    "description": {
+      "en": "Arise Vibe is developed by an experienced team specializing in premium residential real estate in Phuket. Known for delivering modern, high-quality projects that combine thoughtful design with excellent infrastructure and on-time delivery.",
+      "ru": "Arise Vibe создан опытной командой, специализирующейся на премиальной жилой недвижимости Пхукета. Застройщик известен реализацией современных высококачественных проектов, сочетающих продуманный дизайн с отличной инфраструктурой и своевременной сдачей."
+    },
+    "facts": [
+      {
+        "key": { "en": "Total Units", "ru": "Всего юнитов" },
+        "value": { "en": "350+ apartments", "ru": "350+ квартир" }
+      },
+      {
+        "key": { "en": "Completion", "ru": "Сдача" },
+        "value": { "en": "2026", "ru": "2026" }
+      },
+      {
+        "key": { "en": "Location", "ru": "Расположение" },
+        "value": { "en": "Cherngtalay, Thalang District, Phuket", "ru": "Черненгталай, район Таланг, Пхукет" }
+      }
+    ]
+  },
+  "contact": {
+    "label": { "en": "Get in Touch", "ru": "Свяжитесь с нами" },
+    "title": { "en": "Contact Us", "ru": "Контакты" },
+    "description": {
+      "en": "Have questions about Arise Vibe? Our team is ready to help you find your perfect home in Phuket.",
+      "ru": "Есть вопросы об Arise Vibe? Наша команда готова помочь вам найти идеальное жилье на Пхукете."
+    },
+    "phone": "+66612345678",
+    "phone_display": "+66 61 234 5678",
+    "email": "info@arisevibe.com",
+    "whatsapp": "+66612345678",
+    "website": "arisevibe.com",
+    "office_address": {
+      "en": "Cherngtalay, Thalang District, Phuket 83110, Thailand",
+      "ru": "Черненгталай, район Таланг, Пхукет 83110, Таиланд"
+    },
+    "working_hours": {
+      "en": "Mon – Sat: 9:00 – 18:00\nSun: by appointment",
+      "ru": "Пн – Сб: 9:00 – 18:00\nВс: по предварительной записи"
+    }
+  },
+  "sell_banner": {
+    "show": false,
+    "image": "",
+    "title": "",
+    "subtitle": ""
+  }
+}

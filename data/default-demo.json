@@ -1,0 +1,348 @@
+{
+  "project_slug": "default-demo",
+  "project_name": { "en": "Skyline Residence", "ru": "Skyline Residence" },
+  "template": "default",
+  "languages": ["en", "ru"],
+  "currency": "THB",
+  "meta_title": { "en": "Skyline Residence in Phuket", "ru": "Skyline Residence на Пхукете" },
+  "meta_description": {
+    "en": "Skyline Residence is a premium condominium project in Phuket with panoramic sea views. Modern layouts, world-class amenities, and strong investment potential in Thailand's most sought-after island.",
+    "ru": "Skyline Residence — премиальный кондоминиум на Пхукете с панорамным видом на море. Современные планировки, инфраструктура мирового класса и высокий инвестиционный потенциал на самом востребованном острове Таиланда."
+  },
+  "canonical_url": "https://skyline-residence-phuket.com/",
+  "crm_webhook": "",
+  "hero": {
+    "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1920&q=80&fit=crop",
+    "title": { "en": "Skyline Residence", "ru": "Skyline Residence" },
+    "description": {
+      "en": "Luxury condominiums with panoramic Andaman Sea views in the heart of Phuket",
+      "ru": "Роскошные кондоминиумы с панорамным видом на Андаманское море в сердце Пхукета"
+    },
+    "stats": [
+      {
+        "value": "4.9M",
+        "label": { "en": "Starting price, THB", "ru": "Цена от, THB" }
+      },
+      {
+        "value": "7%",
+        "label": { "en": "Expected yield", "ru": "Ожидаемая доходность" }
+      },
+      {
+        "value": "2027",
+        "label": { "en": "Handover year", "ru": "Год сдачи" }
+      },
+      {
+        "value": "Condo",
+        "label": { "en": "Property type", "ru": "Тип недвижимости" }
+      }
+    ]
+  },
+  "concept": {
+    "title": { "en": "The Skyline Concept", "ru": "Концепция Skyline" },
+    "paragraphs": [
+      {
+        "en": "Skyline Residence is a 25-storey luxury condominium tower rising above the Phuket coastline. Designed by an award-winning architectural studio, the building combines sleek contemporary lines with tropical warmth. Every unit is oriented to capture breathtaking views of the Andaman Sea, Phuket's green hills, or the vibrant cityscape below.",
+        "ru": "Skyline Residence — это 25-этажная башня класса люкс, возвышающаяся над побережьем Пхукета. Спроектированное отмеченной наградами архитектурной студией, здание сочетает лаконичные современные линии с тропическим теплом. Каждый юнит ориентирован так, чтобы открывать захватывающие виды на Андаманское море, зелёные холмы Пхукета или яркий городской пейзаж."
+      },
+      {
+        "en": "Residents enjoy a curated lifestyle with five-star amenities on-site — from an infinity pool on the 24th floor to a private cinema and co-working lounge. Whether you seek a personal retreat or a high-performing rental asset, Skyline Residence delivers both comfort and returns.",
+        "ru": "Резиденты наслаждаются продуманным образом жизни с удобствами уровня пяти звёзд — от панорамного бассейна на 24 этаже до частного кинотеатра и коворкинг-лаунжа. Будь то личное убежище или высокодоходный арендный актив, Skyline Residence обеспечивает и комфорт, и доходность."
+      }
+    ],
+    "specs": [
+      {
+        "key": { "en": "Premium Location", "ru": "Премиальная локация" },
+        "value": {
+          "en": "Located in Patong–Kamala corridor, steps from the beach and Phuket's finest dining and nightlife.",
+          "ru": "Расположен в коридоре Патонг–Камала, в нескольких шагах от пляжа, лучших ресторанов и ночной жизни Пхукета."
+        }
+      },
+      {
+        "key": { "en": "Smart Layouts", "ru": "Продуманные планировки" },
+        "value": {
+          "en": "Units from 32 to 85 sq.m. with efficient open-plan designs, premium finishes, and floor-to-ceiling glazing.",
+          "ru": "Юниты от 32 до 85 кв.м. с эффективными открытыми планировками, премиальной отделкой и панорамным остеклением."
+        }
+      },
+      {
+        "key": { "en": "Sea View Guarantee", "ru": "Гарантированный вид на море" },
+        "value": {
+          "en": "All units from the 10th floor and above enjoy unobstructed Andaman Sea panoramas.",
+          "ru": "Все юниты от 10 этажа и выше имеют беспрепятственный панорамный вид на Андаманское море."
+        }
+      },
+      {
+        "key": { "en": "Full-Service Living", "ru": "Полный сервис" },
+        "value": {
+          "en": "24/7 concierge, hotel-managed rental program, housekeeping, and secure underground parking.",
+          "ru": "Круглосуточный консьерж, гостиничная арендная программа, уборка и подземный паркинг."
+        }
+      }
+    ]
+  },
+  "amenities": {
+    "title": { "en": "World-Class Amenities", "ru": "Инфраструктура мирового класса" },
+    "image": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80&fit=crop",
+    "items": [
+      {
+        "title": { "en": "Infinity Pool", "ru": "Панорамный бассейн" },
+        "description": {
+          "en": "A 30-meter rooftop infinity pool on the 24th floor with stunning sunset views over the Andaman Sea.",
+          "ru": "30-метровый панорамный бассейн на крыше 24-го этажа с потрясающим видом на закат над Андаманским морем."
+        },
+        "image": "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "Fitness Center", "ru": "Фитнес-центр" },
+        "description": {
+          "en": "Fully equipped gym with Technogym equipment, personal training area, and dedicated yoga studio.",
+          "ru": "Полностью оборудованный зал с техникой Technogym, зоной персональных тренировок и студией йоги."
+        },
+        "image": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "Co-Working Space", "ru": "Коворкинг" },
+        "description": {
+          "en": "Modern co-working lounge with high-speed internet, meeting rooms, and a business center.",
+          "ru": "Современный коворкинг-лаунж с высокоскоростным интернетом, переговорными и бизнес-центром."
+        },
+        "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "Restaurant & Bar", "ru": "Ресторан и бар" },
+        "description": {
+          "en": "On-site restaurant with Thai and international cuisine, plus a cocktail bar with live music.",
+          "ru": "Ресторан на территории с тайской и международной кухней, а также коктейльный бар с живой музыкой."
+        },
+        "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "Rooftop Bar", "ru": "Бар на крыше" },
+        "description": {
+          "en": "Exclusive rooftop lounge on the 25th floor — the perfect spot for evening cocktails and panoramic views.",
+          "ru": "Эксклюзивный лаунж на крыше 25-го этажа — идеальное место для вечерних коктейлей и панорамных видов."
+        },
+        "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "Parking", "ru": "Паркинг" },
+        "description": {
+          "en": "Secure underground parking with reserved spaces for residents and electric vehicle charging stations.",
+          "ru": "Подземный паркинг с выделенными местами для резидентов и зарядными станциями для электромобилей."
+        },
+        "image": "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?w=600&q=80&fit=crop"
+      }
+    ]
+  },
+  "catalogue": {
+    "image": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200&q=80&fit=crop",
+    "tags": [
+      { "en": "Floor Plans", "ru": "Планировки" },
+      { "en": "Pricing", "ru": "Цены" },
+      { "en": "Finishes", "ru": "Отделка" },
+      { "en": "Investment Prospectus", "ru": "Инвестиционный проспект" }
+    ]
+  },
+  "layouts": [
+    {
+      "name": { "en": "Studio", "ru": "Студия" },
+      "price_from": { "en": "4,900,000 THB", "ru": "4 900 000 THB" },
+      "image": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80&fit=crop",
+      "specs": [
+        {
+          "key": { "en": "Living area", "ru": "Жилая площадь" },
+          "value": { "en": "32 sq.m.", "ru": "32 кв.м." }
+        },
+        {
+          "key": { "en": "Bedrooms", "ru": "Спальни" },
+          "value": { "en": "Studio", "ru": "Студия" }
+        },
+        {
+          "key": { "en": "Bathrooms", "ru": "Ванные комнаты" },
+          "value": { "en": "1", "ru": "1" }
+        },
+        {
+          "key": { "en": "Balcony", "ru": "Балкон" },
+          "value": { "en": "Yes", "ru": "Да" }
+        },
+        {
+          "key": { "en": "Floor range", "ru": "Этажи" },
+          "value": { "en": "5–25", "ru": "5–25" }
+        }
+      ]
+    },
+    {
+      "name": { "en": "1-Bedroom Apartment", "ru": "Апартаменты с 1 спальней" },
+      "price_from": { "en": "6,900,000 THB", "ru": "6 900 000 THB" },
+      "image": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80&fit=crop",
+      "specs": [
+        {
+          "key": { "en": "Living area", "ru": "Жилая площадь" },
+          "value": { "en": "48 sq.m.", "ru": "48 кв.м." }
+        },
+        {
+          "key": { "en": "Bedrooms", "ru": "Спальни" },
+          "value": { "en": "1", "ru": "1" }
+        },
+        {
+          "key": { "en": "Bathrooms", "ru": "Ванные комнаты" },
+          "value": { "en": "1", "ru": "1" }
+        },
+        {
+          "key": { "en": "Balcony", "ru": "Балкон" },
+          "value": { "en": "Yes", "ru": "Да" }
+        },
+        {
+          "key": { "en": "Floor range", "ru": "Этажи" },
+          "value": { "en": "5–25", "ru": "5–25" }
+        }
+      ]
+    },
+    {
+      "name": { "en": "2-Bedroom Apartment", "ru": "Апартаменты с 2 спальнями" },
+      "price_from": { "en": "10,500,000 THB", "ru": "10 500 000 THB" },
+      "image": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80&fit=crop",
+      "specs": [
+        {
+          "key": { "en": "Living area", "ru": "Жилая площадь" },
+          "value": { "en": "85 sq.m.", "ru": "85 кв.м." }
+        },
+        {
+          "key": { "en": "Bedrooms", "ru": "Спальни" },
+          "value": { "en": "2", "ru": "2" }
+        },
+        {
+          "key": { "en": "Bathrooms", "ru": "Ванные комнаты" },
+          "value": { "en": "2", "ru": "2" }
+        },
+        {
+          "key": { "en": "Balcony", "ru": "Балкон" },
+          "value": { "en": "Yes — wraparound", "ru": "Да — панорамный" }
+        },
+        {
+          "key": { "en": "Floor range", "ru": "Этажи" },
+          "value": { "en": "10–25", "ru": "10–25" }
+        }
+      ]
+    }
+  ],
+  "roi": {
+    "title": { "en": "Investment Potential", "ru": "Инвестиционный потенциал" },
+    "subtitle": {
+      "en": "Phuket's booming tourism and limited beachfront supply drive strong rental yields and long-term capital growth for condo investors.",
+      "ru": "Бурный рост туризма на Пхукете и ограниченное предложение у пляжа обеспечивают высокую арендную доходность и долгосрочный рост капитала для инвесторов в кондоминиумы."
+    },
+    "columns": [
+      { "en": "Unit Type", "ru": "Тип юнита" },
+      { "en": "Price (THB)", "ru": "Цена (THB)" },
+      { "en": "Monthly Rent (THB)", "ru": "Аренда / мес. (THB)" },
+      { "en": "Annual Yield", "ru": "Годовая доходность" },
+      { "en": "5-Year Growth", "ru": "Рост за 5 лет" },
+      { "en": "ROI (5 Years)", "ru": "ROI (5 лет)" }
+    ],
+    "rows": [
+      {
+        "type": { "en": "Studio", "ru": "Студия" },
+        "price": "4,900,000",
+        "monthly_rent": "30,000",
+        "annual_yield": "7.3%",
+        "growth_5y": "+30%",
+        "roi_5y": "67%"
+      },
+      {
+        "type": { "en": "1-Bedroom", "ru": "1 спальня" },
+        "price": "6,900,000",
+        "monthly_rent": "42,000",
+        "annual_yield": "7.3%",
+        "growth_5y": "+33%",
+        "roi_5y": "70%"
+      },
+      {
+        "type": { "en": "2-Bedroom", "ru": "2 спальни" },
+        "price": "10,500,000",
+        "monthly_rent": "65,000",
+        "annual_yield": "7.4%",
+        "growth_5y": "+36%",
+        "roi_5y": "73%"
+      }
+    ],
+    "disclaimer": {
+      "en": "* Projected figures based on current market trends. Actual returns may vary.",
+      "ru": "* Прогнозные данные на основе текущих рыночных тенденций. Фактическая доходность может отличаться."
+    }
+  },
+  "gallery": {
+    "images": [
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&q=80&fit=crop"
+    ]
+  },
+  "location": {
+    "title": { "en": "Prime Location", "ru": "Премиальное расположение" },
+    "description": {
+      "en": "Skyline Residence sits in the prestigious Patong–Kamala corridor, offering easy access to Phuket's best beaches, shopping, dining, and international schools — all within minutes.",
+      "ru": "Skyline Residence расположен в престижном коридоре Патонг–Камала с удобным доступом к лучшим пляжам, магазинам, ресторанам и международным школам Пхукета — всё в нескольких минутах езды."
+    },
+    "distances": [
+      {
+        "place": { "en": "Phuket International Airport", "ru": "Международный аэропорт Пхукета" },
+        "time": { "en": "35 min", "ru": "35 мин" }
+      },
+      {
+        "place": { "en": "Kamala Beach", "ru": "Пляж Камала" },
+        "time": { "en": "3 min", "ru": "3 мин" }
+      },
+      {
+        "place": { "en": "Patong Beach", "ru": "Пляж Патонг" },
+        "time": { "en": "10 min", "ru": "10 мин" }
+      },
+      {
+        "place": { "en": "Central Phuket Mall", "ru": "Central Phuket Mall" },
+        "time": { "en": "20 min", "ru": "20 мин" }
+      },
+      {
+        "place": { "en": "British International School", "ru": "Британская международная школа" },
+        "time": { "en": "15 min", "ru": "15 мин" }
+      },
+      {
+        "place": { "en": "Bangkok Hospital Phuket", "ru": "Bangkok Hospital Phuket" },
+        "time": { "en": "18 min", "ru": "18 мин" }
+      }
+    ],
+    "map_embed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15816.0!2d98.2800!3d7.9300!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x305031b1f4870587%3A0x7dc0b1e0c42a4e74!2sKamala%20Beach!5e0!3m2!1sen!2sth!4v1700000000000!5m2!1sen!2sth"
+  },
+  "developer": {
+    "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80&fit=crop",
+    "name": { "en": "Developed by Skyline Group", "ru": "Застройщик — Skyline Group" },
+    "description": {
+      "en": "Skyline Group is a leading Thai-international developer specializing in premium condominiums across Phuket and Bangkok. With over 20 years of experience and 5,000+ units delivered, the company is recognized for innovative design, sustainable construction, and exceptional after-sales service.",
+      "ru": "Skyline Group — ведущий тайско-международный застройщик, специализирующийся на премиальных кондоминиумах на Пхукете и в Бангкоке. Более 20 лет опыта и 5 000+ сданных юнитов. Компания известна инновационным дизайном, устойчивым строительством и превосходным послепродажным обслуживанием."
+    },
+    "facts": [
+      {
+        "key": { "en": "Experience", "ru": "Опыт" },
+        "value": { "en": "20+ years in premium real estate", "ru": "20+ лет в премиальной недвижимости" }
+      },
+      {
+        "key": { "en": "Units Delivered", "ru": "Сдано юнитов" },
+        "value": { "en": "5,000+ across 12 projects", "ru": "5 000+ в 12 проектах" }
+      },
+      {
+        "key": { "en": "On-Time Record", "ru": "Своевременная сдача" },
+        "value": { "en": "100% on-time delivery", "ru": "100% сдача в срок" }
+      }
+    ]
+  },
+  "contact": {
+    "phone": "+66 93 456 7890",
+    "whatsapp": "+66934567890",
+    "email": "info@skyline-residence-phuket.com",
+    "website": "skyline-residence-phuket.com"
+  },
+  "sell_banner": { "show": false, "image": "", "title": "", "subtitle": "" }
+}
