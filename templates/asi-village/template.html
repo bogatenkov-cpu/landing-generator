@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{=meta_title}}</title>
+  <meta name="description" content="{{=meta_description}}">
+
+  <!-- hreflang -->
+  <link rel="alternate" hreflang="en" href="{{=canonical_url}}">
+  <link rel="alternate" hreflang="ru" href="{{=canonical_url}}ru/">
+  <link rel="alternate" hreflang="x-default" href="{{=canonical_url}}">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="{{=meta_title}}">
+  <meta property="og:description" content="{{=meta_description}}">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="{{=og_image}}">
+  <meta property="og:url" content="{{=canonical_url}}">
+
+  <!-- JSON-LD Schema.org -->
+  <script type="application/ld+json">
+  {{{schema_json}}}
+  </script>
+
+  <!-- Fonts -->
+  {{{font_import}}}
+
+  <style>
+  {{{inline_css}}}
+  {{{lang_css}}}
+  </style>
+</head>
+<body {{{body_lang_attr}}}>
+
+  <!-- ====== HEADER ====== -->
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <a href="#" class="header__logo">{{project_name}}</a>
+      <nav class="header__nav">
+        <a href="#concept" class="header__link">{{nav_concept}}</a>
+        <a href="#location" class="header__link">{{nav_location}}</a>
+        <a href="#floorplan" class="header__link">{{nav_floorplans}}</a>
+        <a href="#amenities" class="header__link">{{nav_amenities}}</a>
+        <a href="#gallery" class="header__link">{{nav_gallery}}</a>
+        {{{lang_switcher_header}}}
+      </nav>
+      <!-- Mobile: CTA + Lang + Burger -->
+      <div class="header__mobile-controls">
+        <button class="header__mobile-cta" data-modal="modal-inquiry">{{mobile_cta_text}}</button>
+        {{{lang_switcher_mobile}}}
+        <button class="header__burger" aria-label="Menu">
+          <span class="header__burger-line"></span>
+          <span class="header__burger-line"></span>
+          <span class="header__burger-line"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====== MOBILE NAV ====== -->
+  <div class="mobile-nav">
+    <button class="mobile-nav__close" aria-label="Close">&times;</button>
+    <a href="#concept" class="mobile-nav__link">{{nav_concept}}</a>
+    <a href="#location" class="mobile-nav__link">{{nav_location}}</a>
+    <a href="#floorplan" class="mobile-nav__link">{{nav_floorplans}}</a>
+    <a href="#amenities" class="mobile-nav__link">{{nav_amenities}}</a>
+    <a href="#gallery" class="mobile-nav__link">{{nav_gallery}}</a>
+    <div class="mobile-nav__divider"></div>
+    <button class="btn btn--primary mobile-nav__cta" data-modal="modal-inquiry">{{cta_text}}</button>
+  </div>
+
+  <!-- ====== HERO ====== -->
+  <section class="hero" id="hero">
+    <div class="hero__bg" style="background-image: url('{{=hero_image}}');"></div>
+    <div class="hero__overlay"></div>
+    <div class="hero__content">
+      <span class="hero__badge">{{hero_badge}}</span>
+      <h1 class="hero__title">{{hero_title}}</h1>
+      <p class="hero__subtitle">{{hero_subtitle}}</p>
+      <div class="hero__actions">
+        <button class="btn btn--primary" data-modal="modal-inquiry">{{cta_text}}</button>
+        <a href="#concept" class="btn btn--outline">{{hero_btn_explore}}</a>
+      </div>
+    </div>
+    <div class="hero__scroll" onclick="document.querySelector('#concept').scrollIntoView({behavior:'smooth'})">
+      <div class="hero__scroll-icon"></div>
+      <span>{{scroll_text}}</span>
+    </div>
+  </section>
+
+  <!-- ====== CONCEPT ====== -->
+  <section class="concept" id="concept">
+    <div class="container">
+      <div class="concept__grid">
+        <div class="concept__image-wrapper reveal">
+          <img class="concept__image" src="{{=concept_image}}" alt="{{=concept_image_alt}}" loading="lazy">
+          <div class="concept__image-accent"></div>
+        </div>
+        <div class="concept__text reveal reveal--delay-1">
+          <span class="concept__label">{{concept_label}}</span>
+          <h2 class="concept__heading">{{concept_title}}</h2>
+          <p class="concept__description">{{concept_text}}</p>
+          <div class="concept__features">
+            {{#concept_features}}
+            <div class="concept__feature">
+              <div class="concept__feature-icon">
+                {{{icon}}}
+              </div>
+              <span class="concept__feature-text">{{text}}</span>
+            </div>
+            {{/concept_features}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== LOCATION ====== -->
+  <section class="location" id="location">
+    <div class="container">
+      <div class="section-title reveal">
+        <span class="section-title__label">{{location_label}}</span>
+        <h2 class="section-title__heading">{{location_title}}</h2>
+        <div class="section-title__line"></div>
+        <p class="section-title__description">{{location_text}}</p>
+      </div>
+      <div class="location__grid">
+        <div class="location__map reveal">
+          <iframe src="{{=map_embed}}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <div class="location__info reveal reveal--delay-1">
+          <div class="location__list">
+            {{#location_distances}}
+            <div class="location__item">
+              <div class="location__item-icon">
+                {{{icon}}}
+              </div>
+              <div class="location__item-content">
+                <div class="location__item-title">{{place}}</div>
+                <div class="location__item-detail">{{time}}</div>
+              </div>
+            </div>
+            {{/location_distances}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FLOOR PLAN ====== -->
+  <section class="floorplan" id="floorplan">
+    <div class="container">
+      <div class="section-title reveal">
+        <span class="section-title__label">{{floorplans_label}}</span>
+        <h2 class="section-title__heading">{{floorplans_title}}</h2>
+        <div class="section-title__line"></div>
+        <p class="section-title__description">{{floorplans_description}}</p>
+      </div>
+      <div class="floorplan__grid">
+        {{#floorplans}}
+        <div class="floorplan__card reveal{{_reveal_delay_class}}">
+          <div class="floorplan__card-image">
+            <img src="{{=image}}" alt="{{=image_alt}}" loading="lazy">
+            {{#badge}}<span class="floorplan__card-badge">{{badge}}</span>{{/badge}}
+          </div>
+          <div class="floorplan__card-body">
+            <h3 class="floorplan__card-title">{{title}}</h3>
+            <p class="floorplan__card-subtitle">{{subtitle}}</p>
+            <div class="floorplan__card-specs">
+              {{#specs}}
+              <div class="floorplan__card-spec">
+                <span class="floorplan__card-spec-value">{{value}}</span>
+                <span class="floorplan__card-spec-label">{{label}}</span>
+              </div>
+              {{/specs}}
+            </div>
+            <div class="floorplan__card-price">
+              <span class="floorplan__card-price-from">{{price_from}}</span>
+              <span class="floorplan__card-price-value">{{price_value}}</span>
+            </div>
+            <button class="btn btn--primary btn--sm floorplan__card-cta" data-modal="modal-inquiry">{{floorplan_btn}}</button>
+          </div>
+        </div>
+        {{/floorplans}}
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== AMENITIES ====== -->
+  <section class="amenities" id="amenities">
+    <div class="container">
+      <div class="section-title reveal">
+        <span class="section-title__label">{{amenities_label}}</span>
+        <h2 class="section-title__heading">{{amenities_title}}</h2>
+        <div class="section-title__line"></div>
+        <p class="section-title__description">{{amenities_subtitle}}</p>
+      </div>
+      <div class="amenities__grid">
+        {{#amenities_items}}
+        <div class="amenities__item reveal{{_reveal_delay_class}}">
+          <img class="amenities__item-photo" src="{{=image}}" alt="{{=title}}" loading="lazy">
+          <div class="amenities__item-body">
+            <h3 class="amenities__item-title">{{title}}</h3>
+            <p class="amenities__item-text">{{text}}</p>
+          </div>
+        </div>
+        {{/amenities_items}}
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== GALLERY ====== -->
+  <section class="gallery" id="gallery">
+    <div class="container">
+      <div class="section-title reveal">
+        <span class="section-title__label">{{gallery_label}}</span>
+        <h2 class="section-title__heading">{{gallery_title}}</h2>
+        <div class="section-title__line"></div>
+      </div>
+      <div class="gallery__grid reveal">
+        {{{gallery_html}}}
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== CTA ====== -->
+  <section class="cta" id="contact">
+    <div class="container">
+      <div class="cta__inner">
+        <div class="cta__content">
+          <h2 class="cta__heading">{{cta_heading}}</h2>
+          <p class="cta__text">{{cta_description}}</p>
+          <div class="cta__highlights">
+            {{#cta_highlights}}
+            <div class="cta__highlight">
+              <div class="cta__highlight-icon">
+                {{{icon}}}
+              </div>
+              <span>{{text}}</span>
+            </div>
+            {{/cta_highlights}}
+          </div>
+        </div>
+        <div class="cta__form-wrapper">
+          <h3 class="cta__form-title">{{cta_form_title}}</h3>
+          <p class="cta__form-subtitle">{{cta_form_subtitle}}</p>
+          <form class="cta__form" id="cta-form" novalidate>
+            <div class="cta__form-row">
+              <div class="cta__field">
+                <label class="cta__label" for="cta-name">{{form_label_name}}</label>
+                <input class="cta__input" type="text" id="cta-name" name="name" placeholder="{{=form_placeholder_name}}" required>
+              </div>
+              <div class="cta__field">
+                <label class="cta__label" for="cta-phone">{{form_label_phone}}</label>
+                <input class="cta__input" type="tel" id="cta-phone" name="phone" placeholder="{{=form_placeholder_phone}}">
+              </div>
+            </div>
+            <div class="cta__form-row">
+              <div class="cta__field">
+                <label class="cta__label" for="cta-email">{{form_label_email}}</label>
+                <input class="cta__input" type="email" id="cta-email" name="email" placeholder="{{=form_placeholder_email}}" required>
+              </div>
+              <div class="cta__field">
+                <label class="cta__label" for="cta-villa">{{form_label_villa}}</label>
+                <select class="cta__select" id="cta-villa" name="villa_type">
+                  {{{villa_options_html}}}
+                </select>
+              </div>
+            </div>
+            <div class="cta__field">
+              <label class="cta__label" for="cta-message">{{form_label_message}}</label>
+              <textarea class="cta__textarea" id="cta-message" name="message" placeholder="{{=form_placeholder_message}}"></textarea>
+            </div>
+            <div class="cta__consent">
+              <input type="checkbox" class="cta__checkbox" id="cta-consent" name="consent">
+              <label class="cta__consent-text" for="cta-consent">{{{form_consent_html}}}</label>
+            </div>
+            <button type="submit" class="btn btn--primary cta__submit" disabled>{{form_submit}}</button>
+          </form>
+          <div class="cta__success">
+            <div class="cta__success-icon">&#10003;</div>
+            <h4 class="cta__success-title">{{form_success_title}}</h4>
+            <p class="cta__success-text">{{form_success_text}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FOOTER ====== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <div class="footer__brand-name">{{project_name}}</div>
+          <p class="footer__brand-text">{{footer_tagline}}</p>
+          <div class="footer__social">
+            <!-- Facebook -->
+            <a href="#" class="footer__social-link" aria-label="Facebook">
+              <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+            </a>
+            <!-- Instagram -->
+            <a href="#" class="footer__social-link" aria-label="Instagram">
+              <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <!-- LINE -->
+            <a href="#" class="footer__social-link" aria-label="LINE">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 5.82 2 10.5c0 4.01 3.44 7.37 8.09 8.25.31.07.74.21.85.48.1.25.06.63.03.88l-.14.82c-.04.25-.19.97.85.53s5.65-3.33 7.7-5.7C21.35 13.53 22 12.07 22 10.5 22 5.82 17.52 2 12 2z"/></svg>
+            </a>
+            <!-- WhatsApp -->
+            <a href="#" class="footer__social-link" aria-label="WhatsApp">
+              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer__col">
+          <div class="footer__col-title">{{footer_nav_title}}</div>
+          <a href="#concept" class="footer__link">{{nav_concept}}</a>
+          <a href="#location" class="footer__link">{{nav_location}}</a>
+          <a href="#floorplan" class="footer__link">{{nav_floorplans}}</a>
+          <a href="#amenities" class="footer__link">{{nav_amenities}}</a>
+          <a href="#gallery" class="footer__link">{{nav_gallery}}</a>
+        </div>
+        <div class="footer__col">
+          <div class="footer__col-title">{{footer_villas_title}}</div>
+          {{#footer_villa_links}}
+          <a href="#floorplan" class="footer__link">{{name}}</a>
+          {{/footer_villa_links}}
+        </div>
+        <div class="footer__col">
+          <div class="footer__col-title">{{footer_contact_title}}</div>
+          <div class="footer__contact-item">
+            <span class="footer__contact-icon">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </span>
+            <div class="footer__contact-text">
+              <a href="mailto:{{=email}}">{{=email}}</a>
+            </div>
+          </div>
+          <div class="footer__contact-item">
+            <span class="footer__contact-icon">
+              <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            </span>
+            <div class="footer__contact-text">
+              <a href="tel:{{=phone}}">{{=phone}}</a>
+            </div>
+          </div>
+          <div class="footer__contact-item">
+            <span class="footer__contact-icon">
+              <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </span>
+            <div class="footer__contact-text">{{footer_address}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <div class="footer__copy">&copy; {{year}} {{project_name}}. {{copyright_text}}</div>
+        <div class="footer__bottom-links">
+          <a href="#" class="footer__bottom-link">{{footer_privacy}}</a>
+          <a href="#" class="footer__bottom-link">{{footer_terms}}</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ====== MODAL: INQUIRY ====== -->
+  <div class="modal" id="modal-inquiry">
+    <div class="modal__backdrop"></div>
+    <div class="modal__container">
+      <button class="modal__close" aria-label="Close">&times;</button>
+      <h3 class="modal__title">{{modal_title}}</h3>
+      <p class="modal__subtitle">{{modal_subtitle}}</p>
+      <form class="modal__form" novalidate>
+        <div class="modal__field">
+          <label class="modal__label" for="inq-name">{{form_label_name}}</label>
+          <input class="modal__input" type="text" id="inq-name" name="name" placeholder="{{=form_placeholder_name}}" required>
+        </div>
+        <div class="modal__field">
+          <label class="modal__label" for="inq-email">{{form_label_email}}</label>
+          <input class="modal__input" type="email" id="inq-email" name="email" placeholder="{{=form_placeholder_email}}" required>
+        </div>
+        <div class="modal__field">
+          <label class="modal__label" for="inq-phone">{{form_label_phone}}</label>
+          <input class="modal__input" type="tel" id="inq-phone" name="phone" placeholder="{{=form_placeholder_phone}}">
+        </div>
+        <div class="modal__field">
+          <label class="modal__label" for="inq-villa">{{form_label_villa}}</label>
+          <select class="modal__select" id="inq-villa" name="villa_type">
+            {{{villa_options_html}}}
+          </select>
+        </div>
+        <div class="modal__field">
+          <label class="modal__label" for="inq-message">{{form_label_message}}</label>
+          <textarea class="modal__textarea" id="inq-message" name="message" placeholder="{{=form_placeholder_message}}"></textarea>
+        </div>
+        <div class="modal__consent">
+          <input type="checkbox" class="modal__checkbox" id="inq-consent" name="consent">
+          <label class="modal__consent-text" for="inq-consent">{{{form_consent_html}}}</label>
+        </div>
+        <button type="submit" class="btn btn--primary modal__submit" disabled>{{form_submit}}</button>
+      </form>
+      <div class="modal__success">
+        <div class="modal__success-icon">&#10003;</div>
+        <h4 class="modal__success-title">{{form_success_title}}</h4>
+        <p class="modal__success-text">{{form_success_text}}</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  {{{inline_js}}}
+  {{{lang_js}}}
+  </script>
+</body>
+</html>

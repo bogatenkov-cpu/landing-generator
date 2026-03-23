@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{=meta_title}}</title>
+  <meta name="description" content="{{=meta_description}}">
+
+  <!-- hreflang -->
+  <link rel="alternate" hreflang="en" href="{{=canonical_url}}">
+  <link rel="alternate" hreflang="ru" href="{{=canonical_url}}ru/">
+  <link rel="alternate" hreflang="x-default" href="{{=canonical_url}}">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="{{=meta_title}}">
+  <meta property="og:description" content="{{=meta_description}}">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="{{=og_image}}">
+  <meta property="og:url" content="{{=canonical_url}}">
+  <meta property="og:locale" content="en_US">
+
+  <!-- JSON-LD Schema.org -->
+  <script type="application/ld+json">
+  {{{schema_json}}}
+  </script>
+
+  <!-- Fonts -->
+  {{{font_import}}}
+
+  <style>
+  {{{inline_css}}}
+  {{{lang_css}}}
+  </style>
+</head>
+<body {{{body_lang_attr}}}>
+
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="header__container">
+      <a href="#hero" class="header__logo">{{project_name}}</a>
+      <nav class="header__nav">
+        <a href="#concept" class="header__link">{{nav_concept}}</a>
+        <a href="#amenities" class="header__link">{{nav_amenities}}</a>
+        <a href="#floorplans" class="header__link">{{nav_floorplans}}</a>
+        <a href="#investment" class="header__link">{{nav_investment}}</a>
+        <a href="#gallery" class="header__link">{{nav_gallery}}</a>
+        <a href="#location" class="header__link">{{nav_location}}</a>
+        <a href="#contact" class="header__link">{{nav_contact}}</a>
+      </nav>
+      <div class="header__actions">
+        {{{lang_switcher_header}}}
+        <button class="header__cta" data-modal="offer" data-modal-title="{{=cta_modal_title}}" data-modal-desc="{{=cta_modal_desc}}">{{cta_text}}</button>
+        <button class="header__burger" id="burger-btn" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu__header">
+      <a href="#hero" class="mobile-menu__logo">{{project_name}}</a>
+      <button class="mobile-menu__close" id="mobile-close" aria-label="Close menu">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M6 6L22 22M22 6L6 22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <nav class="mobile-menu__nav">
+      <a href="#concept" class="mobile-menu__link">{{nav_concept}}</a>
+      <a href="#amenities" class="mobile-menu__link">{{nav_amenities}}</a>
+      <a href="#floorplans" class="mobile-menu__link">{{nav_floorplans}}</a>
+      <a href="#investment" class="mobile-menu__link">{{nav_investment}}</a>
+      <a href="#gallery" class="mobile-menu__link">{{nav_gallery}}</a>
+      <a href="#location" class="mobile-menu__link">{{nav_location}}</a>
+      <a href="#contact" class="mobile-menu__link">{{nav_contact}}</a>
+    </nav>
+    <button class="mobile-menu__cta" data-modal="offer" data-modal-title="{{=cta_modal_title}}" data-modal-desc="{{=cta_modal_desc}}">{{cta_text}}</button>
+    {{{lang_switcher_mobile}}}
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal__overlay" id="modal-overlay"></div>
+    <div class="modal__content">
+      <button class="modal__close" id="modal-close" aria-label="Close modal">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <h3 class="modal__title" id="modal-title">{{cta_modal_title}}</h3>
+      <p class="modal__desc" id="modal-desc">{{cta_modal_desc}}</p>
+      <form class="modal__form" id="modal-form" novalidate>
+        <div class="modal__field">
+          <input type="text" class="modal__input" id="modal-name" placeholder="{{=placeholder_name}}" required>
+          <span class="modal__error" id="modal-name-error"></span>
+        </div>
+        <div class="modal__field">
+          <input type="email" class="modal__input" id="modal-email" placeholder="{{=placeholder_email}}" required>
+          <span class="modal__error" id="modal-email-error"></span>
+        </div>
+        <div class="modal__field">
+          <input type="tel" class="modal__input" id="modal-phone" placeholder="+66 XXX XXX XXXX" required>
+          <span class="modal__error" id="modal-phone-error"></span>
+        </div>
+        <button type="submit" class="modal__submit">{{form_submit}}</button>
+      </form>
+    </div>
+  </div>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+      <div class="hero__bg">
+        <img src="{{=hero_image}}" alt="{{=hero_image_alt}}" width="1920" height="1080">
+      </div>
+      <div class="hero__overlay"></div>
+      <div class="hero__content">
+        <h1 class="hero__title">{{hero_title}}</h1>
+        <p class="hero__subtitle">{{hero_subtitle}}</p>
+        <div class="hero__stats">
+          {{#hero_stats}}
+          <div class="hero__stat">
+            <span class="hero__stat-value">{{value}}</span>
+            <span class="hero__stat-label">{{label}}</span>
+          </div>
+          {{/hero_stats}}
+        </div>
+        <div class="hero__buttons">
+          <a href="#floorplans" class="hero__btn hero__btn--primary">{{hero_btn_primary}}</a>
+          <button class="hero__btn hero__btn--secondary" data-modal="consultation" data-modal-title="{{=hero_consult_title}}" data-modal-desc="{{=hero_consult_desc}}">{{hero_btn_secondary}}</button>
+        </div>
+      </div>
+      <div class="hero__scroll">
+        <span>{{scroll_text}}</span>
+        <div class="hero__scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- Concept Section -->
+    <section class="concept" id="concept">
+      <div class="concept__container">
+        <div class="concept__header">
+          <span class="concept__label">{{concept_label}}</span>
+          <h2 class="concept__title">{{concept_title}}</h2>
+          <p class="concept__text">{{concept_text}}</p>
+        </div>
+        <div class="concept__grid">
+          {{#concept_features}}
+          <div class="concept__card">
+            <div class="concept__card-image">
+              <img src="{{=image}}" alt="{{=title}}" width="400" height="260" loading="lazy">
+            </div>
+            <h3 class="concept__card-title">{{title}}</h3>
+            <p class="concept__card-text">{{text}}</p>
+          </div>
+          {{/concept_features}}
+        </div>
+        <div class="concept__image">
+          <img src="{{=concept_image}}" alt="{{=concept_image_alt}}" width="1200" height="700" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <!-- Amenities Section -->
+    <section class="amenities" id="amenities">
+      <div class="amenities__container">
+        <span class="amenities__label">{{amenities_label}}</span>
+        <h2 class="amenities__title">{{amenities_title}}</h2>
+        <p class="amenities__subtitle">{{amenities_subtitle}}</p>
+        <div class="amenities__slider-wrapper">
+          <button class="amenities__arrow amenities__arrow--prev" id="amenities-prev" aria-label="Previous slide">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="amenities__slider" id="amenities-slider">
+            {{#amenities_items}}
+            <div class="amenities__slide">
+              <img src="{{=image}}" alt="{{=title}}" width="600" height="400" loading="lazy">
+              <div class="amenities__slide-content">
+                <h3 class="amenities__slide-title">{{title}}</h3>
+                <p class="amenities__slide-text">{{text}}</p>
+              </div>
+            </div>
+            {{/amenities_items}}
+          </div>
+          <button class="amenities__arrow amenities__arrow--next" id="amenities-next" aria-label="Next slide">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Floor Plans Section -->
+    <section class="floorplans" id="floorplans">
+      <div class="floorplans__container">
+        <span class="floorplans__label">{{floorplans_label}}</span>
+        <h2 class="floorplans__title">{{floorplans_title}}</h2>
+        <div class="floorplans__tabs">
+          {{#floorplans}}
+          <button class="floorplans__tab{{_active_class}}" data-tab="{{=id}}">{{tab_name}}</button>
+          {{/floorplans}}
+        </div>
+        <div class="floorplans__panels">
+          {{#floorplans}}
+          <div class="floorplans__panel{{_active_class_panel}}" id="panel-{{=id}}">
+            <div class="floorplans__plan-image">
+              <img src="{{=image}}" alt="{{=name}}" width="800" height="600" loading="lazy">
+            </div>
+            <div class="floorplans__plan-info">
+              <h3 class="floorplans__plan-name">{{name}}</h3>
+              {{{details_html}}}
+              <button class="floorplans__plan-btn" data-modal="details-{{=id}}" data-modal-title="{{=modal_title}}" data-modal-desc="{{=modal_desc}}">{{floorplan_btn}}</button>
+            </div>
+          </div>
+          {{/floorplans}}
+        </div>
+      </div>
+    </section>
+
+    <!-- Investment / ROI Section -->
+    <section class="investment" id="investment">
+      <div class="investment__container">
+        <span class="investment__label">{{investment_label}}</span>
+        <h2 class="investment__title">{{investment_title}}</h2>
+        <p class="investment__subtitle">{{investment_subtitle}}</p>
+        <div class="investment__table-wrapper">
+          {{{investment_table_html}}}
+        </div>
+        <p class="investment__disclaimer">{{investment_disclaimer}}</p>
+      </div>
+    </section>
+
+    <!-- Lead Magnet Section -->
+    <section class="leadmagnet" id="catalog">
+      <div class="leadmagnet__container">
+        <div class="leadmagnet__content">
+          <span class="leadmagnet__label">{{leadmagnet_label}}</span>
+          <h2 class="leadmagnet__title">{{leadmagnet_title}}</h2>
+          <p class="leadmagnet__text">{{leadmagnet_text}}</p>
+        </div>
+        <form class="leadmagnet__form" id="catalog-form" novalidate>
+          <div class="leadmagnet__field">
+            <input type="text" class="leadmagnet__input" id="catalog-name" placeholder="{{=placeholder_name}}" required>
+            <span class="leadmagnet__error" id="catalog-name-error"></span>
+          </div>
+          <div class="leadmagnet__field">
+            <input type="tel" class="leadmagnet__input" id="catalog-phone" placeholder="+66 XXX XXX XXXX" required>
+            <span class="leadmagnet__error" id="catalog-phone-error"></span>
+          </div>
+          <button type="submit" class="leadmagnet__submit">{{leadmagnet_submit}}</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery" id="gallery">
+      <div class="gallery__container">
+        <span class="gallery__label">{{gallery_label}}</span>
+        <h2 class="gallery__title">{{gallery_title}}</h2>
+        <div class="gallery__justified">
+          {{{gallery_html}}}
+        </div>
+      </div>
+    </section>
+
+    <!-- Developer Section -->
+    <section class="developer" id="developer">
+      <div class="developer__container">
+        <div class="developer__image">
+          <img src="{{=developer_image}}" alt="{{=developer_image_alt}}" width="800" height="600" loading="lazy">
+        </div>
+        <div class="developer__info">
+          <span class="developer__label">{{developer_label}}</span>
+          <h2 class="developer__title">{{developer_title}}</h2>
+          <p class="developer__text">{{developer_text}}</p>
+          <ul class="developer__highlights">
+            {{#developer_facts}}
+            <li class="developer__highlight"><strong>{{value}}</strong> {{label}}</li>
+            {{/developer_facts}}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Location Section -->
+    <section class="location" id="location">
+      <div class="location__container">
+        <div class="location__info">
+          <span class="location__label">{{location_label}}</span>
+          <h2 class="location__title">{{location_title}}</h2>
+          <p class="location__text">{{location_text}}</p>
+          <ul class="location__distances">
+            {{#location_distances}}
+            <li class="location__distance">
+              <span class="location__distance-icon">{{{icon}}}</span>
+              <span class="location__distance-name">{{place}}</span>
+              <strong class="location__distance-value">{{time}}</strong>
+            </li>
+            {{/location_distances}}
+          </ul>
+        </div>
+        <div class="location__map">
+          <iframe src="{{=map_embed}}" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="{{=map_title}}"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" id="contact">
+    <div class="footer__container">
+      <div class="footer__left">
+        <a href="#hero" class="footer__logo">{{project_name}}</a>
+        <p class="footer__tagline">{{footer_tagline}}</p>
+        <div class="footer__contacts">
+          <a href="tel:{{=phone}}" class="footer__contact-link">{{=phone_display}}</a>
+          <a href="mailto:{{=email}}" class="footer__contact-link">{{=email}}</a>
+        </div>
+        <p class="footer__schedule">{{schedule}}</p>
+      </div>
+      <div class="footer__right">
+        <h2 class="footer__form-title">{{footer_form_title}}</h2>
+        <form class="footer__form" id="contact-form" novalidate>
+          <div class="footer__field">
+            <input type="text" class="footer__input" id="contact-name" placeholder="{{=placeholder_name}}" required>
+            <span class="footer__error" id="contact-name-error"></span>
+          </div>
+          <div class="footer__field">
+            <input type="email" class="footer__input" id="contact-email" placeholder="{{=placeholder_email}}" required>
+            <span class="footer__error" id="contact-email-error"></span>
+          </div>
+          <div class="footer__field">
+            <input type="tel" class="footer__input" id="contact-phone" placeholder="+66 XXX XXX XXXX" required>
+            <span class="footer__error" id="contact-phone-error"></span>
+          </div>
+          <button type="submit" class="footer__submit">{{form_submit}}</button>
+        </form>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copy">&copy; {{year}} {{project_name}}. {{copyright_text}}</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  {{{inline_js}}}
+  {{{lang_js}}}
+  </script>
+</body>
+</html>

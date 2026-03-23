@@ -6,7 +6,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { generateHTML, TEMPLATES } = require('./generate.js');
+const { generateHTML, TEMPLATES, getFileTemplates, hasTemplateFiles } = require('./generate.js');
 const { deploy } = require('./deploy.js');
 
 const PORT = process.env.PORT || 3333;
@@ -328,7 +328,38 @@ const server = http.createServer(async (req, res) => {
 
   // List templates
   if (req.method === 'GET' && url.pathname === '/api/templates') {
-    const list = Object.values(TEMPLATES).map(t => ({ id: t.id, name: t.name, description: t.description, colors: t.colors }));
+    // Combine programmatic templates with file-based templates
+    const list = Object.values(TEMPLATES).map(t => ({
+      id: t.id, name: t.name, description: t.description,
+      colors: t.colors, type: 'programmatic'
+    }));
+    // Add file-based templates from templates/ directory
+    const templateDir = path.join(__dirname, 'templates');
+    try {
+      const dirs = fs.readdirSync(templateDir);
+      dirs.forEach(dir => {
+        const configPath = path.join(templateDir, dir, 'config.json');
+        if (fs.existsSync(configPath) && hasTemplateFiles(dir)) {
+          const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+          // Don't duplicate if already in TEMPLATES
+          if (!list.find(t => t.id === config.id)) {
+            list.push({
+              id: config.id, name: config.name, description: config.description,
+              preview_colors: config.preview_colors, fonts: config.fonts,
+              type: 'file-based'
+            });
+          } else {
+            // Mark existing entry as file-based (overrides programmatic)
+            const existing = list.find(t => t.id === config.id);
+            if (existing) {
+              existing.type = 'file-based';
+              existing.preview_colors = config.preview_colors;
+              existing.fonts = config.fonts;
+            }
+          }
+        }
+      });
+    } catch(e) { /* templates dir may not exist */ }
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(list));
     return;

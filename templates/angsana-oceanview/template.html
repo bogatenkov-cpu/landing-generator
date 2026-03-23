@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{=meta_title}}</title>
+  <meta name="description" content="{{=meta_description}}">
+
+  <!-- hreflang -->
+  <link rel="alternate" hreflang="en" href="{{=canonical_url}}">
+  <link rel="alternate" hreflang="ru" href="{{=canonical_url}}ru/">
+  <link rel="alternate" hreflang="x-default" href="{{=canonical_url}}">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="{{=meta_title}}">
+  <meta property="og:description" content="{{=meta_description}}">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="{{=og_image}}">
+  <meta property="og:url" content="{{=canonical_url}}">
+
+  <!-- JSON-LD Schema.org -->
+  <script type="application/ld+json">
+  {{{schema_json}}}
+  </script>
+
+  <!-- Fonts -->
+  {{{font_import}}}
+
+  <style>
+  {{{inline_css}}}
+  {{{lang_css}}}
+  </style>
+</head>
+<body {{{body_lang_attr}}}>
+
+  <!-- HEADER -->
+  <header class="header" id="header">
+    <div class="header__inner">
+      <a href="./" class="header__logo">{{project_name}}</a>
+      <nav class="header__nav">
+        <ul class="header__nav-list">
+          <li><a href="#concept" class="header__nav-link">{{nav_concept}}</a></li>
+          <li><a href="#location" class="header__nav-link">{{nav_location}}</a></li>
+          <li><a href="#floorplans" class="header__nav-link">{{nav_floorplans}}</a></li>
+          <li><a href="#amenities" class="header__nav-link">{{nav_amenities}}</a></li>
+          <li><a href="#investment" class="header__nav-link">{{nav_investment}}</a></li>
+          <li><a href="#faq" class="header__nav-link">{{nav_faq}}</a></li>
+        </ul>
+      </nav>
+      <div class="header__actions">
+        {{{lang_switcher_header}}}
+        <button class="header__cta" data-modal="callback">
+          <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          {{cta_text}}
+        </button>
+      </div>
+      <button class="header__phone-btn" data-modal="callback" aria-label="{{=cta_text}}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </button>
+      <button class="header__burger" id="burgerBtn" aria-label="Toggle menu">
+        <span class="header__burger-line"></span>
+        <span class="header__burger-line"></span>
+        <span class="header__burger-line"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav" id="mobileNav">
+    <ul class="mobile-nav__list">
+      <li><a href="#concept" class="mobile-nav__link">{{nav_concept}}</a></li>
+      <li><a href="#location" class="mobile-nav__link">{{nav_location}}</a></li>
+      <li><a href="#floorplans" class="mobile-nav__link">{{nav_floorplans}}</a></li>
+      <li><a href="#amenities" class="mobile-nav__link">{{nav_amenities}}</a></li>
+      <li><a href="#investment" class="mobile-nav__link">{{nav_investment}}</a></li>
+      <li><a href="#faq" class="mobile-nav__link">{{nav_faq}}</a></li>
+    </ul>
+    <div class="mobile-nav__actions">
+      <button class="btn btn--primary" data-modal="callback">{{cta_text}}</button>
+    </div>
+    {{{lang_switcher_mobile}}}
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero__bg"></div>
+    <div class="hero__pattern"></div>
+    <div class="hero__content">
+      <span class="hero__badge">{{hero_badge}}</span>
+      <h1 class="hero__title">{{hero_title}}</h1>
+      <p class="hero__subtitle">{{hero_subtitle}}</p>
+      <div class="hero__actions">
+        <button class="btn btn--primary" data-modal="brochure">{{hero_btn_brochure}}</button>
+        <a href="#concept" class="btn btn--outline">{{hero_btn_explore}}</a>
+      </div>
+    </div>
+    <div class="hero__scroll">
+      <span>{{scroll_text}}</span>
+      <div class="hero__scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- CONCEPT -->
+  <section class="section concept" id="concept">
+    <div class="container">
+      <div class="concept__grid">
+        <div class="concept__visual reveal reveal--left">
+          <div class="concept__image-main"></div>
+          <div class="concept__image-accent">
+            <div>
+              <div class="concept__accent-number">{{concept_accent_number}}</div>
+              <div class="concept__accent-text">{{concept_accent_text}}</div>
+            </div>
+          </div>
+        </div>
+        <div class="concept__text reveal reveal--right">
+          <span class="section__label">{{concept_label}}</span>
+          <h2 class="section__title">{{concept_title}}</h2>
+          <div class="section__divider"></div>
+          <p class="section__desc">{{concept_text}}</p>
+          <div class="concept__features">
+            {{#concept_features}}
+            <div class="concept__feature">
+              <svg class="concept__feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">{{{icon}}}</svg>
+              <div class="concept__feature-title">{{title}}</div>
+              <div class="concept__feature-desc">{{desc}}</div>
+            </div>
+            {{/concept_features}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats__grid">
+        {{#hero_stats}}
+        <div class="stats__item reveal {{_reveal_delay}}">
+          <div class="stats__number">{{value}}</div>
+          <div class="stats__label">{{label}}</div>
+        </div>
+        {{/hero_stats}}
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCATION -->
+  <section class="section location" id="location">
+    <div class="container">
+      <div class="reveal">
+        <span class="section__label">{{location_label}}</span>
+        <h2 class="section__title">{{location_title}}</h2>
+        <div class="section__divider"></div>
+        <p class="section__desc">{{location_text}}</p>
+      </div>
+      <div class="location__grid reveal">
+        <div class="location__distances">
+          {{#location_distances}}
+          <div class="location__distance">
+            <span class="location__distance-name">{{name}}</span>
+            <span class="location__distance-value">{{value}}</span>
+          </div>
+          {{/location_distances}}
+        </div>
+        <div class="location__map">
+          <iframe src="{{=map_embed}}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="{{=map_title}}"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLOOR PLANS -->
+  <section class="section section--light floorplans" id="floorplans">
+    <div class="container">
+      <div class="reveal">
+        <span class="section__label">{{floorplans_label}}</span>
+        <h2 class="section__title">{{floorplans_title}}</h2>
+        <div class="section__divider"></div>
+      </div>
+
+      <div class="floorplans__tabs reveal reveal--delay-1">
+        {{#floorplans}}
+        <button class="floorplans__tab{{_active_class}}" data-tab="{{=tab_id}}">{{tab_label}}</button>
+        {{/floorplans}}
+      </div>
+
+      {{#floorplans}}
+      <div class="floorplans__content{{_active_class}}" data-content="{{=tab_id}}">
+        <div class="floorplans__card">
+          <div class="floorplans__visual">
+            <img src="{{=image}}" alt="{{=title}}" loading="lazy" width="800" height="600">
+          </div>
+          <div class="floorplans__info">
+            <h3 class="floorplans__info-title">{{title}}</h3>
+            <p class="floorplans__info-desc">{{desc}}</p>
+            <div class="floorplans__specs">
+              {{{details_html}}}
+            </div>
+            <button class="btn btn--accent-dark" data-modal="floorplan" data-unit="{{=unit_type}}">{{btn_text}}</button>
+          </div>
+        </div>
+      </div>
+      {{/floorplans}}
+    </div>
+  </section>
+
+  <!-- AMENITIES -->
+  <section class="section amenities" id="amenities">
+    <div class="container">
+      <div class="reveal" style="text-align:center; max-width:680px; margin:0 auto;">
+        <span class="section__label">{{amenities_label}}</span>
+        <h2 class="section__title">{{amenities_title}}</h2>
+        <div class="section__divider" style="margin:24px auto;"></div>
+        <p class="section__desc" style="margin:0 auto;">{{amenities_text}}</p>
+      </div>
+
+      <div class="amenities__grid">
+        {{#amenities_items}}
+        <div class="amenities__card reveal {{_reveal_delay}}">
+          <img class="amenities__card-img" src="{{=image}}" alt="{{=title}}" loading="lazy" width="400" height="260">
+          <h3 class="amenities__card-title">{{title}}</h3>
+          <p class="amenities__card-text">{{text}}</p>
+        </div>
+        {{/amenities_items}}
+      </div>
+    </div>
+  </section>
+
+  <!-- INVESTMENT -->
+  <section class="section section--dark" id="investment">
+    <div class="container">
+      <div class="reveal">
+        <span class="section__label">{{investment_label}}</span>
+        <h2 class="section__title">{{investment_title}}</h2>
+        <div class="section__divider"></div>
+        <p class="section__desc">{{investment_text}}</p>
+      </div>
+
+      <div class="investment__grid">
+        <div class="investment__highlights">
+          {{#investment_highlights}}
+          <div class="investment__highlight reveal {{_reveal_delay}}">
+            <div class="investment__highlight-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">{{{icon}}}</svg>
+            </div>
+            <div>
+              <div class="investment__highlight-title">{{title}}</div>
+              <div class="investment__highlight-text">{{text}}</div>
+            </div>
+          </div>
+          {{/investment_highlights}}
+        </div>
+
+        <div class="investment__form-box reveal reveal--scale">
+          <div class="investment__cta-title">{{investment_cta_title}}</div>
+          <p class="investment__cta-text">{{investment_cta_text}}</p>
+          <form class="form form--dark-inline" id="investmentInlineForm" novalidate>
+            <div class="form__group">
+              <input class="form__input" type="text" name="name" placeholder="{{=placeholder_name}}" required>
+              <div class="form__error">{{form_error_name}}</div>
+            </div>
+            <div class="form__group">
+              <input class="form__input" type="email" name="email" placeholder="{{=placeholder_email}}" required>
+              <div class="form__error">{{form_error_email}}</div>
+            </div>
+            <div class="form__group">
+              <input class="form__input" type="tel" name="phone" placeholder="{{=placeholder_phone}}" required>
+              <div class="form__error">{{form_error_phone}}</div>
+            </div>
+            <div class="form__consent">
+              <input type="checkbox" id="investConsent" required>
+              <label for="investConsent">{{form_consent}}</label>
+            </div>
+            <button type="submit" class="btn btn--primary btn--full">{{investment_form_submit}}</button>
+            <div class="form__success">
+              <svg class="form__success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <div class="form__success-title">{{form_success_title}}</div>
+              <div class="form__success-text">{{investment_form_success}}</div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEVELOPER -->
+  <section class="section developer" id="developer">
+    <div class="container">
+      <div class="developer__grid">
+        <div class="developer__logo-box reveal reveal--left">
+          <div class="developer__logo-text">{{{developer_logo_text}}}</div>
+        </div>
+        <div class="reveal reveal--right">
+          <span class="section__label">{{developer_label}}</span>
+          <h2 class="section__title">{{developer_title}}</h2>
+          <div class="section__divider"></div>
+          <p class="section__desc">{{developer_text}}</p>
+          <div class="developer__milestones">
+            {{#developer_facts}}
+            <div class="developer__milestone">
+              <div class="developer__milestone-number">{{value}}</div>
+              <div class="developer__milestone-text">{{label}}</div>
+            </div>
+            {{/developer_facts}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="section section--light" id="gallery">
+    <div class="container">
+      <div class="reveal" style="text-align:center; max-width:680px; margin:0 auto;">
+        <span class="section__label">{{gallery_label}}</span>
+        <h2 class="section__title">{{gallery_title}}</h2>
+        <div class="section__divider" style="margin:24px auto;"></div>
+      </div>
+      <div class="gallery__grid">
+        {{{gallery_html}}}
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section faq" id="faq">
+    <div class="container">
+      <div class="reveal" style="text-align:center; max-width:680px; margin:0 auto;">
+        <span class="section__label">{{faq_label}}</span>
+        <h2 class="section__title">{{faq_title}}</h2>
+        <div class="section__divider" style="margin:24px auto;"></div>
+      </div>
+
+      <div class="faq__list">
+        {{#faq_items}}
+        <div class="faq__item reveal">
+          <button class="faq__question">
+            {{question}}
+            <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq__answer">
+            <p class="faq__answer-text">{{answer}}</p>
+          </div>
+        </div>
+        {{/faq_items}}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA / LEAD FORM -->
+  <section class="section section--dark cta-section" id="contact">
+    <div class="container">
+      <div class="cta-section__inner">
+        <div class="reveal reveal--left">
+          <span class="section__label">{{contact_label}}</span>
+          <h2 class="cta-section__title">{{contact_title}}</h2>
+          <p class="cta-section__text">{{contact_text}}</p>
+          <div class="cta-section__contacts">
+            <a href="tel:{{=phone}}" class="cta-section__contact">
+              <svg class="cta-section__contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              {{phone_display}}
+            </a>
+            <a href="mailto:{{=email}}" class="cta-section__contact">
+              <svg class="cta-section__contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              {{=email}}
+            </a>
+          </div>
+        </div>
+        <div class="reveal reveal--right">
+          <form class="form" id="contactForm" novalidate>
+            <div class="form__title">{{contact_form_title}}</div>
+            <div class="form__subtitle">{{contact_form_subtitle}}</div>
+            <div class="form__group">
+              <label class="form__label" for="contactName">{{form_label_name}}</label>
+              <input class="form__input" type="text" id="contactName" name="name" placeholder="{{=placeholder_name}}" required>
+              <div class="form__error" id="contactNameError">{{form_error_name}}</div>
+            </div>
+            <div class="form__group">
+              <label class="form__label" for="contactEmail">{{form_label_email}}</label>
+              <input class="form__input" type="email" id="contactEmail" name="email" placeholder="{{=placeholder_email}}" required>
+              <div class="form__error" id="contactEmailError">{{form_error_email}}</div>
+            </div>
+            <div class="form__group">
+              <label class="form__label" for="contactPhone">{{form_label_phone}}</label>
+              <input class="form__input" type="tel" id="contactPhone" name="phone" placeholder="{{=placeholder_phone}}" required>
+              <div class="form__error" id="contactPhoneError">{{form_error_phone}}</div>
+            </div>
+            <div class="form__consent">
+              <input type="checkbox" id="contactConsent" required>
+              <label for="contactConsent">{{form_consent}}</label>
+            </div>
+            <button type="submit" class="btn btn--primary btn--full">{{contact_form_submit}}</button>
+            <div class="form__success" id="contactSuccess">
+              <svg class="form__success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <div class="form__success-title">{{form_success_title}}</div>
+              <div class="form__success-text">{{contact_form_success}}</div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <div class="footer__brand-name">{{project_name}}</div>
+          <p class="footer__brand-text">{{footer_tagline}}</p>
+        </div>
+        <div>
+          <div class="footer__heading">{{footer_nav_heading}}</div>
+          <ul class="footer__list">
+            <li><a href="#concept" class="footer__link">{{nav_concept}}</a></li>
+            <li><a href="#location" class="footer__link">{{nav_location}}</a></li>
+            <li><a href="#floorplans" class="footer__link">{{nav_floorplans}}</a></li>
+            <li><a href="#amenities" class="footer__link">{{nav_amenities}}</a></li>
+            <li><a href="#investment" class="footer__link">{{nav_investment}}</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer__heading">{{footer_residences_heading}}</div>
+          <ul class="footer__list">
+            {{#footer_residence_links}}
+            <li><a href="#floorplans" class="footer__link">{{label}}</a></li>
+            {{/footer_residence_links}}
+            <li><a href="#faq" class="footer__link">{{nav_faq}}</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer__heading">{{footer_contact_heading}}</div>
+          <div class="footer__contact-item">
+            <svg class="footer__contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <a href="tel:{{=phone}}">{{phone_display}}</a>
+          </div>
+          <div class="footer__contact-item">
+            <svg class="footer__contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <a href="mailto:{{=email}}">{{=email}}</a>
+          </div>
+          <div class="footer__contact-item">
+            <svg class="footer__contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            {{address}}
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <div>&copy; {{year}} {{project_name_plain}}. {{footer_rights}}</div>
+        <div class="footer__legal">
+          <a href="#">{{footer_privacy}}</a>
+          <a href="#">{{footer_terms}}</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: Callback -->
+  <div class="modal" id="modal-callback">
+    <div class="modal__backdrop"></div>
+    <div class="modal__container">
+      <button class="modal__close" aria-label="Close">
+        <svg class="modal__close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal__title">{{modal_callback_title}}</div>
+      <p class="modal__subtitle">{{modal_callback_subtitle}}</p>
+      <form class="form form--light" id="callbackForm" novalidate>
+        <div class="form__group">
+          <label class="form__label" for="cbName">{{form_label_name}}</label>
+          <input class="form__input" type="text" id="cbName" name="name" placeholder="{{=placeholder_name}}" required>
+          <div class="form__error">{{form_error_name}}</div>
+        </div>
+        <div class="form__group">
+          <label class="form__label" for="cbPhone">{{form_label_phone}}</label>
+          <input class="form__input" type="tel" id="cbPhone" name="phone" placeholder="{{=placeholder_phone}}" required>
+          <div class="form__error">{{form_error_phone}}</div>
+        </div>
+        <div class="form__consent">
+          <input type="checkbox" id="cbConsent" required>
+          <label for="cbConsent">{{form_consent}}</label>
+        </div>
+        <button type="submit" class="btn btn--accent-dark btn--full">{{modal_callback_submit}}</button>
+        <div class="form__success">
+          <svg class="form__success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <div class="form__success-title">{{form_success_title}}</div>
+          <div class="form__success-text">{{modal_callback_success}}</div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Brochure -->
+  <div class="modal" id="modal-brochure">
+    <div class="modal__backdrop"></div>
+    <div class="modal__container">
+      <button class="modal__close" aria-label="Close">
+        <svg class="modal__close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal__title">{{modal_brochure_title}}</div>
+      <p class="modal__subtitle">{{modal_brochure_subtitle}}</p>
+      <form class="form form--light" id="brochureForm" novalidate>
+        <div class="form__group">
+          <label class="form__label" for="brName">{{form_label_name}}</label>
+          <input class="form__input" type="text" id="brName" name="name" placeholder="{{=placeholder_name}}" required>
+          <div class="form__error">{{form_error_name}}</div>
+        </div>
+        <div class="form__group">
+          <label class="form__label" for="brEmail">{{form_label_email}}</label>
+          <input class="form__input" type="email" id="brEmail" name="email" placeholder="{{=placeholder_email}}" required>
+          <div class="form__error">{{form_error_email}}</div>
+        </div>
+        <div class="form__consent">
+          <input type="checkbox" id="brConsent" required>
+          <label for="brConsent">{{form_consent}}</label>
+        </div>
+        <button type="submit" class="btn btn--accent-dark btn--full">{{modal_brochure_submit}}</button>
+        <div class="form__success">
+          <svg class="form__success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <div class="form__success-title">{{modal_brochure_success_title}}</div>
+          <div class="form__success-text">{{modal_brochure_success}}</div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Floor Plan -->
+  <div class="modal" id="modal-floorplan">
+    <div class="modal__backdrop"></div>
+    <div class="modal__container">
+      <button class="modal__close" aria-label="Close">
+        <svg class="modal__close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal__title">{{modal_floorplan_title}}</div>
+      <p class="modal__subtitle" id="floorplanModalSubtitle">{{modal_floorplan_subtitle}}</p>
+      <form class="form form--light" id="floorplanForm" novalidate>
+        <input type="hidden" name="unit_type" id="fpUnitType" value="">
+        <div class="form__group">
+          <label class="form__label" for="fpName">{{form_label_name}}</label>
+          <input class="form__input" type="text" id="fpName" name="name" placeholder="{{=placeholder_name}}" required>
+          <div class="form__error">{{form_error_name}}</div>
+        </div>
+        <div class="form__group">
+          <label class="form__label" for="fpEmail">{{form_label_email}}</label>
+          <input class="form__input" type="email" id="fpEmail" name="email" placeholder="{{=placeholder_email}}" required>
+          <div class="form__error">{{form_error_email}}</div>
+        </div>
+        <div class="form__group">
+          <label class="form__label" for="fpPhone">{{form_label_phone}}</label>
+          <input class="form__input" type="tel" id="fpPhone" name="phone" placeholder="{{=placeholder_phone}}" required>
+          <div class="form__error">{{form_error_phone}}</div>
+        </div>
+        <div class="form__consent">
+          <input type="checkbox" id="fpConsent" required>
+          <label for="fpConsent">{{form_consent}}</label>
+        </div>
+        <button type="submit" class="btn btn--accent-dark btn--full">{{modal_floorplan_submit}}</button>
+        <div class="form__success">
+          <svg class="form__success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <div class="form__success-title">{{modal_floorplan_success_title}}</div>
+          <div class="form__success-text">{{modal_floorplan_success}}</div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Investment -->
+  <div class="modal" id="modal-investment">
+    <div class="modal__backdrop"></div>
+    <div class="modal__container">
+      <button class="modal__close" aria-label="Close">
+        <svg class="modal__close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal__title">{{modal_investment_title}}</div>
+      <p class="modal__subtitle">{{modal_investment_subtitle}}</p>
+      <form class="form form--light" id="investmentForm" novalidate>
+        <div class="form__group">
+          <label class="form__label" for="invName">{{form_label_name}}</label>
+          <input class="form__input" type="text" id="invName" name="name" placeholder="{{=placeholder_name}}" required>
+          <div class="form__error">{{form_error_name}}</div>
+        </div>
+        <div class="form__group">
+          <label class="form__label" for="invEmail">{{form_label_email}}</label>
+          <input class="form__input" type="email" id="invEmail" name="email" placeholder="{{=placeholder_email}}" required>
+          <div class="form__error">{{form_error_email}}</div>
+        </div>
+        <div class="form__group">
+          <label class="form__label" for="invPhone">{{form_label_phone}}</label>
+          <input class="form__input" type="tel" id="invPhone" name="phone" placeholder="{{=placeholder_phone}}" required>
+          <div class="form__error">{{form_error_phone}}</div>
+        </div>
+        <div class="form__consent">
+          <input type="checkbox" id="invConsent" required>
+          <label for="invConsent">{{form_consent}}</label>
+        </div>
+        <button type="submit" class="btn btn--accent-dark btn--full">{{modal_investment_submit}}</button>
+        <div class="form__success">
+          <svg class="form__success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <div class="form__success-title">{{modal_investment_success_title}}</div>
+          <div class="form__success-text">{{modal_investment_success}}</div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox__backdrop"></div>
+    <button class="lightbox__close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="lightbox__nav lightbox__nav--prev" aria-label="Previous">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="lightbox__nav lightbox__nav--next" aria-label="Next">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
+    </button>
+    <div class="lightbox__content">
+      <img class="lightbox__img" src="" alt="">
+    </div>
+    <div class="lightbox__counter"></div>
+  </div>
+
+  <script>
+  {{{inline_js}}}
+  {{{lang_js}}}
+  </script>
+</body>
+</html>

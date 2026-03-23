@@ -1,0 +1,11 @@
+{
+  "id": "arise-vibe",
+  "name": "Arise Vibe",
+  "description": "Dark green & gold, modern tropical with presentation modal",
+  "preview_colors": ["#1a3a2a", "#c8a96e", "#f0eeeb"],
+  "fonts": {
+    "heading": "Playfair Display",
+    "body": "Inter"
+  },
+  "sections": ["concept", "amenities", "gallery", "floorplans", "investment", "location", "footer"]
+}

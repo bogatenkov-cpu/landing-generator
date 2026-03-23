@@ -1,0 +1,11 @@
+{
+  "id": "anchan-indigo",
+  "name": "Anchan Indigo",
+  "description": "Indigo & gold, elegant luxury with FAQ section",
+  "preview_colors": ["#2C3E6B", "#C9A96E", "#F5F2ED"],
+  "fonts": {
+    "heading": "Cormorant Garamond",
+    "body": "Outfit"
+  },
+  "sections": ["concept", "amenities", "floorplans", "investment", "gallery", "developer", "location", "faq", "footer"]
+}

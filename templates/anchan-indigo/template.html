@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{=meta_title}}</title>
+  <meta name="description" content="{{=meta_description}}">
+
+  <!-- Hreflang -->
+  <link rel="alternate" hreflang="en" href="{{=canonical_url}}">
+  <link rel="alternate" hreflang="ru" href="{{=canonical_url}}ru/">
+  <link rel="alternate" hreflang="x-default" href="{{=canonical_url}}">
+  <link rel="canonical" href="{{=canonical_url}}">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="{{=meta_title}}">
+  <meta property="og:description" content="{{=meta_description}}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{=canonical_url}}">
+  <meta property="og:image" content="{{=og_image}}">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="ru_RU">
+  <meta property="og:site_name" content="{{=project_name}}">
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {{{schema_json}}}
+  </script>
+
+  {{{font_import}}}
+
+  <style>
+  {{{inline_css}}}
+  {{{lang_css}}}
+  </style>
+</head>
+
+<body {{{body_lang_attr}}}>
+
+  <!-- HEADER -->
+  <header class="header" id="header">
+    <div class="header__container">
+      <a href="/" class="header__logo">
+        <span class="header__logo-text">{{project_name}}</span>
+        <span class="header__logo-accent">{{project_name_accent}}</span>
+      </a>
+
+      <nav class="header__nav" id="nav">
+        <ul class="header__nav-list">
+          <li class="header__nav-item"><a href="#concept" class="header__nav-link">{{nav_concept}}</a></li>
+          <li class="header__nav-item"><a href="#location" class="header__nav-link">{{nav_location}}</a></li>
+          <li class="header__nav-item"><a href="#floorplans" class="header__nav-link">{{nav_floorplans}}</a></li>
+          <li class="header__nav-item"><a href="#amenities" class="header__nav-link">{{nav_amenities}}</a></li>
+          <li class="header__nav-item"><a href="#gallery" class="header__nav-link">{{nav_gallery}}</a></li>
+          <li class="header__nav-item"><a href="#developer" class="header__nav-link">{{nav_developer}}</a></li>
+          <li class="header__nav-item"><a href="#faq" class="header__nav-link">{{nav_faq}}</a></li>
+          <li class="header__nav-item header__nav-item--lang">
+            {{{lang_switcher_header}}}
+          </li>
+          <li class="header__nav-item"><a href="#" class="header__nav-link header__nav-link--cta" data-modal-title="{{=cta_modal_title}}" data-modal-text="{{=cta_modal_desc}}">{{nav_contact}}</a></li>
+        </ul>
+      </nav>
+
+      <div class="header__right">
+        <button class="header__cta-mobile btn btn--primary btn--small" data-modal-title="{{=cta_modal_title}}" data-modal-text="{{=cta_modal_desc_short}}">{{nav_contact}}</button>
+        <button class="header__burger" id="burger" aria-label="Open menu">
+          <span class="header__burger-line"></span>
+          <span class="header__burger-line"></span>
+          <span class="header__burger-line"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="hero">
+    <div class="hero__bg" style="background-image: url('{{=hero_image}}')">
+      <div class="hero__overlay"></div>
+    </div>
+    <div class="hero__content">
+      <p class="hero__subtitle reveal-up">{{hero_subtitle}}</p>
+      <h1 class="hero__title reveal-up">{{hero_title}}</h1>
+      <p class="hero__description reveal-up">{{hero_description}}</p>
+      <div class="hero__metrics reveal-up">
+        {{#hero_stats}}
+        <div class="hero__metric">
+          <span class="hero__metric-value">{{value}}</span>
+          <span class="hero__metric-label">{{label}}</span>
+        </div>
+        {{/hero_stats}}
+      </div>
+      <div class="hero__actions reveal-up">
+        <button class="btn btn--primary" data-modal-title="{{=hero_cta_modal_title}}" data-modal-text="{{=hero_cta_modal_desc}}">{{hero_cta_primary}}</button>
+        <a href="#concept" class="btn btn--outline">{{hero_cta_secondary}}</a>
+      </div>
+    </div>
+    <div class="hero__scroll-indicator">
+      <span></span>
+    </div>
+  </section>
+
+  <!-- CONCEPT SECTION -->
+  <section class="section concept" id="concept">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag reveal-up">{{concept_label}}</span>
+        <h2 class="section__title reveal-up">{{concept_title}}</h2>
+      </div>
+      <div class="concept__grid">
+        <div class="concept__text reveal-left">
+          <p class="concept__lead">{{concept_lead}}</p>
+          {{concept_text}}
+          <div class="concept__stats">
+            {{#concept_stats}}
+            <div class="concept__stat reveal-up">
+              <span class="concept__stat-number" data-count="{{=count}}">0</span>
+              <span class="concept__stat-text">{{text}}</span>
+            </div>
+            {{/concept_stats}}
+          </div>
+        </div>
+        <div class="concept__visual reveal-right">
+          <div class="concept__image-wrapper">
+            <img src="{{=concept_image}}" alt="{{=concept_image_alt}}" class="concept__image" loading="lazy" width="800" height="560">
+            <div class="concept__image-accent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES RIBBON -->
+  <section class="ribbon">
+    <div class="ribbon__track">
+      <div class="ribbon__content">
+        {{#ribbon_items}}
+        <span class="ribbon__item">{{text}}</span>
+        <span class="ribbon__divider">&diams;</span>
+        {{/ribbon_items}}
+        {{#ribbon_items}}
+        <span class="ribbon__item">{{text}}</span>
+        <span class="ribbon__divider">&diams;</span>
+        {{/ribbon_items}}
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCATION SECTION -->
+  <section class="section location" id="location">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag reveal-up">{{location_label}}</span>
+        <h2 class="section__title reveal-up">{{location_title}}</h2>
+      </div>
+      <div class="location__grid">
+        <div class="location__map reveal-left">
+          <div class="location__map-frame">
+            <iframe src="{{=map_embed}}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+        </div>
+        <div class="location__info reveal-right">
+          <p class="location__lead">{{location_text}}</p>
+          <div class="location__distances">
+            {{#location_distances}}
+            <div class="location__distance">
+              <span class="location__distance-time">{{time}}</span>
+              <span class="location__distance-place">{{place}}</span>
+            </div>
+            {{/location_distances}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLOOR PLANS SECTION -->
+  <section class="section floorplans" id="floorplans">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag reveal-up">{{floorplans_label}}</span>
+        <h2 class="section__title reveal-up">{{floorplans_title}}</h2>
+      </div>
+      <p class="floorplans__intro reveal-up">{{floorplans_intro}}</p>
+
+      <div class="floorplans__tabs reveal-up">
+        {{#floorplans}}
+        <button class="floorplans__tab{{_active_class}}" data-tab="{{=id}}">{{tab_name}}</button>
+        {{/floorplans}}
+      </div>
+
+      <div class="floorplans__content">
+        {{#floorplans}}
+        <div class="floorplans__plan{{_active_class_panel}}" id="plan-{{=id}}">
+          <div class="floorplans__plan-grid">
+            <div class="floorplans__plan-image">
+              <img src="{{=image}}" alt="{{=name}}" loading="lazy" width="800" height="460">
+            </div>
+            <div class="floorplans__plan-details">
+              <h3 class="floorplans__plan-title">{{name}}</h3>
+              {{{details_html}}}
+              <button class="btn btn--primary" data-modal-title="{{=modal_title}}" data-modal-text="{{=modal_desc}}">{{floorplan_btn}}</button>
+            </div>
+          </div>
+        </div>
+        {{/floorplans}}
+      </div>
+    </div>
+  </section>
+
+  <!-- AMENITIES SECTION -->
+  <section class="section amenities" id="amenities">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag reveal-up">{{amenities_label}}</span>
+        <h2 class="section__title reveal-up">{{amenities_title}}</h2>
+      </div>
+      <div class="amenities__grid">
+        {{#amenities_items}}
+        <div class="amenities__card reveal-up">
+          <div class="amenities__card-image">
+            <img src="{{=image}}" alt="{{=title}}" loading="lazy" width="600" height="400">
+          </div>
+          <div class="amenities__card-body">
+            <h3 class="amenities__card-title">{{title}}</h3>
+            <p class="amenities__card-text">{{text}}</p>
+          </div>
+        </div>
+        {{/amenities_items}}
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY SECTION -->
+  <section class="section gallery" id="gallery">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag reveal-up">{{gallery_label}}</span>
+        <h2 class="section__title reveal-up">{{gallery_title}}</h2>
+      </div>
+      <div class="gallery__grid reveal-up">
+        {{{gallery_html}}}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="cta-banner">
+    <div class="cta-banner__bg"></div>
+    <div class="container">
+      <div class="cta-banner__content reveal-up">
+        <h2 class="cta-banner__title">{{cta_banner_title}}</h2>
+        <p class="cta-banner__text">{{cta_banner_text}}</p>
+        <button class="btn btn--primary btn--large" data-modal-title="{{=cta_banner_modal_title}}" data-modal-text="{{=cta_banner_modal_desc}}">{{cta_banner_btn}}</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ SECTION -->
+  <section class="section faq" id="faq">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag reveal-up">{{faq_label}}</span>
+        <h2 class="section__title reveal-up">{{faq_title}}</h2>
+      </div>
+      <div class="faq__list reveal-up">
+        {{#faq_items}}
+        <div class="faq__item">
+          <button class="faq__question" aria-expanded="false">
+            <span>{{question}}</span>
+            <span class="faq__icon"></span>
+          </button>
+          <div class="faq__answer">
+            <div class="faq__answer-inner">
+              <p>{{answer}}</p>
+            </div>
+          </div>
+        </div>
+        {{/faq_items}}
+      </div>
+    </div>
+  </section>
+
+  <!-- DEVELOPER SECTION -->
+  <section class="section developer" id="developer">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag reveal-up">{{developer_label}}</span>
+        <h2 class="section__title reveal-up">{{developer_title}}</h2>
+      </div>
+      <div class="developer__grid">
+        <div class="developer__text reveal-left">
+          <h3 class="developer__name">{{developer_name}}</h3>
+          <p class="developer__tagline">{{developer_tagline}}</p>
+          {{developer_text}}
+          <div class="developer__badges">
+            {{#developer_facts}}
+            <div class="developer__badge">
+              <span class="developer__badge-value">{{value}}</span>
+              <span class="developer__badge-label">{{label}}</span>
+            </div>
+            {{/developer_facts}}
+          </div>
+        </div>
+        <div class="developer__visual reveal-right">
+          <div class="developer__image-wrapper">
+            <img src="{{=developer_image}}" alt="{{=developer_image_alt}}" loading="lazy" width="800" height="500">
+            <div class="developer__logo-overlay">
+              <span class="developer__logo-brand">{{developer_logo_brand}}</span>
+              <span class="developer__logo-sub">{{developer_logo_sub}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT SECTION -->
+  <section class="section contact" id="contact">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag reveal-up">{{contact_label}}</span>
+        <h2 class="section__title reveal-up">{{contact_title}}</h2>
+      </div>
+      <div class="contact__grid">
+        <div class="contact__info reveal-left">
+          <p class="contact__lead">{{contact_lead}}</p>
+          <div class="contact__details">
+            <a href="tel:{{=phone}}" class="contact__detail">
+              <span class="contact__detail-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="contact__detail-text">{{=phone_display}}</span>
+            </a>
+            <a href="mailto:{{=email}}" class="contact__detail">
+              <span class="contact__detail-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M22 7l-10 7L2 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="contact__detail-text">{{=email}}</span>
+            </a>
+            <div class="contact__detail">
+              <span class="contact__detail-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+              <span class="contact__detail-text">{{schedule}}</span>
+            </div>
+            <div class="contact__detail">
+              <span class="contact__detail-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/></svg></span>
+              <span class="contact__detail-text">{{contact_address}}</span>
+            </div>
+          </div>
+          <div class="contact__showroom">
+            <p>{{contact_showroom}}</p>
+          </div>
+        </div>
+        <div class="contact__form-wrapper reveal-right">
+          <form class="contact__form" id="contactForm" novalidate>
+            <h3 class="contact__form-title">{{contact_form_title}}</h3>
+            <div class="contact__form-group">
+              <input type="text" name="name" class="contact__form-input" placeholder="{{=placeholder_name}}" required autocomplete="name">
+              <span class="contact__form-error"></span>
+            </div>
+            <div class="contact__form-group">
+              <input type="email" name="email" class="contact__form-input" placeholder="{{=placeholder_email}}" required autocomplete="email">
+              <span class="contact__form-error"></span>
+            </div>
+            <div class="contact__form-group">
+              <input type="tel" name="phone" class="contact__form-input" placeholder="{{=placeholder_phone}}" required autocomplete="tel">
+              <span class="contact__form-error"></span>
+            </div>
+            <div class="contact__form-group">
+              <select name="interest" class="contact__form-input contact__form-select" required>
+                {{{contact_select_options}}}
+              </select>
+              <span class="contact__form-error"></span>
+            </div>
+            <div class="contact__form-group">
+              <textarea name="message" class="contact__form-input contact__form-textarea" placeholder="{{=placeholder_message}}" rows="4"></textarea>
+            </div>
+            <div class="contact__form-group contact__form-group--consent">
+              <label class="contact__consent">
+                <input type="checkbox" name="consent" class="contact__consent-input" required>
+                <span class="contact__consent-check"></span>
+                <span class="contact__consent-text">{{consent_text}}</span>
+              </label>
+              <span class="contact__form-error"></span>
+            </div>
+            <button type="submit" class="btn btn--primary btn--full">{{form_submit}}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="/" class="footer__logo">
+            <span class="footer__logo-text">{{project_name}}</span>
+            <span class="footer__logo-accent">{{project_name_accent}}</span>
+          </a>
+          <p class="footer__brand-text">{{footer_tagline}}</p>
+        </div>
+        <div class="footer__links">
+          <h4 class="footer__links-title">{{footer_nav_title}}</h4>
+          <ul class="footer__links-list">
+            <li><a href="#concept">{{nav_concept}}</a></li>
+            <li><a href="#location">{{nav_location}}</a></li>
+            <li><a href="#floorplans">{{nav_floorplans}}</a></li>
+            <li><a href="#amenities">{{nav_amenities}}</a></li>
+            <li><a href="#developer">{{nav_developer}}</a></li>
+            <li><a href="#faq">{{nav_faq}}</a></li>
+            <li><a href="#contact">{{nav_contact}}</a></li>
+          </ul>
+        </div>
+        <div class="footer__contacts">
+          <h4 class="footer__links-title">{{footer_contacts_title}}</h4>
+          <ul class="footer__links-list">
+            <li><a href="tel:{{=phone}}">{{=phone_display}}</a></li>
+            <li><a href="mailto:{{=email}}">{{=email}}</a></li>
+            <li>{{contact_address}}</li>
+            <li>{{schedule}}</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; {{year}} {{project_name}}. {{copyright_text}}</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- LEAD MODAL -->
+  <div class="modal" id="leadModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__content modal__content--form">
+      <button class="modal__close" aria-label="Close">&times;</button>
+      <h3 class="modal__title" id="modalTitle">{{cta_modal_title}}</h3>
+      <p class="modal__text" id="modalText">{{cta_modal_desc}}</p>
+      <form class="modal__form" id="modalForm" novalidate>
+        <div class="contact__form-group">
+          <input type="text" name="name" class="contact__form-input" placeholder="{{=placeholder_name}}" required autocomplete="name">
+          <span class="contact__form-error"></span>
+        </div>
+        <div class="contact__form-group">
+          <input type="email" name="email" class="contact__form-input" placeholder="{{=placeholder_email}}" required autocomplete="email">
+          <span class="contact__form-error"></span>
+        </div>
+        <div class="contact__form-group">
+          <input type="tel" name="phone" class="contact__form-input" placeholder="{{=placeholder_phone}}" required autocomplete="tel">
+          <span class="contact__form-error"></span>
+        </div>
+        <div class="contact__form-group contact__form-group--consent">
+          <label class="contact__consent">
+            <input type="checkbox" name="consent" class="contact__consent-input" required>
+            <span class="contact__consent-check"></span>
+            <span class="contact__consent-text">{{consent_text}}</span>
+          </label>
+          <span class="contact__form-error"></span>
+        </div>
+        <button type="submit" class="btn btn--primary btn--full">{{form_submit_short}}</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- SUCCESS MODAL -->
+  <div class="modal" id="successModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__content">
+      <button class="modal__close" aria-label="Close">&times;</button>
+      <div class="modal__icon">
+        <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="2"/><path d="M20 32l8 8 16-16" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h3 class="modal__title">{{success_title}}</h3>
+      <p class="modal__text">{{success_text}}</p>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox__overlay"></div>
+    <button class="lightbox__close" aria-label="Close">&times;</button>
+    <button class="lightbox__prev" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button class="lightbox__next" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button>
+    <div class="lightbox__image-wrapper">
+      <img class="lightbox__image" id="lightboxImage" src="" alt="">
+    </div>
+    <div class="lightbox__counter" id="lightboxCounter"></div>
+  </div>
+
+  <script>
+  {{{inline_js}}}
+  {{{lang_js}}}
+  </script>
+</body>
+</html>

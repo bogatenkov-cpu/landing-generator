@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{=meta_title}}</title>
+    <meta name="description" content="{{=meta_description}}">
+
+    <!-- hreflang -->
+    <link rel="alternate" hreflang="en" href="{{=canonical_url}}">
+    <link rel="alternate" hreflang="ru" href="{{=canonical_url}}ru/">
+    <link rel="alternate" hreflang="x-default" href="{{=canonical_url}}">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="{{=meta_title}}">
+    <meta property="og:description" content="{{=meta_description}}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{=canonical_url}}">
+    <meta property="og:image" content="{{=og_image}}">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{=meta_title}}">
+    <meta name="twitter:description" content="{{=meta_description}}">
+
+    <!-- JSON-LD Schema.org -->
+    <script type="application/ld+json">
+    {{{schema_json}}}
+    </script>
+
+    <!-- Fonts -->
+    {{{font_import}}}
+
+    <style>
+    {{{inline_css}}}
+    {{{lang_css}}}
+    </style>
+</head>
+<body {{{body_lang_attr}}}>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="header__container">
+            <a href="/" class="header__logo">
+                <span class="header__logo-text">{{project_name}}</span>
+            </a>
+
+            <nav class="header__nav">
+                <ul class="header__nav-list">
+                    <li class="header__nav-item"><a href="#concept" class="header__nav-link">{{nav_concept}}</a></li>
+                    <li class="header__nav-item"><a href="#amenities" class="header__nav-link">{{nav_amenities}}</a></li>
+                    <li class="header__nav-item"><a href="#gallery" class="header__nav-link">{{nav_gallery}}</a></li>
+                    <li class="header__nav-item"><a href="#floor-plan" class="header__nav-link">{{nav_floorplans}}</a></li>
+                    <li class="header__nav-item"><a href="#investment" class="header__nav-link">{{nav_investment}}</a></li>
+                    <li class="header__nav-item"><a href="#location" class="header__nav-link">{{nav_location}}</a></li>
+                    <li class="header__nav-item"><a href="#contact" class="header__nav-link">{{nav_contact}}</a></li>
+                </ul>
+            </nav>
+
+            <div class="header__actions">
+                {{{lang_switcher_header}}}
+                <button class="header__cta btn btn--primary btn--sm" data-modal="presentation">{{cta_text}}</button>
+            </div>
+
+            <button class="header__burger" id="burger-btn" aria-label="Open menu">
+                <span class="header__burger-line"></span>
+                <span class="header__burger-line"></span>
+                <span class="header__burger-line"></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-menu__overlay"></div>
+        <div class="mobile-menu__panel">
+            <button class="mobile-menu__close" id="mobile-menu-close" aria-label="Close menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <nav class="mobile-menu__nav">
+                <ul class="mobile-menu__list">
+                    <li class="mobile-menu__item"><a href="#concept" class="mobile-menu__link">{{nav_concept}}</a></li>
+                    <li class="mobile-menu__item"><a href="#amenities" class="mobile-menu__link">{{nav_amenities}}</a></li>
+                    <li class="mobile-menu__item"><a href="#gallery" class="mobile-menu__link">{{nav_gallery}}</a></li>
+                    <li class="mobile-menu__item"><a href="#floor-plan" class="mobile-menu__link">{{nav_floorplans}}</a></li>
+                    <li class="mobile-menu__item"><a href="#investment" class="mobile-menu__link">{{nav_investment}}</a></li>
+                    <li class="mobile-menu__item"><a href="#location" class="mobile-menu__link">{{nav_location}}</a></li>
+                    <li class="mobile-menu__item"><a href="#contact" class="mobile-menu__link">{{nav_contact}}</a></li>
+                </ul>
+            </nav>
+            {{{lang_switcher_mobile}}}
+            <button class="mobile-menu__cta btn btn--primary" data-modal="presentation">{{cta_presentation}}</button>
+        </div>
+    </div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero__bg">
+                <img src="{{=hero_image}}" alt="{{=hero_image_alt}}" class="hero__bg-img">
+                <div class="hero__overlay"></div>
+            </div>
+            <div class="hero__container">
+                <div class="hero__content">
+                    <p class="hero__tagline">{{hero_tagline}}</p>
+                    <h1 class="hero__title">{{hero_title}}</h1>
+                    <p class="hero__subtitle">{{hero_subtitle}}</p>
+                    <div class="hero__actions">
+                        <button class="btn btn--primary btn--lg" data-modal="presentation">{{cta_presentation}}</button>
+                        <a href="#concept" class="btn btn--outline btn--lg">{{hero_btn_explore}}</a>
+                    </div>
+                    <div class="hero__stats">
+                        {{#hero_stats}}
+                        <div class="hero__stat">
+                            <span class="hero__stat-value">{{value}}</span>
+                            <span class="hero__stat-label">{{label}}</span>
+                        </div>
+                        {{/hero_stats}}
+                    </div>
+                </div>
+            </div>
+            <a href="#concept" class="hero__scroll" aria-label="Scroll down">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </a>
+        </section>
+
+        <!-- Concept Section -->
+        <section class="concept section" id="concept">
+            <div class="container">
+                <div class="section__header">
+                    <p class="section__label">{{concept_label}}</p>
+                    <h2 class="section__title">{{concept_title}}</h2>
+                    <p class="section__desc">{{concept_text}}</p>
+                </div>
+                <div class="concept__grid">
+                    {{#concept_features}}
+                    <div class="concept__card{{_large_class}}">
+                        <img src="{{=image}}" alt="{{=alt}}" class="concept__card-img" loading="lazy">
+                        <div class="concept__card-content">
+                            <h3 class="concept__card-title">{{title}}</h3>
+                            <p class="concept__card-text">{{text}}</p>
+                        </div>
+                    </div>
+                    {{/concept_features}}
+                </div>
+            </div>
+        </section>
+
+        <!-- Amenities Section -->
+        <section class="amenities section section--dark" id="amenities">
+            <div class="container">
+                <div class="section__header">
+                    <p class="section__label">{{amenities_label}}</p>
+                    <h2 class="section__title">{{amenities_title}}</h2>
+                    <p class="section__desc">{{amenities_subtitle}}</p>
+                </div>
+                <div class="amenities__grid">
+                    {{#amenities_items}}
+                    <div class="amenities__item">
+                        <div class="amenities__icon">
+                            {{{icon}}}
+                        </div>
+                        <h3 class="amenities__title">{{title}}</h3>
+                        <p class="amenities__text">{{text}}</p>
+                    </div>
+                    {{/amenities_items}}
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section class="gallery section" id="gallery">
+            <div class="container">
+                <div class="section__header">
+                    <p class="section__label">{{gallery_label}}</p>
+                    <h2 class="section__title">{{gallery_title}}</h2>
+                    <p class="section__desc">{{gallery_subtitle}}</p>
+                </div>
+                <div class="gallery__grid">
+                    {{{gallery_html}}}
+                </div>
+            </div>
+        </section>
+
+        <!-- Floor Plan Section -->
+        <section class="floor-plan section" id="floor-plan">
+            <div class="container">
+                <div class="section__header">
+                    <p class="section__label">{{floorplans_label}}</p>
+                    <h2 class="section__title">{{floorplans_title}}</h2>
+                    <p class="section__desc">{{floorplans_subtitle}}</p>
+                </div>
+                <div class="floor-plan__grid">
+                    {{#floorplans}}
+                    <div class="floor-plan__card{{_featured_class}}">
+                        <div class="floor-plan__card-img-wrap">
+                            <img src="{{=image}}" alt="{{=alt}}" class="floor-plan__card-img" loading="lazy">
+                            <span class="floor-plan__card-badge">{{badge}}</span>
+                            {{{popular_html}}}
+                        </div>
+                        <div class="floor-plan__card-content">
+                            <h3 class="floor-plan__card-title">{{name}}</h3>
+                            <ul class="floor-plan__card-features">
+                                {{{details_html}}}
+                            </ul>
+                            <button class="btn btn--primary btn--full" data-modal="presentation">{{floorplan_btn}}</button>
+                        </div>
+                    </div>
+                    {{/floorplans}}
+                </div>
+            </div>
+        </section>
+
+        <!-- Investment Section -->
+        <section class="investment section section--dark" id="investment">
+            <div class="container">
+                <div class="section__header">
+                    <p class="section__label">{{investment_label}}</p>
+                    <h2 class="section__title">{{investment_title}}</h2>
+                    <p class="section__desc">{{investment_subtitle}}</p>
+                </div>
+                <div class="investment__table-wrap">
+                    <div class="investment__table-scroll">
+                        {{{investment_table_html}}}
+                    </div>
+                </div>
+                <div class="investment__cta">
+                    <p class="investment__cta-text">{{investment_cta_text}}</p>
+                    <button class="btn btn--primary btn--lg" data-modal="presentation">{{investment_cta_btn}}</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Location Section -->
+        <section class="location section" id="location">
+            <div class="container">
+                <div class="section__header">
+                    <p class="section__label">{{location_label}}</p>
+                    <h2 class="section__title">{{location_title}}</h2>
+                    <p class="section__desc">{{location_text}}</p>
+                </div>
+                <div class="location__content">
+                    <div class="location__info">
+                        <div class="location__distances">
+                            {{#location_distances}}
+                            <div class="location__distance">
+                                <span class="location__distance-time">{{time}}</span>
+                                <span class="location__distance-place">{{place}}</span>
+                            </div>
+                            {{/location_distances}}
+                        </div>
+                    </div>
+                    <div class="location__map">
+                        <iframe
+                            src="{{=map_embed}}"
+                            width="100%"
+                            height="450"
+                            style="border:0;"
+                            allowfullscreen=""
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            title="{{=map_title}}">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact section section--dark" id="contact">
+            <div class="container">
+                <div class="section__header">
+                    <p class="section__label">{{contact_label}}</p>
+                    <h2 class="section__title">{{contact_title}}</h2>
+                    <p class="section__desc">{{contact_desc}}</p>
+                </div>
+                <div class="contact__content">
+                    <form class="contact__form" id="contact-form" novalidate>
+                        <div class="contact__form-group">
+                            <label class="contact__form-label" for="contact-name">{{form_label_name}}</label>
+                            <input type="text" class="contact__form-input" id="contact-name" name="name" placeholder="{{=placeholder_name}}" required>
+                            <span class="contact__form-error" id="error-name"></span>
+                        </div>
+                        <div class="contact__form-group">
+                            <label class="contact__form-label" for="contact-email">{{form_label_email}}</label>
+                            <input type="email" class="contact__form-input" id="contact-email" name="email" placeholder="{{=placeholder_email}}" required>
+                            <span class="contact__form-error" id="error-email"></span>
+                        </div>
+                        <div class="contact__form-group">
+                            <label class="contact__form-label" for="contact-phone">{{form_label_phone}}</label>
+                            <input type="tel" class="contact__form-input" id="contact-phone" name="phone" placeholder="{{=placeholder_phone}}" required>
+                            <span class="contact__form-error" id="error-phone"></span>
+                        </div>
+                        <div class="contact__form-group">
+                            <label class="contact__form-label" for="contact-message">{{form_label_message}}</label>
+                            <textarea class="contact__form-input contact__form-textarea" id="contact-message" name="message" placeholder="{{=placeholder_message}}" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn--primary btn--full">{{form_submit}}</button>
+                    </form>
+                    <div class="contact__info">
+                        <div class="contact__info-item">
+                            <h3 class="contact__info-title">{{contact_office_title}}</h3>
+                            <p class="contact__info-text">{{contact_address}}</p>
+                        </div>
+                        <div class="contact__info-item">
+                            <h3 class="contact__info-title">{{contact_phone_title}}</h3>
+                            <p class="contact__info-text"><a href="tel:{{=phone}}" class="contact__info-link">{{=phone_display}}</a></p>
+                        </div>
+                        <div class="contact__info-item">
+                            <h3 class="contact__info-title">{{contact_email_title}}</h3>
+                            <p class="contact__info-text"><a href="mailto:{{=email}}" class="contact__info-link">{{=email}}</a></p>
+                        </div>
+                        <div class="contact__info-item">
+                            <h3 class="contact__info-title">{{contact_hours_title}}</h3>
+                            <p class="contact__info-text">{{schedule}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <div class="footer__brand">
+                    <span class="footer__logo">{{project_name}}</span>
+                    <p class="footer__tagline">{{footer_tagline}}</p>
+                </div>
+                <div class="footer__links">
+                    <a href="#concept" class="footer__link">{{nav_concept}}</a>
+                    <a href="#amenities" class="footer__link">{{nav_amenities}}</a>
+                    <a href="#gallery" class="footer__link">{{nav_gallery}}</a>
+                    <a href="#floor-plan" class="footer__link">{{nav_floorplans}}</a>
+                    <a href="#investment" class="footer__link">{{nav_investment}}</a>
+                    <a href="#location" class="footer__link">{{nav_location}}</a>
+                    <a href="#contact" class="footer__link">{{nav_contact}}</a>
+                </div>
+                <div class="footer__contacts">
+                    <a href="tel:{{=phone}}" class="footer__contact-link">{{=phone_display}}</a>
+                    <a href="mailto:{{=email}}" class="footer__contact-link">{{=email}}</a>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p class="footer__copy">&copy; {{year}} {{project_name}}. {{copyright_text}}</p>
+                <p class="footer__disclaimer">{{disclaimer_text}}</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div class="modal" id="modal-presentation">
+        <div class="modal__overlay"></div>
+        <div class="modal__container">
+            <button class="modal__close" aria-label="Close modal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="modal__content">
+                <h3 class="modal__title">{{modal_title}}</h3>
+                <p class="modal__desc">{{modal_desc}}</p>
+                <form class="modal__form" id="modal-form" novalidate>
+                    <div class="modal__form-group">
+                        <label class="modal__form-label" for="modal-name">{{form_label_name}}</label>
+                        <input type="text" class="modal__form-input" id="modal-name" name="name" placeholder="{{=placeholder_name}}" required>
+                        <span class="modal__form-error" id="modal-error-name"></span>
+                    </div>
+                    <div class="modal__form-group">
+                        <label class="modal__form-label" for="modal-email">{{form_label_email}}</label>
+                        <input type="email" class="modal__form-input" id="modal-email" name="email" placeholder="{{=placeholder_email}}" required>
+                        <span class="modal__form-error" id="modal-error-email"></span>
+                    </div>
+                    <div class="modal__form-group">
+                        <label class="modal__form-label" for="modal-phone">{{form_label_phone}}</label>
+                        <input type="tel" class="modal__form-input" id="modal-phone" name="phone" placeholder="{{=placeholder_phone}}" required>
+                        <span class="modal__form-error" id="modal-error-phone"></span>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--full">{{cta_presentation}}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="modal-success">
+        <div class="modal__overlay"></div>
+        <div class="modal__container modal__container--sm">
+            <button class="modal__close" aria-label="Close modal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="modal__content modal__content--center">
+                <div class="modal__success-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                </div>
+                <h3 class="modal__title">{{success_title}}</h3>
+                <p class="modal__desc">{{success_desc}}</p>
+                <button class="btn btn--primary" onclick="closeAllModals()">{{success_close_btn}}</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox__overlay"></div>
+        <button class="lightbox__close" aria-label="Close lightbox">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <button class="lightbox__nav lightbox__nav--prev" aria-label="Previous image">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+        <button class="lightbox__nav lightbox__nav--next" aria-label="Next image">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 6 15 12 9 18"></polyline>
+            </svg>
+        </button>
+        <div class="lightbox__content">
+            <img class="lightbox__img" src="" alt="">
+        </div>
+        <div class="lightbox__counter"></div>
+    </div>
+
+    <script>
+    {{{inline_js}}}
+    {{{lang_js}}}
+    </script>
+</body>
+</html>

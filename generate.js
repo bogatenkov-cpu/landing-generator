@@ -1084,5 +1084,497 @@ function main() {
   }
 }
 
-module.exports = { generateHTML, TEMPLATES };
+// ══════════════════════════════════════════════════════════════════
+// TEMPLATE-BASED GENERATION (1:1 original designs)
+// ══════════════════════════════════════════════════════════════════
+
+var TEMPLATE_DIR = path.join(__dirname, 'templates');
+
+// Check if a template has files (CSS/JS/HTML) in templates/ directory
+function hasTemplateFiles(templateId) {
+  var dir = path.join(TEMPLATE_DIR, templateId);
+  try {
+    return fs.existsSync(path.join(dir, 'template.html')) &&
+           fs.existsSync(path.join(dir, 'style.css')) &&
+           fs.existsSync(path.join(dir, 'main.js'));
+  } catch(e) { return false; }
+}
+
+// Get list of file-based templates
+function getFileTemplates() {
+  try {
+    return fs.readdirSync(TEMPLATE_DIR).filter(function(dir) {
+      return hasTemplateFiles(dir);
+    });
+  } catch(e) { return []; }
+}
+
+// Mini template engine
+// Supports: {{var}}, {{=var}}, {{{raw}}}, {{#array}}...{{/array}}
+function renderTemplateEngine(template, data, langs) {
+  var html = template;
+
+  // 1. Process loops: {{#key}}...{{/key}}
+  html = html.replace(/\{\{#(\w+)\}\}([\s\S]*?)\{\{\/\1\}\}/g, function(match, key, body) {
+    var arr = data[key];
+    if (!Array.isArray(arr)) return '';
+    return arr.map(function(item, i) {
+      var itemHtml = body;
+      // Replace {{{field}}} raw HTML inside loop
+      itemHtml = itemHtml.replace(/\{\{\{(\w+)\}\}\}/g, function(m, k) {
+        return String(item[k] || '');
+      });
+      // Replace {{=field}} attribute-safe inside loop
+      itemHtml = itemHtml.replace(/\{\{=(\w+)\}\}/g, function(m, k) {
+        if (k === '_index') return String(i);
+        return tAttr(item[k], langs);
+      });
+      // Replace {{_active_*}} — outputs active class for first item
+      itemHtml = itemHtml.replace(/\{\{_active_class\}\}/g, i === 0 ? ' floorplans__tab--active' : '');
+      itemHtml = itemHtml.replace(/\{\{_active_class_panel\}\}/g, i === 0 ? ' floorplans__panel--active' : '');
+      itemHtml = itemHtml.replace(/\{\{_active\}\}/g, i === 0 ? ' active' : '');
+      // Replace {{field}} with multi-lang text inside loop
+      itemHtml = itemHtml.replace(/\{\{(\w+)\}\}/g, function(m, k) {
+        if (k === '_index') return String(i);
+        if (k === '_num') return String(i + 1);
+        return t(item[k] || '', langs);
+      });
+      return itemHtml;
+    }).join('');
+  });
+
+  // 2. Raw HTML: {{{key}}}
+  html = html.replace(/\{\{\{(\w+)\}\}\}/g, function(m, key) {
+    return String(data[key] || '');
+  });
+
+  // 3. Attribute-safe: {{=key}}
+  html = html.replace(/\{\{=(\w+)\}\}/g, function(m, key) {
+    var val = data[key];
+    if (val === undefined || val === null) return '';
+    return tAttr(val, langs);
+  });
+
+  // 4. Normal text: {{key}}
+  html = html.replace(/\{\{(\w+)\}\}/g, function(m, key) {
+    var val = data[key];
+    if (val === undefined || val === null) return '';
+    return t(val, langs);
+  });
+
+  return html;
+}
+
+// Build language switcher HTML for templates (button-style, not links)
+function buildTemplateLangSwitcher(langs, cssPrefix) {
+  if (langs.length <= 1) return '';
+  var cls = cssPrefix || 'header__lang';
+  return langs.map(function(l, i) {
+    return (i > 0 ? '<span class="' + cls + '-sep">|</span>' : '') +
+      '<button class="' + cls + '-link' + (i === 0 ? ' ' + cls + '-link--active' : '') +
+      '" data-lang-btn="' + l + '" onclick="switchLang(\'' + l + '\')">' + l.toUpperCase() + '</button>';
+  }).join('');
+}
+
+// Build Schema.org JSON-LD for template
+function buildTemplateSchema(d, langs) {
+  var schema = {
+    '@context': 'https://schema.org',
+    '@type': 'RealEstateAgent',
+    name: tAttr(d.project_name, langs),
+    description: tAttr(d.meta_description || '', langs),
+    url: d.canonical_url || '',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: tAttr(d.location ? d.location.title : '', langs),
+      addressCountry: 'TH'
+    },
+    openingHoursSpecification: {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+      opens: '09:00', closes: '18:00'
+    }
+  };
+  if (d.contact && d.contact.phone) schema.telephone = d.contact.phone;
+  if (d.hero && d.hero.image) schema.image = d.hero.image;
+  var rows = d.roi && d.roi.rows || [];
+  if (rows.length) {
+    schema.makesOffer = rows.map(function(r) {
+      return { '@type': 'Offer', name: tAttr(r.type, langs), price: tAttr(r.price, langs), priceCurrency: d.currency || 'USD' };
+    });
+  }
+  return JSON.stringify(schema, null, 2);
+}
+
+// Build investment table HTML for template (pre-built, since table structure varies)
+function buildTemplateInvestmentTable(d, langs) {
+  var rows = d.roi && d.roi.rows || [];
+  if (!rows.length) return '';
+  // Auto-detect columns from first row keys
+  var cols = Object.keys(rows[0]).filter(function(k) { return k !== 'id'; });
+  var thead = '<thead><tr>' + cols.map(function(c) {
+    return '<th class="investment__th investment__th--sticky">' + t(c.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); }), langs) + '</th>';
+  }).join('') + '</tr></thead>';
+  var tbody = '<tbody>' + rows.map(function(r) {
+    return '<tr class="investment__tr">' + cols.map(function(c) {
+      return '<td class="investment__td">' + t(r[c] || '', langs) + '</td>';
+    }).join('') + '</tr>';
+  }).join('') + '</tbody>';
+  return '<table class="investment__table">' + thead + tbody + '</table>';
+}
+
+// Build gallery HTML for template
+function buildTemplateGalleryHTML(d, langs, templateId) {
+  var images = d.gallery && d.gallery.images || [];
+  if (!images.length) return '';
+
+  return images.map(function(img, i) {
+    var src = typeof img === 'string' ? img : (img.url || img.src || '');
+    var alt = typeof img === 'object' && img.alt ? tAttr(img.alt, langs) : 'Gallery ' + (i + 1);
+    return '<div class="gallery__item" style="flex-grow:' + (i % 3 === 0 ? '1.5' : '1') + '">' +
+      '<img src="' + esc(src) + '" alt="' + alt + '" width="900" height="600" loading="lazy">' +
+      '</div>';
+  }).join('\n            ');
+}
+
+// Build lang switching JS for template
+function buildTemplateLangJS(langs) {
+  if (langs.length <= 1) return '';
+  return `
+    // Language switcher
+    function switchLang(lang) {
+      document.body.setAttribute('data-lang', lang);
+      document.querySelectorAll('[data-lang-btn]').forEach(function(b) {
+        var cls = b.className.replace(/--active/g, '');
+        b.className = b.getAttribute('data-lang-btn') === lang ? cls + '--active' : cls;
+      });
+    }`;
+}
+
+// Prepare flat data object for template rendering
+function prepareTemplateData(data, langs) {
+  var d = data;
+  var multiLang = langs.length > 1;
+  var defaultLang = langs[0];
+  var phone = d.contact && d.contact.phone || '';
+  var phoneClean = phone.replace(/[^\d+]/g, '');
+  var email = d.contact && d.contact.email || '';
+  var wa = d.contact && d.contact.whatsapp || phone;
+  var waClean = wa ? wa.replace(/[^\d]/g, '') : '';
+  var waLink = waClean ? 'https://wa.me/' + waClean : '';
+
+  // Build template font import
+  var tmpl = TEMPLATES[d.template] || TEMPLATES.default;
+  var fontImport = tmpl.fontImport || "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap";
+
+  // Concept features — normalize from specs or features
+  var conceptFeatures = [];
+  if (d.concept && d.concept.features) {
+    conceptFeatures = d.concept.features.map(function(f) {
+      return {
+        title: f.title || f.key || '',
+        text: f.text || f.value || f.description || '',
+        image: f.image || (d.concept && d.concept.image) || (d.hero && d.hero.image) || ''
+      };
+    });
+  } else if (d.concept && d.concept.specs) {
+    conceptFeatures = d.concept.specs.map(function(s) {
+      return {
+        title: s.key || '',
+        text: s.value || '',
+        image: s.image || (d.concept && d.concept.image) || (d.hero && d.hero.image) || ''
+      };
+    });
+  }
+
+  // Amenities items — normalize
+  var amenitiesItems = [];
+  if (d.amenities && d.amenities.items) {
+    amenitiesItems = d.amenities.items.map(function(item) {
+      if (typeof item === 'string') return { title: item, text: '', image: (d.amenities && d.amenities.image) || '' };
+      return {
+        title: item.title || '',
+        text: item.description || item.text || '',
+        image: item.image || (d.amenities && d.amenities.image) || ''
+      };
+    });
+  }
+
+  // Floor plans — normalize from layouts or floorplans
+  var floorplans = [];
+  var rawPlans = d.floorplans && d.floorplans.items || d.layouts || [];
+  floorplans = rawPlans.map(function(fp, i) {
+    var details = [];
+    if (fp.specs) {
+      details = fp.specs.map(function(s) {
+        return '<li class="floorplans__plan-detail"><span>' + t(s.key, langs) + '</span><strong>' + t(s.value, langs) + '</strong></li>';
+      });
+    } else if (fp.details) {
+      details = fp.details.map(function(d) {
+        return '<li class="floorplans__plan-detail"><span>' + t(d.label || d.key, langs) + '</span><strong>' + t(d.value, langs) + '</strong></li>';
+      });
+    }
+    return {
+      id: fp.id || ('type' + (i + 1)),
+      tab_name: fp.tab_name || fp.name || fp.type || ('Type ' + (i + 1)),
+      name: fp.name || fp.type || '',
+      image: fp.image || (d.hero && d.hero.image) || '',
+      details_html: details.length ? '<ul class="floorplans__plan-details">' + details.join('') + '</ul>' : '',
+      price: fp.price_from || fp.price || '',
+      modal_title: fp.name || fp.type || '',
+      modal_desc: 'Request detailed specifications and availability.'
+    };
+  });
+
+  // Location distances
+  var distances = d.location && d.location.distances || [];
+  var distIcons = [
+    '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 21L12 3L21 21H3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 20h20M4 20V10l8-6 8 6v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg>',
+    '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
+  ];
+  var locationDistances = distances.map(function(d, i) {
+    return {
+      place: d.place || d.name || '',
+      time: d.time || d.value || d.distance || '',
+      icon: distIcons[i % distIcons.length]
+    };
+  });
+
+  // Developer facts
+  var devFacts = d.developer && d.developer.facts || d.developer && d.developer.highlights || [];
+  var developerFacts = devFacts.map(function(f) {
+    return {
+      value: f.value || f.number || '',
+      label: f.key || f.label || f.text || ''
+    };
+  });
+
+  // Gallery rows for justified layout (Annara style)
+  var galleryImages = d.gallery && d.gallery.images || [];
+  var galleryRowsHtml = '';
+  if (galleryImages.length) {
+    var rowSizes = [2, 3, 2];
+    var idx = 0;
+    var rows = [];
+    for (var r = 0; idx < galleryImages.length; r++) {
+      var count = rowSizes[r % rowSizes.length];
+      var rowItems = [];
+      for (var c = 0; c < count && idx < galleryImages.length; c++, idx++) {
+        var img = galleryImages[idx];
+        var src = typeof img === 'string' ? img : (img.url || img.src || '');
+        var alt = typeof img === 'object' && img.alt ? esc(img.alt) : 'Gallery ' + (idx + 1);
+        var grow = (c === 0 && count === 2) ? '1.5' : '1';
+        rowItems.push('            <div class="gallery__item" style="flex-grow:' + grow + '">\n              <img src="' + esc(src) + '" alt="' + alt + '" width="900" height="600" loading="lazy">\n            </div>');
+      }
+      rows.push('          <div class="gallery__row">\n' + rowItems.join('\n') + '\n          </div>');
+    }
+    galleryRowsHtml = rows.join('\n');
+  }
+
+  // Flat gallery array for simpler templates
+  var galleryItems = galleryImages.map(function(img, i) {
+    var src = typeof img === 'string' ? img : (img.url || img.src || '');
+    var alt = typeof img === 'object' && img.alt ? img.alt : 'Gallery ' + (i + 1);
+    return { url: src, alt: alt };
+  });
+
+  // FAQ items
+  var faqItems = d.faq && d.faq.items || d.faq || [];
+  if (Array.isArray(faqItems)) {
+    faqItems = faqItems.map(function(f) {
+      return { question: f.question || f.q || '', answer: f.answer || f.a || '' };
+    });
+  }
+
+  return {
+    // SEO & Meta
+    meta_title: d.meta_title || d.project_name || '',
+    meta_description: d.meta_description || '',
+    canonical_url: d.canonical_url || '',
+    og_image: d.og_image || (d.hero && d.hero.image) || '',
+    schema_json: buildTemplateSchema(d, langs),
+    font_import: '<link rel="preconnect" href="https://fonts.googleapis.com">\n  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <link href="' + esc(fontImport) + '" rel="stylesheet">',
+
+    // Project
+    project_name: d.project_name || '',
+    cta_text: d.cta_text || {en: 'Get Offer', ru: 'Получить предложение'},
+
+    // Hero
+    hero_image: d.hero && d.hero.image || '',
+    hero_title: d.hero && d.hero.title || d.project_name || '',
+    hero_subtitle: d.hero && (d.hero.subtitle || d.hero.description) || '',
+    hero_stats: d.hero && d.hero.stats || [],
+
+    // Concept
+    concept_title: d.concept && d.concept.title || '',
+    concept_text: d.concept && (d.concept.description || (d.concept.paragraphs && d.concept.paragraphs.length ? d.concept.paragraphs[0] : '')) || '',
+    concept_image: d.concept && d.concept.image || (d.hero && d.hero.image) || '',
+    concept_features: conceptFeatures,
+
+    // Amenities
+    amenities_title: d.amenities && d.amenities.title || '',
+    amenities_subtitle: d.amenities && d.amenities.subtitle || '',
+    amenities_items: amenitiesItems,
+
+    // Floor plans
+    floorplans_title: d.floorplans && d.floorplans.title || (d.project_name ? d.project_name + ' Floor Plans' : 'Floor Plans'),
+    floorplans: floorplans,
+
+    // Investment / ROI
+    investment_title: d.roi && d.roi.title || '',
+    investment_subtitle: d.roi && d.roi.subtitle || '',
+    investment_table_html: buildTemplateInvestmentTable(d, langs),
+
+    // Lead Magnet
+    leadmagnet_title: d.leadmagnet && d.leadmagnet.title || {en: 'Get the Developer Catalog', ru: 'Получите каталог застройщика'},
+    leadmagnet_text: d.leadmagnet && d.leadmagnet.text || {en: 'Receive detailed floor plans, pricing, and investment prospectus.', ru: 'Получите подробные планировки, цены и инвестиционный проспект.'},
+
+    // Gallery
+    gallery_html: galleryRowsHtml,
+    gallery_items: galleryItems,
+
+    // Developer
+    developer_name: d.developer && d.developer.name || '',
+    developer_title: d.developer && d.developer.title || {en: 'Built by Experts', ru: 'Построено экспертами'},
+    developer_text: d.developer && d.developer.description || '',
+    developer_image: d.developer && d.developer.image || '',
+    developer_facts: developerFacts,
+
+    // Location
+    location_title: d.location && d.location.title || '',
+    location_text: d.location && d.location.description || '',
+    location_distances: locationDistances,
+    map_embed: d.location && d.location.map_embed || '',
+
+    // Contact
+    phone: phone,
+    phone_clean: phoneClean,
+    email: email,
+    whatsapp: wa,
+    whatsapp_link: waLink,
+    website: d.contact && d.contact.website || '',
+    schedule: {en: 'Mon \u2013 Sun, 9:00 \u2013 18:00', ru: '\u041f\u043d \u2013 \u0412\u0441, 9:00 \u2013 18:00'},
+
+    // Footer
+    footer_tagline: d.footer_tagline || (d.hero && d.hero.subtitle) || '',
+    year: String(new Date().getFullYear()),
+    copyright_text: {en: 'All rights reserved.', ru: 'Все права защищены.'},
+    footer_form_title: {en: 'Request a Callback', ru: 'Заказать обратный звонок'},
+
+    // Navigation labels
+    nav_concept: {en: 'Concept', ru: 'Концепция'},
+    nav_amenities: {en: 'Amenities', ru: 'Удобства'},
+    nav_floorplans: {en: 'Floor Plans', ru: 'Планировки'},
+    nav_investment: {en: 'Investment', ru: 'Инвестиции'},
+    nav_gallery: {en: 'Gallery', ru: 'Галерея'},
+    nav_location: {en: 'Location', ru: 'Расположение'},
+    nav_contact: {en: 'Contact', ru: 'Контакты'},
+    nav_developer: {en: 'Developer', ru: 'Застройщик'},
+    nav_faq: {en: 'FAQ', ru: 'Вопросы'},
+
+    // Section labels
+    concept_label: {en: 'About the project', ru: 'О проекте'},
+    amenities_label: {en: 'Lifestyle', ru: 'Образ жизни'},
+    floorplans_label: {en: 'Residences', ru: 'Резиденции'},
+    investment_label: {en: 'Returns', ru: 'Доходность'},
+    investment_disclaimer: {en: '* Projected figures based on current market trends. Actual returns may vary.', ru: '* Прогнозные данные на основе текущих рыночных тенденций. Фактическая доходность может отличаться.'},
+    leadmagnet_label: {en: 'Free Download', ru: 'Бесплатная загрузка'},
+    leadmagnet_submit: {en: 'Download Catalog', ru: 'Скачать каталог'},
+    gallery_label: {en: 'Visual Tour', ru: 'Визуальный тур'},
+    gallery_title: {en: 'Gallery', ru: 'Галерея'},
+    developer_label: {en: 'The Developer', ru: 'Застройщик'},
+    location_label: {en: 'Where we are', ru: 'Расположение'},
+
+    // CTA & Modal defaults
+    cta_modal_title: d.cta_modal_title || {en: 'Get a Special Offer', ru: 'Получить специальное предложение'},
+    cta_modal_desc: d.cta_modal_desc || {en: 'Leave your details and our manager will prepare a personalized offer for you.', ru: 'Оставьте ваши данные и наш менеджер подготовит для вас персональное предложение.'},
+
+    // Hero buttons
+    hero_btn_primary: {en: 'View Floor Plans', ru: 'Смотреть планировки'},
+    hero_btn_secondary: {en: 'Request a Consultation', ru: 'Заказать консультацию'},
+    hero_consult_title: {en: 'Request a Consultation', ru: 'Заказать консультацию'},
+    hero_consult_desc: {en: 'Our expert will contact you to discuss the best options for your goals.', ru: 'Наш эксперт свяжется с вами для обсуждения лучших вариантов.'},
+    hero_image_alt: tAttr(d.project_name, langs) + ' luxury property',
+    scroll_text: {en: 'Scroll', ru: 'Прокрутка'},
+
+    // Concept extras
+    concept_image_alt: tAttr(d.project_name, langs) + ' exterior',
+
+    // Floor plan button
+    floorplan_btn: {en: 'Request Details', ru: 'Запросить детали'},
+
+    // Form placeholders
+    placeholder_name: {en: 'Your name', ru: 'Ваше имя'},
+    placeholder_email: {en: 'Email address', ru: 'Email'},
+    placeholder_phone: {en: '+66 XXX XXX XXXX', ru: '+66 XXX XXX XXXX'},
+    form_submit: {en: 'Send Request', ru: 'Отправить заявку'},
+
+    // Contact display
+    phone_display: phone,
+    map_title: tAttr(d.project_name, langs) + ' location on Google Maps',
+
+    // Developer extras
+    developer_image_alt: tAttr(d.developer && d.developer.name || '', langs),
+
+    // FAQ
+    faq_items: faqItems,
+
+    // Pre-built HTML
+    inline_css: '',  // filled by generateFromTemplate
+    inline_js: '',   // filled by generateFromTemplate
+    lang_css: multiLang ? '[data-lang]{display:none}' + langs.map(function(l) { return 'body[data-lang="' + l + '"] [data-lang="' + l + '"]{display:revert}'; }).join('') : '',
+    body_lang_attr: multiLang ? ' data-lang="' + defaultLang + '"' : '',
+    lang_switcher_header: buildTemplateLangSwitcher(langs, 'header__lang'),
+    lang_switcher_mobile: buildTemplateLangSwitcher(langs, 'mobile-menu__lang'),
+    lang_js: buildTemplateLangJS(langs),
+
+    // Webhook
+    webhook: esc(d.crm_webhook || ''),
+    project_name_attr: tAttr(d.project_name, langs),
+    default_lang: defaultLang
+  };
+}
+
+// Generate HTML from file-based template
+function generateFromTemplate(data) {
+  var templateId = data.template;
+  var dir = path.join(TEMPLATE_DIR, templateId);
+  var langs = data.languages && data.languages.length ? data.languages : ['en'];
+
+  // Load template files
+  var templateHtml = fs.readFileSync(path.join(dir, 'template.html'), 'utf8');
+  var css = fs.readFileSync(path.join(dir, 'style.css'), 'utf8');
+  var js = fs.readFileSync(path.join(dir, 'main.js'), 'utf8');
+
+  // Prepare data
+  var tplData = prepareTemplateData(data, langs);
+
+  // Inject CSS and JS
+  tplData.inline_css = css + (tplData.lang_css ? '\n    ' + tplData.lang_css : '');
+  tplData.inline_js = js + (tplData.lang_js || '');
+
+  // Render template
+  return renderTemplateEngine(templateHtml, tplData, langs);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// UNIFIED GENERATE: routes to template-based or programmatic
+// ══════════════════════════════════════════════════════════════════
+
+var originalGenerateHTML = generateHTML;
+
+generateHTML = function(data) {
+  var templateId = data.template || 'default';
+  // If template has files in templates/, use file-based generation
+  if (templateId !== 'default' && hasTemplateFiles(templateId)) {
+    return generateFromTemplate(data);
+  }
+  // Otherwise, use the original programmatic generation
+  return originalGenerateHTML(data);
+};
+
+module.exports = { generateHTML, TEMPLATES, getFileTemplates, hasTemplateFiles };
 if (require.main === module) main();

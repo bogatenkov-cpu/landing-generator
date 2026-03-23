@@ -1,0 +1,11 @@
+{
+  "id": "angsana-oceanview",
+  "name": "Angsana Oceanview",
+  "description": "Navy blue & gold, premium resort with branded residences",
+  "preview_colors": ["#0b1a2e", "#c9a96e", "#f5f2ed"],
+  "fonts": {
+    "heading": "Cormorant Garamond",
+    "body": "Outfit"
+  },
+  "sections": ["concept", "amenities", "floorplans", "investment", "gallery", "location", "faq", "footer"]
+}

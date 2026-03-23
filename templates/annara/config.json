@@ -1,0 +1,11 @@
+{
+  "id": "annara",
+  "name": "Annara",
+  "description": "Sage green & sand, warm sophistication with justified gallery",
+  "preview_colors": ["#5a7a64", "#c8a96e", "#f5f0e8"],
+  "fonts": {
+    "heading": "Cormorant Garamond",
+    "body": "Outfit"
+  },
+  "sections": ["concept", "amenities", "floorplans", "investment", "leadmagnet", "gallery", "developer", "location", "footer"]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "asi-village",
+  "name": "Asi Village",
+  "description": "Forest green & gold, eco-luxury villas with inline CTA",
+  "preview_colors": ["#1a3c34", "#c9a96e", "#efeae0"],
+  "fonts": {
+    "heading": "Playfair Display",
+    "body": "Inter"
+  },
+  "sections": ["concept", "amenities", "floorplans", "investment", "gallery", "location", "footer"]
+}
