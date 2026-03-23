@@ -665,14 +665,36 @@ function collectFormData() {
       facts: devFacts
     },
     contact: {
-      address: v('f_contact_address'),
-      email: v('f_contact_email'),
+      phone: v('f_contact_phone'),
+      whatsapp: v('f_contact_whatsapp'),
       website: v('f_contact_website')
-    }
+    },
+    canonical_url: v('f_canonical_url')
   };
 }
 
 // ── Save ──────────────────────────────────────────────────
+async function suggestDomains() {
+  var name = (document.getElementById('f_name') || {}).value || '';
+  if (!name) { alert('Fill in the Project Name first'); return; }
+  var loc = '';
+  // Try to get location from concept specs or location title
+  var locField = document.getElementById('f_loc_title');
+  if (locField) loc = locField.value;
+  var btn = document.querySelector('[onclick="suggestDomains()"]');
+  if (btn) btn.disabled = true;
+  try {
+    var r = await apiFetch('/api/suggest-domains', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ project_name: name, location: loc }) });
+    var out = document.getElementById('domainSuggestions');
+    if (r.ok && r.domains) {
+      out.innerHTML = r.domains.map(function(d) { return '<div style="cursor:pointer;padding:3px 0;color:#2563eb" onclick="document.getElementById(\'f_canonical_url\').value=\'https://\'+this.textContent.trim()" title="Click to use">' + s(d) + '</div>'; }).join('');
+    } else {
+      out.textContent = 'Error: ' + (r.error || 'Unknown');
+    }
+  } catch(e) { alert(e.message); }
+  if (btn) btn.disabled = false;
+}
+
 async function saveProject() {
   var data = collectFormData();
   if(!data.project_slug) { alert('Fill in the Project Slug field'); return; }
@@ -1219,11 +1241,16 @@ function renderForm(d) {
     + '<div class="section-card__title">Contact</div>'
     + '<span class="section-card__chevron">&#9660;</span></div>'
     + '<div class="section-card__body">'
-    + '<div class="field"><label>Address</label><input id="f_contact_address" value="' + s(contact.address) + '" /></div>'
     + '<div class="field-row">'
-    + '<div class="field"><label>Email</label><input id="f_contact_email" type="email" value="' + s(contact.email) + '" /></div>'
-    + '<div class="field"><label>Website</label><input id="f_contact_website" value="' + s(contact.website) + '" placeholder="www.example.com" /></div>'
-    + '</div></div></div>'
+    + '<div class="field"><label>Phone</label><input id="f_contact_phone" type="tel" value="' + s(contact.phone || '') + '" placeholder="+66 123 456 789" /></div>'
+    + '<div class="field"><label>WhatsApp</label><input id="f_contact_whatsapp" type="tel" value="' + s(contact.whatsapp || '') + '" placeholder="+66123456789 (same as phone if empty)" /></div>'
+    + '</div>'
+    + '<div class="field-row">'
+    + '<div class="field"><label>Website</label><input id="f_contact_website" value="' + s(contact.website || '') + '" placeholder="www.example.com" /></div>'
+    + '<div class="field"><label>Canonical URL</label><input id="f_canonical_url" value="' + s(data.canonical_url || '') + '" placeholder="https://project-name.com" /></div>'
+    + '</div>'
+    + '<div class="field"><label>Domain Suggestions</label><button type="button" class="btn-small" onclick="suggestDomains()">Suggest SEO Domains</button><div id="domainSuggestions" style="margin-top:8px;font-size:13px;color:#6b7280"></div></div>'
+    + '</div></div>'
 
     // Form Fields
     + '<div class="section-card">'

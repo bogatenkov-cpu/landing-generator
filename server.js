@@ -83,6 +83,71 @@ function claudeRequest(body, apiKey) {
   });
 }
 
+// Domain name suggestion generator
+function generateDomainSuggestions(projectName, location) {
+  var slug = projectName.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+  var locSlug = location ? location.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '') : '';
+
+  var words = slug.split('-').filter(Boolean);
+  var domains = [];
+
+  // Base: project-name.com
+  domains.push(slug + '.com');
+
+  // project-location.com
+  if (locSlug && locSlug !== slug) {
+    domains.push(slug + '-' + locSlug + '.com');
+  }
+
+  // projectname.com (no hyphens)
+  var nohyphen = words.join('');
+  if (nohyphen !== slug) domains.push(nohyphen + '.com');
+
+  // project-thailand.com, project-phuket.com etc.
+  var thaiLocations = ['thailand', 'phuket', 'samui', 'bangkok', 'pattaya', 'chiangmai', 'krabi', 'huahin'];
+  var hasLoc = thaiLocations.some(function(l) { return slug.includes(l); });
+  if (!hasLoc) {
+    if (locSlug && !slug.includes(locSlug)) {
+      domains.push(slug + '-' + locSlug + '.com');
+    }
+    domains.push(slug + '-thailand.com');
+  }
+
+  // Buy/invest prefixes
+  domains.push('buy-' + slug + '.com');
+  domains.push('invest-' + slug + '.com');
+
+  // With "villas/residences" suffix
+  if (!slug.includes('villa') && !slug.includes('residence')) {
+    domains.push(slug + '-villas.com');
+    domains.push(slug + '-residences.com');
+  }
+
+  // Short: first word + location
+  if (words.length > 1 && locSlug) {
+    domains.push(words[0] + '-' + locSlug + '.com');
+  }
+
+  // Property/realestate suffix
+  domains.push(slug + '-property.com');
+
+  // Deduplicate
+  var seen = {};
+  return domains.filter(function(d) {
+    if (seen[d]) return false;
+    seen[d] = true;
+    return true;
+  }).slice(0, 10);
+}
+
 async function aiFillProject(query, apiKey, languages) {
   languages = languages && languages.length ? languages : ['en'];
   const multiLang = languages.length > 1;
@@ -317,6 +382,60 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Fetch image from URL and save to project folder
+  // POST /api/fetch-image  body: { slug, url, filename }
+  if (req.method === 'POST' && url.pathname === '/api/fetch-image') {
+    let body;
+    try { body = await parseBody(req); } catch(e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message })); return;
+    }
+    const { slug, url: imageUrl, filename } = body;
+    try {
+      if (!slug || !imageUrl) throw new Error('slug and url are required');
+      if (!isValidSlug(slug)) throw new Error('Invalid slug format');
+      // Determine filename from URL or use provided one
+      var fname = filename || path.basename(new URL(imageUrl).pathname) || 'image.jpg';
+      fname = fname.replace(/[^a-zA-Z0-9._-]/g, '_');
+      if (!fname.match(/\.(jpg|jpeg|png|gif|webp|svg|avif)$/i)) fname += '.jpg';
+      // Fetch the image
+      const proto = imageUrl.startsWith('https') ? https : require('http');
+      const imgData = await new Promise(function(resolve, reject) {
+        var chunks = [];
+        var request = proto.get(imageUrl, { timeout: 30000 }, function(response) {
+          if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+            // Follow redirect
+            var rProto = response.headers.location.startsWith('https') ? https : require('http');
+            rProto.get(response.headers.location, { timeout: 30000 }, function(r2) {
+              r2.on('data', function(c) { chunks.push(c); });
+              r2.on('end', function() { resolve(Buffer.concat(chunks)); });
+              r2.on('error', reject);
+            }).on('error', reject);
+            return;
+          }
+          if (response.statusCode !== 200) {
+            reject(new Error('HTTP ' + response.statusCode));
+            return;
+          }
+          response.on('data', function(c) { chunks.push(c); });
+          response.on('end', function() { resolve(Buffer.concat(chunks)); });
+          response.on('error', reject);
+        });
+        request.on('error', reject);
+        request.on('timeout', function() { request.destroy(); reject(new Error('Timeout')); });
+      });
+      var imgDir = path.join(__dirname, 'data', slug, 'images');
+      fs.mkdirSync(imgDir, { recursive: true });
+      fs.writeFileSync(path.join(imgDir, fname), imgData);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, path: 'images/' + fname, size: imgData.length }));
+    } catch(e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   // Preview
   if (req.method === 'POST' && url.pathname === '/api/preview') {
     let data;
@@ -358,6 +477,24 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: e.message }));
     }
+    return;
+  }
+
+  // Suggest SEO domain names
+  if (req.method === 'POST' && url.pathname === '/api/suggest-domains') {
+    let body;
+    try { body = await parseBody(req); } catch(e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message })); return;
+    }
+    const { project_name, location } = body;
+    if (!project_name) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'project_name is required' })); return;
+    }
+    const domains = generateDomainSuggestions(project_name, location || '');
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, domains: domains }));
     return;
   }
 
