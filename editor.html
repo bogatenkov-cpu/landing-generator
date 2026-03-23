@@ -760,25 +760,17 @@ async function previewProject() {
   try {
     var r = await apiFetch('/api/preview', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
     if (r.status === 401) { showLogin(); return; }
+    if (!r.ok) { var err = await r.json(); showStatus(err.error || 'Preview error', 'err'); return; }
     var html = await r.text();
-    var frame = document.getElementById('previewFrame');
-    frame.style.display = 'block';
-    document.getElementById('content').style.display = 'none';
-    // Use blob URL instead of srcdoc for large HTML
-    var blob = new Blob([html], { type: 'text/html; charset=utf-8' });
-    frame.src = URL.createObjectURL(blob);
-    var pname = typeof data.project_name === 'object' ? (data.project_name.en || data.project_name.ru || '') : (data.project_name || '');
-    document.getElementById('topbarTitle').textContent = '\u2190 Back  |  ' + (pname || 'Preview');
-    document.getElementById('topbarTitle').style.cursor = 'pointer';
-    document.getElementById('topbarTitle').onclick = closePreview;
+    // Open in new tab — most reliable way to preview
+    var w = window.open('', '_blank');
+    if (w) { w.document.open(); w.document.write(html); w.document.close(); }
+    else { showStatus('Popup blocked — allow popups for this site', 'err'); }
   } catch(e) { showStatus(e.message,'err'); }
 }
 
 function closePreview() {
-  var frame = document.getElementById('previewFrame');
-  if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
-  frame.src = '';
-  frame.style.display = 'none';
+  document.getElementById('previewFrame').style.display = 'none';
   document.getElementById('content').style.display = 'block';
   document.getElementById('topbarTitle').onclick = null;
   document.getElementById('topbarTitle').style.cursor = '';
