@@ -367,14 +367,14 @@ const server = http.createServer(async (req, res) => {
 
   // List demo examples
   if (req.method === 'GET' && url.pathname === '/api/demos') {
-    const dataDir = path.join(__dirname, 'data');
+    const demosDir = path.join(__dirname, 'demos');
     let demos = [];
-    if (fs.existsSync(dataDir)) {
-      demos = fs.readdirSync(dataDir)
-        .filter(f => f.endsWith('-demo.json'))
+    if (fs.existsSync(demosDir)) {
+      demos = fs.readdirSync(demosDir)
+        .filter(f => f.endsWith('.json'))
         .map(f => {
           try {
-            const d = JSON.parse(fs.readFileSync(path.join(dataDir, f), 'utf8'));
+            const d = JSON.parse(fs.readFileSync(path.join(demosDir, f), 'utf8'));
             return { slug: d.project_slug, name: d.project_name?.en || d.project_name || d.meta_title?.en || f, template: d.template || 'default', file: f };
           } catch(e) { return null; }
         }).filter(Boolean);
@@ -407,7 +407,10 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && url.pathname.startsWith('/api/project/')) {
     const slug = url.pathname.replace('/api/project/', '');
     if (!isValidSlug(slug)) { res.writeHead(400, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'Invalid slug' })); return; }
-    const jsonPath = path.join(__dirname, 'data', `${slug}.json`);
+    let jsonPath = path.join(__dirname, 'data', `${slug}.json`);
+    if (!fs.existsSync(jsonPath)) {
+      jsonPath = path.join(__dirname, 'demos', `${slug}.json`);
+    }
     if (!fs.existsSync(jsonPath)) { res.writeHead(404); res.end('Not found'); return; }
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(fs.readFileSync(jsonPath, 'utf8'));

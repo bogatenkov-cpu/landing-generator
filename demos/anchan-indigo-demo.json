@@ -1,0 +1,423 @@
+{
+  "project_slug": "anchan-indigo-demo",
+  "project_name": { "en": "Anchan Indigo", "ru": "Anchan Indigo" },
+  "template": "anchan-indigo",
+  "languages": ["en", "ru"],
+  "currency": "THB",
+  "meta_title": { "en": "Anchan Indigo — Luxury Villas in Phuket", "ru": "Anchan Indigo — Роскошные виллы на Пхукете" },
+  "meta_description": {
+    "en": "Anchan Indigo — a modern luxury villa project in the Bangtao area of Phuket. Thoughtful layouts and developed infrastructure. An excellent opportunity for comfortable living and investment.",
+    "ru": "Anchan Indigo — современный роскошный проект вилл в районе Бангтао на Пхукете. Продуманные планировки и развитая инфраструктура. Отличная возможность для комфортной жизни и инвестиций."
+  },
+  "canonical_url": "https://anchanindigo.com/",
+  "crm_webhook": "",
+  "hero": {
+    "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80&fit=crop",
+    "title": { "en": "Anchan Indigo", "ru": "Anchan Indigo" },
+    "subtitle": { "en": "Luxury Villas in Phuket", "ru": "Luxury Villas in Phuket" },
+    "description": {
+      "en": "Modern luxury villas in the heart of Bangtao.\nThe art of tropical living on Phuket island.",
+      "ru": "Современные роскошные виллы в самом сердце Бангтао.\nИскусство тропической жизни на острове Пхукет."
+    },
+    "stats": [
+      { "value": "53", "label": { "en": "villas", "ru": "виллы" } },
+      { "value": "3–4", "label": { "en": "bedrooms", "ru": "спальни" } },
+      { "value": "18+", "label": { "en": "years experience", "ru": "лет опыта" } },
+      { "value": "Freehold", "label": { "en": "ownership", "ru": "собственность" } }
+    ]
+  },
+  "concept": {
+    "title": { "en": "Anchan Indigo Concept", "ru": "Концепция Anchan Indigo" },
+    "tag": { "en": "About the Project", "ru": "О проекте" },
+    "paragraphs": [
+      {
+        "en": "The Artistry of Tropical Living — the Anchan philosophy where every villa is crafted with attention to detail and harmony with Phuket's nature.",
+        "ru": "The Artistry of Tropical Living — философия Anchan, где каждая вилла создаётся с вниманием к деталям и гармонией с природой Пхукета."
+      },
+      {
+        "en": "Anchan Indigo is 53 premium-class villas in the Pru Jampa area, created by a developer with 18 years of experience in the Phuket market. The project combines modern Luxury Modern Tropical architecture with maximum living comfort and high investment potential.",
+        "ru": "Anchan Indigo — это 53 виллы премиум-класса в районе Pru Jampa, созданные застройщиком с 18-летним опытом на рынке Пхукета. Проект сочетает современную архитектуру стиля Luxury Modern Tropical с максимальным комфортом для жизни и высоким инвестиционным потенциалом."
+      },
+      {
+        "en": "Every villa is equipped with a private pool, spacious terrace, elegant sala zone, and a well-thought-out open-plan layout that creates a seamless flow between indoor and outdoor spaces.",
+        "ru": "Каждая вилла оснащена приватным бассейном, просторной террасой, элегантной зоной сала и продуманной планировкой open-plan, создающей плавный переход между внутренним и внешним пространством."
+      }
+    ],
+    "specs": [
+      { "key": { "en": "villas sold", "ru": "вилл продано" }, "value": { "en": "259", "ru": "259" } },
+      { "key": { "en": "projects completed", "ru": "проектов реализовано" }, "value": { "en": "12", "ru": "12" } },
+      { "key": { "en": "quality awards", "ru": "наград качества" }, "value": { "en": "15", "ru": "15" } }
+    ],
+    "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80&fit=crop"
+  },
+  "ribbon": [
+    { "en": "Private Pool", "ru": "Приватный бассейн" },
+    { "en": "Open-plan Design", "ru": "Open-plan дизайн" },
+    { "en": "Tropical Gardens", "ru": "Тропические сады" },
+    { "en": "Terrace & Sala", "ru": "Терраса и сала" },
+    { "en": "Premium Materials", "ru": "Премиум материалы" },
+    { "en": "Freehold Ownership", "ru": "Freehold собственность" }
+  ],
+  "amenities": {
+    "title": { "en": "Amenities at Anchan Indigo", "ru": "Удобства в Anchan Indigo" },
+    "tag": { "en": "Infrastructure", "ru": "Инфраструктура" },
+    "image": "https://images.unsplash.com/photo-1572331165267-854da2b10ccc?w=600&q=80&fit=crop",
+    "items": [
+      {
+        "title": { "en": "Private Pool", "ru": "Приватный бассейн" },
+        "description": {
+          "en": "Every villa features its own pool with a relaxation area and sun loungers surrounded by tropical plants.",
+          "ru": "Каждая вилла оборудована собственным бассейном с зоной отдыха и шезлонгами в окружении тропических растений."
+        },
+        "image": "https://images.unsplash.com/photo-1572331165267-854da2b10ccc?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "24/7 Security", "ru": "Круглосуточная охрана" },
+        "description": {
+          "en": "Gated community with CCTV surveillance system and access control around the clock.",
+          "ru": "Закрытая охраняемая территория с системой видеонаблюдения и контролем доступа 24/7."
+        },
+        "image": "https://images.unsplash.com/photo-1558002038-1055907df827?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "Villa Management", "ru": "Управление виллой" },
+        "description": {
+          "en": "Full range of services: cleaning, garden and pool care, technical maintenance, rental management.",
+          "ru": "Полный комплекс услуг: уборка, уход за садом и бассейном, техническое обслуживание, управление арендой."
+        },
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "Investment Income", "ru": "Инвестиционный доход" },
+        "description": {
+          "en": "Rental management programme with tenant sourcing, contracts, and servicing for stable income.",
+          "ru": "Программа управления арендой с поиском арендаторов, контрактами и обслуживанием для стабильного дохода."
+        },
+        "image": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "Premium Location", "ru": "Премиум локация" },
+        "description": {
+          "en": "10 minutes to the best beaches, 15 minutes to the airport, nearby international schools and shopping centres.",
+          "ru": "10 минут до лучших пляжей, 15 минут до аэропорта, рядом международные школы и торговые центры."
+        },
+        "image": "https://images.unsplash.com/photo-1519046904884-53103b34b206?w=600&q=80&fit=crop"
+      },
+      {
+        "title": { "en": "Tropical Landscape", "ru": "Тропический ландшафт" },
+        "description": {
+          "en": "Professional landscape design with lush tropical gardens creating an atmosphere of seclusion and tranquillity.",
+          "ru": "Профессиональный ландшафтный дизайн с пышными тропическими садами, создающими атмосферу уединения и покоя."
+        },
+        "image": "https://images.unsplash.com/photo-1598902108854-d1446719b661?w=600&q=80&fit=crop"
+      }
+    ]
+  },
+  "catalogue": {
+    "image": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=80&fit=crop",
+    "tags": [
+      { "en": "Floor Plans", "ru": "Планировки" },
+      { "en": "Pricing", "ru": "Цены" },
+      { "en": "Finishes", "ru": "Отделка" },
+      { "en": "Investment Prospectus", "ru": "Инвестиционный проспект" }
+    ]
+  },
+  "layouts": [
+    {
+      "name": { "en": "Villa Type 3A-1", "ru": "Вилла Тип 3A-1" },
+      "tab_label": { "en": "Type 3A-1 · 3 Bed", "ru": "Тип 3A-1 · 3 спальни" },
+      "image": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80&fit=crop",
+      "price_from": { "en": "Request Price", "ru": "Запросить цену" },
+      "specs": [
+        { "key": { "en": "Bedrooms", "ru": "Спальни" }, "value": { "en": "3", "ru": "3" } },
+        { "key": { "en": "Bathrooms", "ru": "Ванные" }, "value": { "en": "3", "ru": "3" } },
+        { "key": { "en": "Plot Area", "ru": "Площадь участка" }, "value": { "en": "from 400 sqm", "ru": "от 400 кв.м" } },
+        { "key": { "en": "Living Area", "ru": "Жилая площадь" }, "value": { "en": "from 220 sqm", "ru": "от 220 кв.м" } },
+        { "key": { "en": "Pool", "ru": "Бассейн" }, "value": { "en": "Private", "ru": "Приватный" } },
+        { "key": { "en": "Parking", "ru": "Парковка" }, "value": { "en": "2 cars", "ru": "2 авто" } }
+      ],
+      "features": [
+        { "en": "Open-plan living room and kitchen", "ru": "Open-plan гостиная и кухня" },
+        { "en": "Master bedroom with walk-in closet", "ru": "Мастер-спальня с гардеробной" },
+        { "en": "Terrace with BBQ zone", "ru": "Терраса с зоной барбекю" },
+        { "en": "Tropical landscaped garden", "ru": "Тропический ландшафтный сад" }
+      ]
+    },
+    {
+      "name": { "en": "Villa Type 3B", "ru": "Вилла Тип 3B" },
+      "tab_label": { "en": "Type 3B · 3 Bed", "ru": "Тип 3B · 3 спальни" },
+      "image": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80&fit=crop",
+      "price_from": { "en": "Request Price", "ru": "Запросить цену" },
+      "specs": [
+        { "key": { "en": "Bedrooms", "ru": "Спальни" }, "value": { "en": "3", "ru": "3" } },
+        { "key": { "en": "Bathrooms", "ru": "Ванные" }, "value": { "en": "4", "ru": "4" } },
+        { "key": { "en": "Plot Area", "ru": "Площадь участка" }, "value": { "en": "from 500 sqm", "ru": "от 500 кв.м" } },
+        { "key": { "en": "Living Area", "ru": "Жилая площадь" }, "value": { "en": "from 280 sqm", "ru": "от 280 кв.м" } },
+        { "key": { "en": "Pool", "ru": "Бассейн" }, "value": { "en": "Private L", "ru": "Приватный L" } },
+        { "key": { "en": "Parking", "ru": "Парковка" }, "value": { "en": "2 cars", "ru": "2 авто" } }
+      ],
+      "features": [
+        { "en": "Extended living area with high ceilings", "ru": "Расширенная гостиная с высокими потолками" },
+        { "en": "Separate maid's quarters", "ru": "Отдельные апартаменты для персонала" },
+        { "en": "Sala pavilion by the pool", "ru": "Павильон-сала у бассейна" },
+        { "en": "Lush tropical garden", "ru": "Пышный тропический сад" }
+      ]
+    },
+    {
+      "name": { "en": "Villa Type 4B", "ru": "Вилла Тип 4B" },
+      "tab_label": { "en": "Type 4B · 4 Bed", "ru": "Тип 4B · 4 спальни" },
+      "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80&fit=crop",
+      "price_from": { "en": "Request Price", "ru": "Запросить цену" },
+      "specs": [
+        { "key": { "en": "Bedrooms", "ru": "Спальни" }, "value": { "en": "4", "ru": "4" } },
+        { "key": { "en": "Bathrooms", "ru": "Ванные" }, "value": { "en": "4", "ru": "4" } },
+        { "key": { "en": "Plot Area", "ru": "Площадь участка" }, "value": { "en": "from 600 sqm", "ru": "от 600 кв.м" } },
+        { "key": { "en": "Living Area", "ru": "Жилая площадь" }, "value": { "en": "from 320 sqm", "ru": "от 320 кв.м" } },
+        { "key": { "en": "Pool", "ru": "Бассейн" }, "value": { "en": "Private XL", "ru": "Приватный XL" } },
+        { "key": { "en": "Parking", "ru": "Парковка" }, "value": { "en": "2 cars", "ru": "2 авто" } }
+      ],
+      "features": [
+        { "en": "Spacious open-plan ground floor", "ru": "Просторный open-plan первый этаж" },
+        { "en": "Master suite with panoramic views", "ru": "Мастер-сьют с панорамным видом" },
+        { "en": "Separate guest wing", "ru": "Отдельная зона для гостей" },
+        { "en": "Elegant poolside sala", "ru": "Элегантная сала у бассейна" }
+      ]
+    },
+    {
+      "name": { "en": "Villa Type 4C", "ru": "Вилла Тип 4C" },
+      "tab_label": { "en": "Type 4C · 4 Bed", "ru": "Тип 4C · 4 спальни" },
+      "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80&fit=crop",
+      "price_from": { "en": "Request Price", "ru": "Запросить цену" },
+      "specs": [
+        { "key": { "en": "Bedrooms", "ru": "Спальни" }, "value": { "en": "4", "ru": "4" } },
+        { "key": { "en": "Bathrooms", "ru": "Ванные" }, "value": { "en": "5", "ru": "5" } },
+        { "key": { "en": "Plot Area", "ru": "Площадь участка" }, "value": { "en": "from 800 sqm", "ru": "от 800 кв.м" } },
+        { "key": { "en": "Living Area", "ru": "Жилая площадь" }, "value": { "en": "from 420 sqm", "ru": "от 420 кв.м" } },
+        { "key": { "en": "Pool", "ru": "Бассейн" }, "value": { "en": "Infinity Pool", "ru": "Infinity Pool" } },
+        { "key": { "en": "Parking", "ru": "Парковка" }, "value": { "en": "3 cars", "ru": "3 авто" } }
+      ],
+      "features": [
+        { "en": "Two-storey premium villa", "ru": "Двухэтажная вилла премиум-класса" },
+        { "en": "Home cinema and study", "ru": "Кинозал и кабинет" },
+        { "en": "Infinity pool with garden view", "ru": "Infinity pool с видом на сад" },
+        { "en": "Designer landscaping", "ru": "Дизайнерский ландшафт" }
+      ]
+    },
+    {
+      "name": { "en": "Villa Type 5C", "ru": "Вилла Тип 5C" },
+      "tab_label": { "en": "Type 5C · 5 Bed", "ru": "Тип 5C · 5 спален" },
+      "image": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80&fit=crop",
+      "price_from": { "en": "Request Price", "ru": "Запросить цену" },
+      "specs": [
+        { "key": { "en": "Bedrooms", "ru": "Спальни" }, "value": { "en": "5", "ru": "5" } },
+        { "key": { "en": "Bathrooms", "ru": "Ванные" }, "value": { "en": "6", "ru": "6" } },
+        { "key": { "en": "Plot Area", "ru": "Площадь участка" }, "value": { "en": "from 1000 sqm", "ru": "от 1000 кв.м" } },
+        { "key": { "en": "Living Area", "ru": "Жилая площадь" }, "value": { "en": "from 550 sqm", "ru": "от 550 кв.м" } },
+        { "key": { "en": "Pool", "ru": "Бассейн" }, "value": { "en": "Infinity Pool XL", "ru": "Infinity Pool XL" } },
+        { "key": { "en": "Parking", "ru": "Парковка" }, "value": { "en": "4 cars", "ru": "4 авто" } }
+      ],
+      "features": [
+        { "en": "Flagship villa with maximum space", "ru": "Флагманская вилла максимальной площади" },
+        { "en": "Private gym and wine cellar", "ru": "Приватный спортзал и винный погреб" },
+        { "en": "Rooftop terrace with sea views", "ru": "Терраса на крыше с видом на море" },
+        { "en": "Premium smart home system", "ru": "Премиум система умного дома" }
+      ]
+    }
+  ],
+  "roi": {
+    "title": { "en": "Investment Potential", "ru": "Инвестиционный потенциал" },
+    "subtitle": {
+      "en": "Phuket's luxury villa market generates rental yields of 6–8% per annum. The Bangtao area is one of the most popular tourist zones, ensuring high occupancy rates year-round.",
+      "ru": "Рынок люкс-вилл Пхукета приносит арендную доходность 6–8% годовых. Район Бангтао — одна из самых популярных туристических зон, обеспечивающая высокую заполняемость круглый год."
+    },
+    "columns": [
+      { "en": "Villa Type", "ru": "Тип виллы" },
+      { "en": "Plot (sqm)", "ru": "Участок (кв.м)" },
+      { "en": "Living (sqm)", "ru": "Жилая (кв.м)" },
+      { "en": "Bedrooms", "ru": "Спальни" },
+      { "en": "Annual Yield", "ru": "Годовая доходность" },
+      { "en": "5-Year Growth", "ru": "Рост за 5 лет" }
+    ],
+    "rows": [
+      {
+        "type": { "en": "Type 3A-1", "ru": "Тип 3A-1" },
+        "price": "400+",
+        "monthly_rent": "220+",
+        "annual_yield": "7.0%",
+        "growth_5y": "+35%",
+        "roi_5y": "70%"
+      },
+      {
+        "type": { "en": "Type 3B", "ru": "Тип 3B" },
+        "price": "500+",
+        "monthly_rent": "280+",
+        "annual_yield": "7.5%",
+        "growth_5y": "+38%",
+        "roi_5y": "76%"
+      },
+      {
+        "type": { "en": "Type 4B", "ru": "Тип 4B" },
+        "price": "600+",
+        "monthly_rent": "320+",
+        "annual_yield": "7.8%",
+        "growth_5y": "+40%",
+        "roi_5y": "79%"
+      },
+      {
+        "type": { "en": "Type 4C", "ru": "Тип 4C" },
+        "price": "800+",
+        "monthly_rent": "420+",
+        "annual_yield": "8.0%",
+        "growth_5y": "+42%",
+        "roi_5y": "82%"
+      },
+      {
+        "type": { "en": "Type 5C", "ru": "Тип 5C" },
+        "price": "1000+",
+        "monthly_rent": "550+",
+        "annual_yield": "8.2%",
+        "growth_5y": "+45%",
+        "roi_5y": "86%"
+      }
+    ],
+    "disclaimer": {
+      "en": "* Projected figures based on current market trends. Actual returns may vary.",
+      "ru": "* Прогнозные данные на основе текущих рыночных тенденций. Фактическая доходность может отличаться."
+    }
+  },
+  "gallery": {
+    "images": [
+      "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=600&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=600&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=600&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=900&q=80&fit=crop"
+    ],
+    "captions": [
+      { "en": "Villa Exterior", "ru": "Экстерьер виллы" },
+      { "en": "Living Room", "ru": "Гостиная" },
+      { "en": "Pool Area", "ru": "Зона бассейна" },
+      { "en": "Bedroom", "ru": "Спальня" },
+      { "en": "Tropical Garden", "ru": "Тропический сад" }
+    ]
+  },
+  "location": {
+    "title": { "en": "Anchan Indigo Location", "ru": "Расположение Anchan Indigo" },
+    "tag": { "en": "Bangtao Area", "ru": "Район Бангтао" },
+    "description": {
+      "en": "Strategic location in the Pru Jampa area — at the very centre of the best infrastructure on Phuket's north coast.",
+      "ru": "Стратегическое расположение в районе Pru Jampa — в самом центре лучшей инфраструктуры северного побережья Пхукета."
+    },
+    "distances": [
+      { "place": { "en": "Layan Beach", "ru": "Пляж Лаян" }, "time": { "en": "10 min", "ru": "10 мин" } },
+      { "place": { "en": "Boat Avenue", "ru": "Boat Avenue" }, "time": { "en": "12 min", "ru": "12 мин" } },
+      { "place": { "en": "Laguna Golf Phuket", "ru": "Laguna Golf Phuket" }, "time": { "en": "10 min", "ru": "10 мин" } },
+      { "place": { "en": "Phuket Airport", "ru": "Аэропорт Пхукет" }, "time": { "en": "15 min", "ru": "15 мин" } },
+      { "place": { "en": "UWC International School", "ru": "UWC International School" }, "time": { "en": "12 min", "ru": "12 мин" } },
+      { "place": { "en": "Bangtao Beach", "ru": "Пляж Бангтао" }, "time": { "en": "15 min", "ru": "15 мин" } },
+      { "place": { "en": "Blue Tree Phuket", "ru": "Blue Tree Phuket" }, "time": { "en": "12 min", "ru": "12 мин" } },
+      { "place": { "en": "Surin Beach", "ru": "Пляж Сурин" }, "time": { "en": "20 min", "ru": "20 мин" } }
+    ],
+    "map_embed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63266.39637498043!2d98.27!3d7.98!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30503a6e4a2c3b1d%3A0x4020d2fb7e2b1b0!2sBang%20Tao%20Beach!5e0!3m2!1sen!2sth!4v1700000000000"
+  },
+  "developer": {
+    "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80&fit=crop",
+    "name": { "en": "Anchan Villas", "ru": "Anchan Villas" },
+    "tagline": { "en": "The Artistry of Tropical Living", "ru": "The Artistry of Tropical Living" },
+    "description": [
+      {
+        "en": "Anchan Villas is a local Phuket developer with over 18 years of experience since 2007. The company has delivered 12 projects, sold 259 villas, of which 159 have been handed over. Anchan has received more than 15 quality awards, confirming its leadership in the Phuket luxury villa market.",
+        "ru": "Anchan Villas — локальный застройщик Пхукета с более чем 18-летним опытом с 2007 года. Компания реализовала 12 проектов, продала 259 вилл, из которых 159 сданы в эксплуатацию. Anchan получила более 15 наград качества, подтверждающих лидерство на рынке люкс-вилл Пхукета."
+      },
+      {
+        "en": "Every Anchan project is built with a personal approach, combining deep knowledge of the region with premium quality materials and modern tropical architecture. The company offers a full range of post-sale services: villa maintenance, garden and pool care, rental management, and furniture assistance.",
+        "ru": "Каждый проект Anchan строится с личным подходом, сочетая глубокое знание региона с премиум-качеством материалов и современной тропической архитектурой. Компания предоставляет полный спектр услуг после продажи: обслуживание виллы, уход за садом и бассейном, управление арендой, помощь с мебелью."
+      }
+    ],
+    "facts": [
+      { "key": { "en": "On the market", "ru": "На рынке" }, "value": { "en": "Since 2007", "ru": "С 2007" } },
+      { "key": { "en": "Completed", "ru": "Реализовано" }, "value": { "en": "12 Projects", "ru": "12 проектов" } },
+      { "key": { "en": "Quality", "ru": "Качество" }, "value": { "en": "15+ Awards", "ru": "15+ наград" } }
+    ]
+  },
+  "faq": {
+    "title": { "en": "Frequently Asked Questions", "ru": "Часто задаваемые вопросы" },
+    "items": [
+      {
+        "question": {
+          "en": "Can foreigners own property in Phuket?",
+          "ru": "Могут ли иностранцы владеть недвижимостью на Пхукете?"
+        },
+        "answer": {
+          "en": "Yes. At Anchan Indigo, villas are offered with Freehold ownership — full ownership of the building. Land can be held under a long-term lease of 30+30+30 years or through a Thai company structure. Our legal team assists with all aspects of the transaction.",
+          "ru": "Да. В Anchan Indigo виллы предлагаются с правом собственности Freehold — полное владение зданием. Земля оформляется в долгосрочную аренду 30+30+30 лет или через структуру тайской компании. Наша юридическая команда сопровождает все аспекты сделки."
+        }
+      },
+      {
+        "question": {
+          "en": "What is the expected return on investment from renting a villa?",
+          "ru": "Какова ожидаемая доходность от сдачи виллы в аренду?"
+        },
+        "answer": {
+          "en": "Phuket's luxury villa market generates rental yields of 6–8% per annum. The Bangtao area is one of the most popular tourist zones, ensuring high occupancy rates year-round. Anchan offers a professional rental management programme covering all aspects — from finding tenants to maintenance.",
+          "ru": "Рынок люкс-вилл Пхукета приносит арендную доходность 6–8% годовых. Район Бангтао — одна из самых популярных туристических зон, обеспечивающая высокую заполняемость круглый год. Anchan предлагает профессиональную программу управления арендой, покрывающую все аспекты — от поиска арендаторов до обслуживания."
+        }
+      },
+      {
+        "question": {
+          "en": "At what stage of construction is the Anchan Indigo project?",
+          "ru": "На какой стадии строительства находится проект Anchan Indigo?"
+        },
+        "answer": {
+          "en": "Anchan Indigo is at the active sales and construction stage. The developer Anchan Villas has over 18 years of experience and has successfully delivered 12 projects with 159 villas handed over. Show villas are available for viewing daily — contact us to arrange a visit.",
+          "ru": "Anchan Indigo находится на стадии активных продаж и строительства. Застройщик Anchan Villas имеет более 18 лет опыта и успешно реализовал 12 проектов со 159 сданными виллами. Шоу-виллы доступны для ежедневного просмотра — свяжитесь с нами для организации визита."
+        }
+      },
+      {
+        "question": {
+          "en": "What services are included in villa management?",
+          "ru": "Какие услуги включены в управление виллой?"
+        },
+        "answer": {
+          "en": "The Anchan management company provides a full range of services: regular cleaning, pool and garden maintenance, technical support, security, rental management with tenant sourcing and contract handling, and furniture procurement assistance. You can enjoy your villa without worrying about day-to-day upkeep.",
+          "ru": "Управляющая компания Anchan предоставляет полный спектр услуг: регулярная уборка, обслуживание бассейна и сада, техническая поддержка, охрана, управление арендой с поиском арендаторов и оформлением контрактов, помощь в подборе мебели. Вы можете наслаждаться виллой, не беспокоясь о повседневном обслуживании."
+        }
+      },
+      {
+        "question": {
+          "en": "How do I purchase a villa remotely?",
+          "ru": "Как приобрести виллу дистанционно?"
+        },
+        "answer": {
+          "en": "Remote purchase is fully supported. Our managers conduct virtual tours of show villas, provide all documentation in English, and guide you through every step. The transaction can be completed remotely with power of attorney, and our legal team ensures a secure and transparent process.",
+          "ru": "Дистанционная покупка полностью поддерживается. Наши менеджеры проводят виртуальные туры по шоу-виллам, предоставляют всю документацию, и сопровождают на каждом этапе. Сделка может быть оформлена дистанционно по доверенности, а наша юридическая команда обеспечивает безопасный и прозрачный процесс."
+        }
+      }
+    ]
+  },
+  "cta_banner": {
+    "title": { "en": "Start Your Dream Life\nin Phuket", "ru": "Начните жизнь мечты\nна Пхукете" },
+    "text": {
+      "en": "Get a personalised presentation and learn about exclusive conditions for purchasing a villa at Anchan Indigo.",
+      "ru": "Получите персональную презентацию и узнайте об эксклюзивных условиях покупки виллы в Anchan Indigo."
+    }
+  },
+  "contact": {
+    "phone": "+66923899000",
+    "phone_display": "+66 92 389 9000",
+    "email": "info@anchanindigo.com",
+    "whatsapp": "+66923899000",
+    "website": "anchanindigo.com",
+    "address": "Pru Jampa, Thalang, Phuket",
+    "working_hours": { "en": "Mon — Sun, 9:00 — 18:00", "ru": "Пн — Вс, 9:00 — 18:00" },
+    "lead_text": {
+      "en": "We are ready to answer all your questions about Anchan Indigo and help you choose the perfect villa.",
+      "ru": "Мы готовы ответить на все ваши вопросы о проекте Anchan Indigo и помочь выбрать идеальную виллу."
+    },
+    "showroom_text": {
+      "en": "Show villas are open for viewing daily. Book your visit!",
+      "ru": "Шоу-виллы открыты для просмотра ежедневно. Запишитесь на визит!"
+    }
+  },
+  "sell_banner": { "show": false, "image": "", "title": "", "subtitle": "" }
+}
