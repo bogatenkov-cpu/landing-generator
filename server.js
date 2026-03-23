@@ -299,6 +299,25 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Serve preview for demo projects (no auth — read-only demo content)
+  if (req.method === 'GET' && url.pathname.startsWith('/preview/')) {
+    const slug = url.pathname.replace('/preview/', '');
+    if (!isValidSlug(slug)) { res.writeHead(400); res.end('Invalid slug'); return; }
+    let jsonPath = path.join(__dirname, 'demos', `${slug}.json`);
+    if (!fs.existsSync(jsonPath)) jsonPath = path.join(__dirname, 'data', `${slug}.json`);
+    if (!fs.existsSync(jsonPath)) { res.writeHead(404); res.end('Not found'); return; }
+    try {
+      const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+      const html = generateHTML(data);
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(html);
+    } catch(e) {
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Error: ' + e.message);
+    }
+    return;
+  }
+
   // All /api/* routes require auth
   if (url.pathname.startsWith('/api/') && !checkAuth(req)) {
     res.writeHead(401, { 'Content-Type': 'application/json' });
