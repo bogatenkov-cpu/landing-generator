@@ -680,17 +680,18 @@ async function suggestDomains() {
   if (!name) { alert('Fill in the Project Name first'); return; }
   var loc = '';
   // Try to get location from concept specs or location title
-  var locField = document.getElementById('f_loc_title');
+  var locField = document.getElementById('f_location_title');
   if (locField) loc = locField.value;
   var btn = document.querySelector('[onclick="suggestDomains()"]');
   if (btn) btn.disabled = true;
   try {
     var r = await apiFetch('/api/suggest-domains', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ project_name: name, location: loc }) });
+    var res = await r.json();
     var out = document.getElementById('domainSuggestions');
-    if (r.ok && r.domains) {
-      out.innerHTML = r.domains.map(function(d) { return '<div style="cursor:pointer;padding:3px 0;color:#2563eb" onclick="document.getElementById(\'f_canonical_url\').value=\'https://\'+this.textContent.trim()" title="Click to use">' + s(d) + '</div>'; }).join('');
+    if (res.ok && res.domains) {
+      out.innerHTML = res.domains.map(function(d) { return '<div style="cursor:pointer;padding:3px 0;color:#2563eb" onclick="document.getElementById(\'f_canonical_url\').value=\'https://\'+this.textContent.trim()" title="Click to use">' + s(d) + '</div>'; }).join('');
     } else {
-      out.textContent = 'Error: ' + (r.error || 'Unknown');
+      out.textContent = 'Error: ' + (res.error || 'Unknown');
     }
   } catch(e) { alert(e.message); }
   if (btn) btn.disabled = false;
@@ -1248,7 +1249,7 @@ function renderForm(d) {
     + '</div>'
     + '<div class="field-row">'
     + '<div class="field"><label>Website</label><input id="f_contact_website" value="' + s(contact.website || '') + '" placeholder="www.example.com" /></div>'
-    + '<div class="field"><label>Canonical URL</label><input id="f_canonical_url" value="' + s(data.canonical_url || '') + '" placeholder="https://project-name.com" /></div>'
+    + '<div class="field"><label>Canonical URL</label><input id="f_canonical_url" value="' + s(d.canonical_url || '') + '" placeholder="https://project-name.com" /></div>'
     + '</div>'
     + '<div class="field"><label>Domain Suggestions</label><button type="button" class="btn-small" onclick="suggestDomains()">Suggest SEO Domains</button><div id="domainSuggestions" style="margin-top:8px;font-size:13px;color:#6b7280"></div></div>'
     + '</div></div>'
@@ -1312,7 +1313,7 @@ function defaultData() {
     gallery: { images: ['','','','',''] },
     location: { title: 'Prime Location', description: '', distances: [{place:'',time:''}], map_embed: '' },
     developer: { image: '', name: '', description: '', facts: [{key:'',value:''}] },
-    contact: { address: '', email: '', website: '' }
+    contact: { phone: '', whatsapp: '', website: '' }
   };
 }
 
