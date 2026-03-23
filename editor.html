@@ -22,6 +22,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sidebar__item-name{font-weight:500}
 .sidebar__item-slug{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
 .sidebar__empty{padding:20px;font-size:12px;color:rgba(255,255,255,.3);text-align:center}
+.sidebar__divider{border-top:1px solid rgba(255,255,255,.08);margin:8px 0 0}
+.sidebar__section-label{padding:10px 20px 4px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.sidebar__list--demos .sidebar__item{color:rgba(255,255,255,.5)}
+.sidebar__list--demos .sidebar__item-slug{color:rgba(255,255,255,.25)}
+.sidebar__list--demos .sidebar__item .sidebar__demo-badge{display:inline-block;font-size:9px;padding:1px 5px;background:rgba(191,161,119,.25);color:#c9a96e;border-radius:3px;margin-left:6px;vertical-align:middle}
 
 /* Main */
 .main{display:flex;flex-direction:column;min-height:100vh}
@@ -165,6 +170,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="sidebar__logo">Landing Generator</div>
     <button class="sidebar__new" onclick="newProject()">+ New Project</button>
     <div class="sidebar__list" id="projectList">
+      <div class="sidebar__empty">Loading...</div>
+    </div>
+    <div class="sidebar__divider"></div>
+    <div class="sidebar__section-label">Examples</div>
+    <div class="sidebar__list sidebar__list--demos" id="demoList">
       <div class="sidebar__empty">Loading...</div>
     </div>
   </aside>
@@ -332,6 +342,7 @@ async function initAuth() {
     var r = await apiFetch('/api/projects');
     if (r.status === 401) { showLogin(); return; }
     renderProjectList(await r.json());
+    loadDemos();
   } catch(e) {
     renderProjectList([]);
   }
@@ -354,6 +365,7 @@ async function doLogin() {
     localStorage.setItem('admin_pass', pwd);
     document.getElementById('loginOverlay').style.display = 'none';
     renderProjectList(await r.json());
+    loadDemos();
   } catch(e) { errEl.textContent = 'Connection error: ' + e.message; }
 }
 
@@ -368,14 +380,39 @@ async function loadProjects() {
 
 function renderProjectList(projects) {
   var list = document.getElementById('projectList');
-  if (!projects.length) {
+  var userProjects = projects.filter(function(p) { return !p.slug.endsWith('-demo'); });
+  if (!userProjects.length) {
     list.innerHTML = '<div class="sidebar__empty">No projects yet</div>';
     return;
   }
-  list.innerHTML = projects.map(function(p) {
+  list.innerHTML = userProjects.map(function(p) {
+    var name = typeof p.name === 'object' ? (p.name.en || p.name.ru || p.slug) : (p.name || p.slug);
     return '<div class="sidebar__item' + (p.slug === currentSlug ? ' active' : '') + '" onclick="loadProject(\'' + s(p.slug) + '\')">'
-      + '<div class="sidebar__item-name">' + s(p.name) + '</div>'
+      + '<div class="sidebar__item-name">' + s(name) + '</div>'
       + '<div class="sidebar__item-slug">' + s(p.slug) + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+async function loadDemos() {
+  try {
+    var r = await apiFetch('/api/demos');
+    if (r.status === 401) return;
+    var demos = await r.json();
+    renderDemoList(demos);
+  } catch(e) {}
+}
+
+function renderDemoList(demos) {
+  var list = document.getElementById('demoList');
+  if (!demos.length) {
+    list.innerHTML = '<div class="sidebar__empty">No examples</div>';
+    return;
+  }
+  list.innerHTML = demos.map(function(d) {
+    return '<div class="sidebar__item" onclick="loadProject(\'' + s(d.slug) + '\')">'
+      + '<div class="sidebar__item-name">' + s(d.name) + '<span class="sidebar__demo-badge">' + s(d.template) + '</span></div>'
+      + '<div class="sidebar__item-slug">' + s(d.slug) + '</div>'
       + '</div>';
   }).join('');
 }
@@ -408,7 +445,8 @@ async function loadProject(slug) {
     _mlStore = {};
     _mlSeq = 0;
     renderForm(data);
-    document.getElementById('topbarTitle').textContent = data.project_name;
+    var pname = typeof data.project_name === 'object' ? (data.project_name.en || data.project_name.ru || slug) : (data.project_name || slug);
+    document.getElementById('topbarTitle').textContent = pname;
     document.getElementById('topbarActions').style.display = 'flex';
     closePreview();
     loadProjects();

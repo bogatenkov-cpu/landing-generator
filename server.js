@@ -365,6 +365,25 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // List demo examples
+  if (req.method === 'GET' && url.pathname === '/api/demos') {
+    const dataDir = path.join(__dirname, 'data');
+    let demos = [];
+    if (fs.existsSync(dataDir)) {
+      demos = fs.readdirSync(dataDir)
+        .filter(f => f.endsWith('-demo.json'))
+        .map(f => {
+          try {
+            const d = JSON.parse(fs.readFileSync(path.join(dataDir, f), 'utf8'));
+            return { slug: d.project_slug, name: d.project_name?.en || d.project_name || d.meta_title?.en || f, template: d.template || 'default', file: f };
+          } catch(e) { return null; }
+        }).filter(Boolean);
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(demos));
+    return;
+  }
+
   // List projects
   if (req.method === 'GET' && url.pathname === '/api/projects') {
     const dataDir = path.join(__dirname, 'data');
