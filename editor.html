@@ -222,6 +222,7 @@ var _langs = ['en'];
 var _editorLang = 'en';
 var _mlStore = {}; // { en: {id: value}, ru: {id: value} }
 var _selectedTemplate = 'default';
+var _loadedRawData = null; // stores original JSON for demo projects
 
 // Template definitions (mirrored from generate.js)
 var TEMPLATES = {
@@ -423,6 +424,7 @@ function newProject() {
   _langs = ['en'];
   _editorLang = 'en';
   _selectedTemplate = 'default';
+  _loadedRawData = null;
   _mlStore = {};
   _mlSeq = 0;
   renderForm(defaultData());
@@ -442,6 +444,7 @@ async function loadProject(slug) {
     _langs = data.languages && data.languages.length ? data.languages : ['en'];
     _editorLang = _langs[0];
     _selectedTemplate = data.template || 'default';
+    _loadedRawData = slug.endsWith('-demo') ? data : null;
     _mlStore = {};
     _mlSeq = 0;
     renderForm(data);
@@ -753,7 +756,7 @@ async function saveProject() {
 
 // ── Preview ───────────────────────────────────────────────
 async function previewProject() {
-  var data = collectFormData();
+  var data = _loadedRawData || collectFormData();
   try {
     var r = await apiFetch('/api/preview', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
     if (r.status === 401) { showLogin(); return; }
