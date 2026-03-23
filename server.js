@@ -291,6 +291,14 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Serve favicon
+  if (req.method === 'GET' && url.pathname === '/favicon.svg') {
+    const svg = fs.readFileSync(path.join(__dirname, 'favicon.svg'));
+    res.writeHead(200, { 'Content-Type': 'image/svg+xml' });
+    res.end(svg);
+    return;
+  }
+
   // All /api/* routes require auth
   if (url.pathname.startsWith('/api/') && !checkAuth(req)) {
     res.writeHead(401, { 'Content-Type': 'application/json' });
