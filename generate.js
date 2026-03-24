@@ -1553,7 +1553,9 @@ function generateFromTemplate(data) {
   var tplData = prepareTemplateData(data, langs);
 
   // Inject CSS and JS
-  tplData.inline_css = css + (tplData.lang_css ? '\n    ' + tplData.lang_css : '');
+  // Override reveal animations to ensure content is always visible
+  var revealFix = '\n    .reveal{opacity:1!important;transform:none!important}';
+  tplData.inline_css = css + revealFix + (tplData.lang_css ? '\n    ' + tplData.lang_css : '');
   tplData.inline_js = js + (tplData.lang_js || '');
 
   // Render template
