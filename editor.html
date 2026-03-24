@@ -756,30 +756,25 @@ async function saveProject() {
 
 // ── Preview ───────────────────────────────────────────────
 async function previewProject() {
-  var frame = document.getElementById('previewFrame');
-  frame.style.display = 'block';
-  document.getElementById('content').style.display = 'none';
-
+  // Demo projects — navigate directly, use browser back to return
   if (_loadedRawData && currentSlug) {
-    // Demo projects — load via direct URL in iframe
-    frame.src = '/preview/' + currentSlug;
-  } else {
-    // User projects — POST data, set srcdoc
-    var data = collectFormData();
-    try {
-      var r = await apiFetch('/api/preview', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
-      if (r.status === 401) { showLogin(); return; }
-      if (!r.ok) { var err = await r.json(); showStatus(err.error || 'Preview error', 'err'); return; }
-      frame.srcdoc = await r.text();
-    } catch(e) { showStatus(e.message,'err'); return; }
+    window.location.href = '/preview/' + currentSlug;
+    return;
   }
-
-  var pname = typeof (_loadedRawData || {}).project_name === 'object'
-    ? ((_loadedRawData || {}).project_name.en || '')
-    : ((document.getElementById('f_name') || {}).value || 'Preview');
-  document.getElementById('topbarTitle').textContent = '\u2190 Back  |  ' + pname;
-  document.getElementById('topbarTitle').style.cursor = 'pointer';
-  document.getElementById('topbarTitle').onclick = closePreview;
+  // User projects — POST data, show in iframe
+  var data = collectFormData();
+  try {
+    var r = await apiFetch('/api/preview', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+    if (r.status === 401) { showLogin(); return; }
+    if (!r.ok) { var err = await r.json(); showStatus(err.error || 'Preview error', 'err'); return; }
+    var frame = document.getElementById('previewFrame');
+    frame.style.display = 'block';
+    document.getElementById('content').style.display = 'none';
+    frame.srcdoc = await r.text();
+    document.getElementById('topbarTitle').textContent = '\u2190 Back  |  ' + ((document.getElementById('f_name') || {}).value || 'Preview');
+    document.getElementById('topbarTitle').style.cursor = 'pointer';
+    document.getElementById('topbarTitle').onclick = closePreview;
+  } catch(e) { showStatus(e.message,'err'); }
 }
 
 function closePreview() {
