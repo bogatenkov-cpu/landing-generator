@@ -732,7 +732,7 @@ function generateHTML(data) {
     .section-title{font-family:var(--font-heading);font-size:clamp(32px,4.5vw,52px);font-weight:300;color:var(--text-mid);margin-bottom:48px}
     .reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
     .reveal.visible{opacity:1;transform:none}
-    ${multiLang ? `[data-lang]{display:none}body[data-lang="${defaultLang}"] [data-lang="${defaultLang}"]{display:revert}${langs.filter(l=>l!==defaultLang).map(l=>`body[data-lang="${l}"] [data-lang="${l}"]{display:revert}`).join('')}` : ''}
+    ${multiLang ? `[data-lang]{display:none}body[data-lang="${defaultLang}"] [data-lang="${defaultLang}"]{display:inline}${langs.filter(l=>l!==defaultLang).map(l=>`body[data-lang="${l}"] [data-lang="${l}"]{display:inline}`).join('')}` : ''}
     .lang-switch{display:flex;gap:4px;margin-left:16px}
     .lang-switch__btn{font-family:var(--font-ui);font-size:11px;font-weight:600;padding:4px 10px;border-radius:4px;border:1.5px solid rgba(255,255,255,.4);background:transparent;color:rgba(255,255,255,.7);cursor:pointer;transition:.2s;letter-spacing:.05em}
     .lang-switch__btn.active{background:rgba(255,255,255,.9);color:var(--teal);border-color:rgba(255,255,255,.9)}
@@ -1525,7 +1525,7 @@ function prepareTemplateData(data, langs) {
     // Pre-built HTML
     inline_css: '',  // filled by generateFromTemplate
     inline_js: '',   // filled by generateFromTemplate
-    lang_css: multiLang ? '[data-lang]{display:none}' + langs.map(function(l) { return 'body[data-lang="' + l + '"] [data-lang="' + l + '"]{display:revert}'; }).join('') : '',
+    lang_css: multiLang ? '[data-lang]{display:none}' + langs.map(function(l) { return 'body[data-lang="' + l + '"] [data-lang="' + l + '"]{display:inline}'; }).join('') : '',
     body_lang_attr: multiLang ? ' data-lang="' + defaultLang + '"' : '',
     lang_switcher_header: buildTemplateLangSwitcher(langs, 'header__lang'),
     lang_switcher_mobile: buildTemplateLangSwitcher(langs, 'mobile-menu__lang'),
