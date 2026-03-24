@@ -730,7 +730,7 @@ function generateHTML(data) {
     .btn--teal-outline{background:transparent;color:var(--teal);border:1.5px solid var(--teal)}
     .btn--teal-outline:hover{background:var(--teal);color:var(--white)}
     .section-title{font-family:var(--font-heading);font-size:clamp(32px,4.5vw,52px);font-weight:300;color:var(--text-mid);margin-bottom:48px}
-    .reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+    .reveal{opacity:1;transform:none}
     .reveal.visible{opacity:1;transform:none}
     ${multiLang ? `[data-lang]{display:none}body[data-lang="${defaultLang}"] [data-lang="${defaultLang}"]{display:inline}${langs.filter(l=>l!==defaultLang).map(l=>`body[data-lang="${l}"] [data-lang="${l}"]{display:inline}`).join('')}` : ''}
     .lang-switch{display:flex;gap:4px;margin-left:16px}
@@ -1554,7 +1554,7 @@ function generateFromTemplate(data) {
 
   // Inject CSS and JS
   // Override reveal animations to ensure content is always visible
-  var revealFix = '\n    .reveal{opacity:1!important;transform:none!important}';
+  var revealFix = '\n    [class*="reveal"]{opacity:1!important;transform:none!important;transition:none!important}.js-reveal-ready [class*="reveal"]{opacity:1!important;transform:none!important}';
   tplData.inline_css = css + revealFix + (tplData.lang_css ? '\n    ' + tplData.lang_css : '');
   tplData.inline_js = js + (tplData.lang_js || '');
 
