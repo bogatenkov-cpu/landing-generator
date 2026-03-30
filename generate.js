@@ -1264,20 +1264,34 @@ function prepareTemplateData(data, langs) {
   var fontImport = tmpl.fontImport || "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap";
 
   // Concept features — normalize from specs or features
+  var defaultIcons = [
+    '<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>',
+    '<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+    '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+    '<path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+    '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>',
+    '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>',
+    '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/>',
+    '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'
+  ];
   var conceptFeatures = [];
   if (d.concept && d.concept.features) {
-    conceptFeatures = d.concept.features.map(function(f) {
+    conceptFeatures = d.concept.features.map(function(f, i) {
       return {
         title: f.title || f.key || '',
         text: f.text || f.value || f.description || '',
+        desc: f.text || f.value || f.description || '',
+        icon: f.icon || defaultIcons[i % defaultIcons.length],
         image: f.image || (d.concept && d.concept.image) || (d.hero && d.hero.image) || ''
       };
     });
   } else if (d.concept && d.concept.specs) {
-    conceptFeatures = d.concept.specs.map(function(s) {
+    conceptFeatures = d.concept.specs.map(function(s, i) {
       return {
         title: s.key || '',
         text: s.value || '',
+        desc: s.value || '',
+        icon: defaultIcons[i % defaultIcons.length],
         image: s.image || (d.concept && d.concept.image) || (d.hero && d.hero.image) || ''
       };
     });
@@ -1464,7 +1478,9 @@ function prepareTemplateData(data, langs) {
     hero_image: d.hero && d.hero.image || '',
     hero_title: d.hero && d.hero.title || d.project_name || '',
     hero_subtitle: d.hero && (d.hero.subtitle || d.hero.description) || '',
-    hero_stats: d.hero && d.hero.stats || [],
+    hero_stats: (d.hero && d.hero.stats || []).map(function(s, i) {
+      return { value: s.value || '', label: s.label || '', _reveal_delay: i > 0 ? 'reveal--delay-' + i : '' };
+    }),
 
     // Concept
     concept_title: d.concept && d.concept.title || '',
@@ -1474,16 +1490,20 @@ function prepareTemplateData(data, langs) {
 
     // Amenities
     amenities_title: d.amenities && d.amenities.title || '',
-    amenities_subtitle: d.amenities && d.amenities.subtitle || '',
+    amenities_subtitle: d.amenities && d.amenities.subtitle || {en: 'Everything you need for comfortable living', ru: 'Всё необходимое для комфортной жизни'},
+    amenities_text: d.amenities && (d.amenities.text || d.amenities.description) || {en: 'A curated selection of world-class amenities designed for residents who expect the best', ru: 'Подборка удобств мирового класса для самых взыскательных резидентов'},
     amenities_items: amenitiesItems,
 
     // Floor plans
-    floorplans_title: d.floorplans && d.floorplans.title || (d.project_name ? d.project_name + ' Floor Plans' : 'Floor Plans'),
+    floorplans_title: d.floorplans && d.floorplans.title || (function() {
+      var pn = typeof d.project_name === 'object' ? d.project_name : {en: d.project_name || '', ru: d.project_name || ''};
+      return {en: (pn.en || '') + ' Floor Plans', ru: 'Планировки ' + (pn.ru || pn.en || '')};
+    })(),
     floorplans: floorplans,
 
     // Investment / ROI
     investment_title: d.roi && d.roi.title || '',
-    investment_subtitle: d.roi && d.roi.subtitle || '',
+    investment_subtitle: d.roi && d.roi.subtitle || {en: 'Projected returns and rental income analysis', ru: 'Прогнозируемая доходность и анализ дохода от аренды'},
     investment_table_html: buildTemplateInvestmentTable(d, langs),
 
     // Lead Magnet
@@ -1579,8 +1599,8 @@ function prepareTemplateData(data, langs) {
     // Floor plan extras
     floorplan_btn: {en: 'Request Details', ru: 'Запросить детали'},
     floorplans_intro: d.floorplans && d.floorplans.intro || '',
-    floorplans_description: d.floorplans && d.floorplans.description || '',
-    floorplans_subtitle: d.floorplans && d.floorplans.subtitle || '',
+    floorplans_description: d.floorplans && d.floorplans.description || {en: 'Choose the perfect unit for your lifestyle and investment goals', ru: 'Выберите идеальный юнит для вашего стиля жизни и инвестиционных целей'},
+    floorplans_subtitle: d.floorplans && d.floorplans.subtitle || {en: 'Available unit types and pricing', ru: 'Доступные типы юнитов и цены'},
 
     // CTA Banner
     cta_banner_title: {en: 'Ready to Invest?', ru: 'Готовы инвестировать?'},
@@ -1627,13 +1647,14 @@ function prepareTemplateData(data, langs) {
     success_text: {en: 'Your request has been sent. We will contact you shortly.', ru: 'Ваша заявка отправлена. Мы свяжемся с вами в ближайшее время.'},
     success_desc: {en: 'Our manager will contact you within 15 minutes.', ru: 'Наш менеджер свяжется с вами в течение 15 минут.'},
     success_close_btn: {en: 'Close', ru: 'Закрыть'},
+    modal_desc: {en: 'Fill in your details and we will send you the information', ru: 'Заполните данные — мы отправим вам информацию'},
 
     // Contact section extras
     contact_label: {en: 'Get in Touch', ru: 'Связаться'},
     contact_title: {en: 'Contact Us', ru: 'Контакты'},
     contact_lead: {en: 'Get in touch with our team for personalized assistance.', ru: 'Свяжитесь с нашей командой для персональной помощи.'},
     contact_text: d.contact && d.contact.text || '',
-    contact_desc: d.contact && d.contact.description || '',
+    contact_desc: d.contact && d.contact.description || {en: 'Leave your details and our expert will contact you shortly', ru: 'Оставьте контакты — наш эксперт свяжется с вами'},
     contact_address: d.contact && d.contact.address || '',
     contact_showroom: d.contact && d.contact.showroom || '',
     contact_form_title: {en: 'Send a Request', ru: 'Отправить заявку'},
@@ -1673,7 +1694,7 @@ function prepareTemplateData(data, langs) {
     footer_rights: {en: 'All rights reserved.', ru: 'Все права защищены.'},
 
     // Investment extras
-    investment_text: d.roi && d.roi.text || '',
+    investment_text: d.roi && d.roi.text || {en: 'Detailed analysis of projected returns and rental income potential', ru: 'Детальный анализ прогнозируемой доходности и потенциала арендного дохода'},
     investment_cta_title: {en: 'Calculate Your Returns', ru: 'Рассчитайте доходность'},
     investment_cta_text: {en: 'Get a detailed investment analysis', ru: 'Получите детальный инвестиционный анализ'},
     investment_cta_btn: {en: 'Get Analysis', ru: 'Получить анализ'},
@@ -1705,7 +1726,7 @@ function prepareTemplateData(data, langs) {
     modal_investment_success_title: {en: 'Analysis Sent!', ru: 'Анализ отправлен!'},
 
     // Gallery extras
-    gallery_subtitle: d.gallery && d.gallery.subtitle || '',
+    gallery_subtitle: d.gallery && d.gallery.subtitle || {en: 'Explore the project through our photo gallery', ru: 'Познакомьтесь с проектом через фотогалерею'},
 
     // Pre-built HTML
     inline_css: '',  // filled by generateFromTemplate
