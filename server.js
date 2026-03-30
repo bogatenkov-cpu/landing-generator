@@ -587,6 +587,91 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Google Drive folder import — list images and map by filename
+  if (req.method === 'POST' && url.pathname === '/api/drive-import') {
+    let body;
+    try { body = await parseBody(req); } catch(e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message })); return;
+    }
+    try {
+      const { folder_url } = body;
+      if (!folder_url) throw new Error('folder_url is required');
+
+      // Extract folder ID from various Google Drive URL formats
+      let folderId = null;
+      const m1 = folder_url.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+      const m2 = folder_url.match(/id=([a-zA-Z0-9_-]+)/);
+      folderId = (m1 && m1[1]) || (m2 && m2[1]);
+      if (!folderId) throw new Error('Could not extract folder ID from URL. Use a Google Drive folder link.');
+
+      const apiKey = process.env.GOOGLE_DRIVE_API_KEY;
+      if (!apiKey) throw new Error('GOOGLE_DRIVE_API_KEY not configured. Ask admin to add it in Railway env vars.');
+
+      // List files in folder via Google Drive API
+      const driveUrl = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'&fields=files(id,name,mimeType)&key=${apiKey}&pageSize=100`;
+      const driveRes = await fetch(driveUrl);
+      const driveData = await driveRes.json();
+
+      if (driveData.error) {
+        throw new Error('Google Drive API: ' + (driveData.error.message || JSON.stringify(driveData.error)));
+      }
+
+      const files = driveData.files || [];
+      if (!files.length) throw new Error('No images found in folder. Make sure the folder is shared publicly (Anyone with the link).');
+
+      // Map filenames to landing page fields
+      const mapping = {};
+      const gallery = [];
+      const layouts = [];
+
+      for (const f of files) {
+        const directUrl = `https://drive.google.com/uc?export=view&id=${f.id}`;
+        const name = f.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/\s+/g, '-');
+
+        if (name === 'hero' || name === 'main' || name.startsWith('hero')) {
+          mapping.hero_image = directUrl;
+        } else if (name === 'concept' || name.startsWith('concept')) {
+          mapping.concept_image = directUrl;
+        } else if (name.startsWith('amenit')) {
+          mapping.amenities_image = directUrl;
+        } else if (name === 'catalogue' || name === 'catalog') {
+          mapping.catalogue_image = directUrl;
+        } else if (name.startsWith('developer') || name === 'dev') {
+          mapping.developer_image = directUrl;
+        } else if (name.startsWith('sell') || name === 'banner') {
+          mapping.sell_image = directUrl;
+        } else if (name.startsWith('layout') || name.startsWith('plan') || name.startsWith('floor')) {
+          layouts.push({ name: f.name, url: directUrl });
+        } else if (name.startsWith('gallery') || name.startsWith('photo') || name.startsWith('img')) {
+          gallery.push({ name: f.name, url: directUrl });
+        } else {
+          // Unrecognized name → put in gallery
+          gallery.push({ name: f.name, url: directUrl });
+        }
+      }
+
+      // Sort gallery and layouts by filename for consistent order
+      gallery.sort((a, b) => a.name.localeCompare(b.name));
+      layouts.sort((a, b) => a.name.localeCompare(b.name));
+
+      if (gallery.length) mapping.gallery = gallery.map(g => g.url);
+      if (layouts.length) mapping.layouts = layouts.map(l => l.url);
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        ok: true,
+        total_files: files.length,
+        mapping: mapping,
+        all_files: files.map(f => ({ name: f.name, url: `https://drive.google.com/uc?export=view&id=${f.id}` }))
+      }));
+    } catch(e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   // AI Fill — Claude with web search
   if (req.method === 'POST' && url.pathname === '/api/ai-fill') {
     let body;

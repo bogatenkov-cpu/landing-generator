@@ -114,6 +114,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-ai:hover{background:linear-gradient(135deg,#6d28d9,#5b21b6)}
 .btn-ai:disabled{opacity:.6;cursor:not-allowed}
 .ai-status{font-size:12px;color:#6b7280;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-drive{background:linear-gradient(135deg,#1a73e8,#1557b0);color:#fff;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.btn-drive:hover{background:linear-gradient(135deg,#1557b0,#0d47a1)}
+.btn-drive:disabled{opacity:.6;cursor:not-allowed}
+
+/* Drive import modal */
+.drive-modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.7);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(4px)}
+.drive-modal{background:#fff;border-radius:16px;padding:32px;width:560px;max-width:90vw;max-height:85vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+.drive-modal h3{font-size:18px;font-weight:700;margin-bottom:4px}
+.drive-modal p{font-size:13px;color:#6b7280;margin-bottom:16px;line-height:1.5}
+.drive-modal .field{margin-bottom:16px}
+.drive-modal label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px}
+.drive-modal input{width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;outline:none;font-family:inherit;box-sizing:border-box}
+.drive-modal input:focus{border-color:#1a73e8}
+.drive-modal .naming-guide{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px;margin-bottom:16px}
+.drive-modal .naming-guide h4{font-size:13px;font-weight:700;margin-bottom:8px;color:#1e293b}
+.drive-modal .naming-guide table{width:100%;font-size:12px;border-collapse:collapse}
+.drive-modal .naming-guide td{padding:3px 8px;border-bottom:1px solid #f1f5f9}
+.drive-modal .naming-guide td:first-child{font-weight:600;color:#1a73e8;white-space:nowrap;width:40%}
+.drive-modal .naming-guide td:last-child{color:#64748b}
+.drive-modal .btn-row{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.drive-modal .btn-cancel{padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;border:1.5px solid #e5e7eb;background:#fff;color:#374151;cursor:pointer}
+.drive-modal .result-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;margin-top:16px}
+.drive-modal .result-box.error{background:#fef2f2;border-color:#fecaca}
+.drive-modal .result-item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:13px}
+.drive-modal .result-item:last-child{border-bottom:none}
+.drive-modal .result-item .role{font-weight:600;color:#059669;min-width:120px}
+.drive-modal .result-item .fname{color:#64748b;flex:1;overflow:hidden;text-overflow:ellipsis}
+.drive-modal .result-item img{width:48px;height:36px;object-fit:cover;border-radius:4px;flex-shrink:0}
+
 .img-thumb{margin-top:6px;border-radius:8px;overflow:hidden;max-height:110px;display:none}
 .img-thumb img{width:100%;max-height:110px;object-fit:cover;display:block}
 .img-thumb.visible{display:block}
@@ -1044,6 +1073,7 @@ function renderForm(d) {
     + '<div class="ai-bar">'
     + '<input id="aiQuery" placeholder="Enter project name or URL (e.g. ANAVA Samui)" />'
     + '<button class="btn-ai" id="aiFillBtn" onclick="aiFill()">AI Fill</button>'
+    + '<button class="btn-drive" onclick="openDriveImport()">&#128247; Images from Drive</button>'
     + '<span class="ai-status" id="aiStatus"></span>'
     + '</div>'
 
@@ -1441,6 +1471,162 @@ async function aiFill() {
   }
   btn.disabled = false;
   btn.innerHTML = 'AI Fill';
+}
+
+// ── Drive Image Import ────────────────────────────────────
+function openDriveImport() {
+  var overlay = document.createElement('div');
+  overlay.className = 'drive-modal-overlay';
+  overlay.id = 'driveModal';
+  overlay.innerHTML = '<div class="drive-modal">'
+    + '<h3>Import Images from Google Drive</h3>'
+    + '<p>Share a Google Drive folder publicly, paste the link below. Name files by convention and they\'ll auto-fill the right fields.</p>'
+    + '<div class="naming-guide">'
+    + '<h4>Naming Convention</h4>'
+    + '<table>'
+    + '<tr><td>hero.jpg</td><td>Main hero banner (1920×1080)</td></tr>'
+    + '<tr><td>concept.jpg</td><td>Concept section image</td></tr>'
+    + '<tr><td>amenities.jpg</td><td>Amenities background</td></tr>'
+    + '<tr><td>catalogue.jpg</td><td>Catalogue section</td></tr>'
+    + '<tr><td>developer.jpg</td><td>Developer photo</td></tr>'
+    + '<tr><td>sell.jpg / banner.jpg</td><td>Sell banner background</td></tr>'
+    + '<tr><td>layout-1.jpg, layout-2.jpg ...</td><td>Floor plans</td></tr>'
+    + '<tr><td>gallery-1.jpg, gallery-2.jpg ...</td><td>Gallery photos</td></tr>'
+    + '<tr><td>Anything else</td><td>→ goes to Gallery</td></tr>'
+    + '</table>'
+    + '</div>'
+    + '<div class="field">'
+    + '<label>Google Drive Folder Link</label>'
+    + '<input id="driveUrl" placeholder="https://drive.google.com/drive/folders/..." />'
+    + '</div>'
+    + '<div id="driveResult"></div>'
+    + '<div class="btn-row">'
+    + '<button class="btn-cancel" onclick="closeDriveModal()">Cancel</button>'
+    + '<button class="btn-drive" id="driveFetchBtn" onclick="fetchDriveImages()">Fetch Images</button>'
+    + '</div>'
+    + '</div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) closeDriveModal(); });
+  setTimeout(function() { document.getElementById('driveUrl').focus(); }, 100);
+}
+
+function closeDriveModal() {
+  var m = document.getElementById('driveModal');
+  if (m) m.remove();
+}
+
+async function fetchDriveImages() {
+  var url = document.getElementById('driveUrl').value.trim();
+  if (!url) { alert('Paste a Google Drive folder link'); return; }
+
+  var btn = document.getElementById('driveFetchBtn');
+  var result = document.getElementById('driveResult');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="border-color:rgba(255,255,255,.3);border-top-color:#fff"></span>Loading...';
+  result.innerHTML = '';
+
+  try {
+    var r = await apiFetch('/api/drive-import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ folder_url: url })
+    });
+    if (r.status === 401) { showLogin(); closeDriveModal(); return; }
+    var res = await r.json();
+    if (!res.ok) throw new Error(res.error || 'Unknown error');
+
+    var mapping = res.mapping;
+    var html = '<div class="result-box"><strong>' + res.total_files + ' images found:</strong><br><br>';
+
+    // Show what will be mapped
+    var roleLabels = {
+      hero_image: 'Hero', concept_image: 'Concept', amenities_image: 'Amenities',
+      catalogue_image: 'Catalogue', developer_image: 'Developer', sell_image: 'Sell Banner'
+    };
+    for (var key in roleLabels) {
+      if (mapping[key]) {
+        html += '<div class="result-item"><span class="role">' + roleLabels[key] + '</span>'
+          + '<img src="' + mapping[key] + '" onerror="this.style.display=\'none\'" />'
+          + '<span class="fname">' + key + '</span></div>';
+      }
+    }
+    if (mapping.layouts && mapping.layouts.length) {
+      html += '<div class="result-item"><span class="role">Layouts (' + mapping.layouts.length + ')</span>'
+        + '<span class="fname">' + mapping.layouts.length + ' floor plan(s)</span></div>';
+    }
+    if (mapping.gallery && mapping.gallery.length) {
+      html += '<div class="result-item"><span class="role">Gallery (' + mapping.gallery.length + ')</span>'
+        + '<span class="fname">' + mapping.gallery.length + ' photo(s)</span></div>';
+    }
+    html += '</div>';
+    result.innerHTML = html;
+
+    // Change button to Apply
+    btn.innerHTML = 'Apply to Form';
+    btn.disabled = false;
+    btn.onclick = function() { applyDriveImages(mapping); };
+
+  } catch(e) {
+    result.innerHTML = '<div class="result-box error">' + e.message + '</div>';
+    btn.disabled = false;
+    btn.innerHTML = 'Fetch Images';
+  }
+}
+
+function applyDriveImages(mapping) {
+  // Hero
+  if (mapping.hero_image) {
+    var heroInp = document.getElementById('f_hero_image');
+    if (heroInp) { heroInp.value = mapping.hero_image; updateImgThumb('f_hero_image'); }
+  }
+  // Concept — there's no separate concept image field in current editor, skip or use amenities
+  if (mapping.amenities_image) {
+    var amenInp = document.getElementById('f_amenities_image');
+    if (amenInp) { amenInp.value = mapping.amenities_image; updateImgThumb('f_amenities_image'); }
+  }
+  if (mapping.catalogue_image) {
+    var catInp = document.getElementById('f_catalogue_image');
+    if (catInp) { catInp.value = mapping.catalogue_image; updateImgThumb('f_catalogue_image'); }
+  }
+  if (mapping.developer_image) {
+    var devInp = document.getElementById('f_dev_image');
+    if (devInp) { devInp.value = mapping.developer_image; updateImgThumb('f_dev_image'); }
+  }
+  if (mapping.sell_image) {
+    var sellInp = document.getElementById('f_sell_image');
+    if (sellInp) { sellInp.value = mapping.sell_image; updateImgThumb('f_sell_image'); }
+  }
+
+  // Layouts — fill existing layout image fields or create new ones
+  if (mapping.layouts && mapping.layouts.length) {
+    var layoutCards = document.querySelectorAll('.layout-card');
+    mapping.layouts.forEach(function(url, i) {
+      var inp = document.querySelector('#layout_img_' + i) || (layoutCards[i] && layoutCards[i].querySelector('.img-input-wrap input'));
+      if (inp) { inp.value = url; var id = inp.id; if (id) updateImgThumb(id); }
+    });
+  }
+
+  // Gallery — fill existing gallery inputs, add more if needed
+  if (mapping.gallery && mapping.gallery.length) {
+    var container = document.getElementById('galleryImages');
+    if (container) {
+      var existing = container.querySelectorAll('.dyn-item input[id^="gimg_"]');
+      mapping.gallery.forEach(function(url, i) {
+        if (i < existing.length) {
+          existing[i].value = url;
+          updateImgThumb(existing[i].id);
+        } else {
+          addGalleryImg();
+          var newInputs = container.querySelectorAll('.dyn-item input[id^="gimg_"]');
+          var last = newInputs[newInputs.length - 1];
+          if (last) { last.value = url; updateImgThumb(last.id); }
+        }
+      });
+    }
+  }
+
+  closeDriveModal();
+  showStatus('Images imported from Google Drive! ' + Object.keys(mapping).length + ' fields filled.', 'ok');
 }
 
 // ── Start ────────────────────────────────────────────────
