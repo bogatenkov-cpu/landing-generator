@@ -12,7 +12,7 @@
   "canonical_url": "https://angsana-oceanview.com/",
   "crm_webhook": "",
   "hero": {
-    "image": "https://images.unsplash.com/photo-1540541338287-41700c1d5c28?w=1920&q=80&fit=crop",
+    "image": "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=1920&q=80&fit=crop",
     "badge": { "en": "Laguna Phuket \u2022 Branded Residences", "ru": "Лагуна Пхукет \u2022 Брендовые резиденции" },
     "title": { "en": "Angsana Oceanview Residences", "ru": "Angsana Oceanview Residences" },
     "description": {
@@ -83,7 +83,7 @@
       "en": "Residents enjoy seamless access to a full spectrum of five-star facilities, from world-class wellness to gourmet dining — all within steps of your front door.",
       "ru": "Резиденты пользуются полным спектром пятизвёздочных удобств — от оздоровительного центра мирового уровня до изысканных ресторанов — буквально в нескольких шагах от порога."
     },
-    "image": "https://images.unsplash.com/photo-1540541338287-41700c1d5c28?w=600&q=80&fit=crop",
+    "image": "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=600&q=80&fit=crop",
     "items": [
       {
         "title": { "en": "Infinity Pool & Beach Club", "ru": "Инфинити-бассейн и пляжный клуб" },
@@ -91,7 +91,7 @@
           "en": "Resort-style swimming pools with stunning seaview panoramas and a private beach club at Bang Tao Beach for sun-drenched relaxation.",
           "ru": "Курортные бассейны с захватывающими панорамами моря и приватный пляжный клуб на берегу Банг Тао для безмятежного отдыха."
         },
-        "image": "https://images.unsplash.com/photo-1540541338287-41700c1d5c28?w=600&q=80&fit=crop"
+        "image": "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=600&q=80&fit=crop"
       },
       {
         "title": { "en": "Spa & Wellness Centre", "ru": "Спа и велнес-центр" },
@@ -131,7 +131,7 @@
           "en": "Round-the-clock security with CCTV surveillance, controlled access, and covered parking facilities ensure complete peace of mind.",
           "ru": "Круглосуточная охрана с видеонаблюдением, контролируемый доступ и крытая парковка для полного спокойствия."
         },
-        "image": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=80&fit=crop"
+        "image": "https://images.unsplash.com/photo-1558002038-1055907df827?w=600&q=80&fit=crop"
       }
     ]
   },
@@ -304,7 +304,7 @@
   },
   "gallery": {
     "images": [
-      "https://images.unsplash.com/photo-1540541338287-41700c1d5c28?w=900&q=80&fit=crop",
+      "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=900&q=80&fit=crop",
       "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600&q=80&fit=crop",
       "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=600&q=80&fit=crop",
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80&fit=crop",

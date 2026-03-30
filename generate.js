@@ -1223,20 +1223,6 @@ function buildTemplateInvestmentTable(d, langs) {
   return '<table class="investment__table">' + thead + tbody + '</table>';
 }
 
-// Build gallery HTML for template
-function buildTemplateGalleryHTML(d, langs, templateId) {
-  var images = d.gallery && d.gallery.images || [];
-  if (!images.length) return '';
-
-  return images.map(function(img, i) {
-    var src = typeof img === 'string' ? img : (img.url || img.src || '');
-    var alt = typeof img === 'object' && img.alt ? tAttr(img.alt, langs) : 'Gallery ' + (i + 1);
-    return '<div class="gallery__item" style="flex-grow:' + (i % 3 === 0 ? '1.5' : '1') + '">' +
-      '<img src="' + esc(src) + '" alt="' + alt + '" width="900" height="600" loading="lazy">' +
-      '</div>';
-  }).join('\n            ');
-}
-
 // Build lang switching JS for template
 function buildTemplateLangJS(langs) {
   if (langs.length <= 1) return '';
@@ -1352,26 +1338,49 @@ function prepareTemplateData(data, langs) {
     };
   });
 
-  // Gallery rows for justified layout (Annara style)
+  // Gallery HTML generation — adapts to template layout expectations
   var galleryImages = d.gallery && d.gallery.images || [];
+  var templateId = d.template || 'default';
   var galleryRowsHtml = '';
   if (galleryImages.length) {
-    var rowSizes = [2, 3, 2];
-    var idx = 0;
-    var rows = [];
-    for (var r = 0; idx < galleryImages.length; r++) {
-      var count = rowSizes[r % rowSizes.length];
-      var rowItems = [];
-      for (var c = 0; c < count && idx < galleryImages.length; c++, idx++) {
-        var img = galleryImages[idx];
-        var src = typeof img === 'string' ? img : (img.url || img.src || '');
-        var alt = typeof img === 'object' && img.alt ? esc(img.alt) : 'Gallery ' + (idx + 1);
-        var grow = (c === 0 && count === 2) ? '1.5' : '1';
-        rowItems.push('            <div class="gallery__item" style="flex-grow:' + grow + '">\n              <img src="' + esc(src) + '" alt="' + alt + '" width="900" height="600" loading="lazy">\n            </div>');
+    if (templateId === 'annara') {
+      // Annara: flexbox justified rows (gallery__row wrappers)
+      var rowSizes = [2, 3, 2];
+      var idx = 0;
+      var rows = [];
+      for (var r = 0; idx < galleryImages.length; r++) {
+        var count = rowSizes[r % rowSizes.length];
+        var rowItems = [];
+        for (var c = 0; c < count && idx < galleryImages.length; c++, idx++) {
+          var img = galleryImages[idx];
+          var src = typeof img === 'string' ? img : (img.url || img.src || '');
+          var alt = typeof img === 'object' && img.alt ? esc(img.alt) : 'Gallery ' + (idx + 1);
+          var grow = (c === 0 && count === 2) ? '1.5' : '1';
+          rowItems.push('            <div class="gallery__item" style="flex-grow:' + grow + '">\n              <img src="' + esc(src) + '" alt="' + alt + '" width="900" height="600" loading="lazy">\n            </div>');
+        }
+        rows.push('          <div class="gallery__row">\n' + rowItems.join('\n') + '\n          </div>');
       }
-      rows.push('          <div class="gallery__row">\n' + rowItems.join('\n') + '\n          </div>');
+      galleryRowsHtml = rows.join('\n');
+    } else {
+      // Grid-based templates: flat gallery__item list
+      var items = [];
+      galleryImages.forEach(function(img, i) {
+        var src = typeof img === 'string' ? img : (img.url || img.src || '');
+        var alt = typeof img === 'object' && img.alt ? esc(img.alt) : 'Gallery ' + (i + 1);
+        var cls = 'gallery__item';
+        // Anchan-indigo & asi-village: 4-col grid, first item spans 2x2
+        if ((templateId === 'anchan-indigo' || templateId === 'asi-village') && i === 0) {
+          cls += ' gallery__item--large';
+        }
+        // Arise-vibe: 3-col dense grid, first item tall, second wide
+        if (templateId === 'arise-vibe') {
+          if (i === 0) cls += ' gallery__item--tall';
+          else if (i === 3) cls += ' gallery__item--wide';
+        }
+        items.push('        <div class="' + cls + '">\n          <img src="' + esc(src) + '" alt="' + alt + '" width="900" height="600" loading="lazy">\n        </div>');
+      });
+      galleryRowsHtml = items.join('\n');
     }
-    galleryRowsHtml = rows.join('\n');
   }
 
   // Flat gallery array for simpler templates

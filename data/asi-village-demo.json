@@ -86,7 +86,7 @@
       "en": "Enjoy a curated selection of world-class amenities designed for modern luxury living in the heart of Phuket.",
       "ru": "Наслаждайтесь тщательно подобранным набором удобств мирового класса, созданных для современной роскошной жизни в сердце Пхукета."
     },
-    "image": "https://images.unsplash.com/photo-1572331165267-854da2b021b1?w=600&q=80&fit=crop",
+    "image": "https://images.unsplash.com/photo-1572331165267-854da2b10ccc?w=600&q=80&fit=crop",
     "items": [
       {
         "icon": "fitness",
@@ -104,7 +104,7 @@
           "en": "Infinity pool with sun deck and poolside lounge area",
           "ru": "Инфинити-бассейн с солнечной палубой и зоной отдыха"
         },
-        "image": "https://images.unsplash.com/photo-1572331165267-854da2b021b1?w=600&q=80&fit=crop"
+        "image": "https://images.unsplash.com/photo-1572331165267-854da2b10ccc?w=600&q=80&fit=crop"
       },
       {
         "icon": "garden",
@@ -122,7 +122,7 @@
           "en": "Gated community with CCTV surveillance and security patrol",
           "ru": "Закрытая территория с видеонаблюдением и патрулированием"
         },
-        "image": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=80&fit=crop"
+        "image": "https://images.unsplash.com/photo-1558002038-1055907df827?w=600&q=80&fit=crop"
       },
       {
         "icon": "clubhouse",
@@ -149,7 +149,7 @@
           "en": "Safe and engaging play areas designed for children of all ages",
           "ru": "Безопасные и увлекательные зоны для детей всех возрастов"
         },
-        "image": "https://images.unsplash.com/photo-1566454825481-9c31bd88c36f?w=600&q=80&fit=crop"
+        "image": "https://images.unsplash.com/photo-1566454544259-f4b94c3d758c?w=600&q=80&fit=crop"
       },
       {
         "icon": "concierge",
