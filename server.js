@@ -161,13 +161,13 @@ async function aiFillProject(query, apiKey, languages) {
     crm_webhook: "",
     hero: {
       image: "URL",
-      title: multiLang ? {en: "Main heading", ru: "Главный заголовок"} : "Main heading",
-      description: multiLang ? {en: "2-3 sentences", ru: "2-3 предложения"} : "2-3 sentences",
+      title: multiLang ? {en: "Short Title Max 6 Words", ru: "Короткий Заголовок"} : "Short Title Max 6 Words",
+      description: multiLang ? {en: "One short sentence, max 15 words", ru: "Одно короткое предложение"} : "One short sentence, max 15 words",
       stats: [{ value: multiLang ? {en: "From $X", ru: "От $X"} : "From $X", label: multiLang ? {en: "Starting Price", ru: "Цена от"} : "Starting Price" }]
     },
     concept: {
       title: multiLang ? {en: "Section title", ru: "Название секции"} : "Section title",
-      paragraphs: multiLang ? [{en: "paragraph EN with <strong>bold</strong>", ru: "параграф RU с <strong>выделением</strong>"}] : ["paragraph with <strong>bold</strong>"],
+      paragraphs: multiLang ? [{en: "Max 40 words with <strong>key phrase</strong>", ru: "Макс 40 слов с <strong>ключевой фразой</strong>"}] : ["Max 40 words with <strong>key phrase</strong>"],
       specs: [{ key: multiLang ? {en: "Location", ru: "Расположение"} : "Location", value: multiLang ? {en: "Area Name", ru: "Название района"} : "Area Name" }]
     },
     sell_banner: { image: "", title: "", subtitle: "", show: false },
@@ -189,14 +189,14 @@ async function aiFillProject(query, apiKey, languages) {
     gallery: { images: ["URL1", "URL2"] },
     location: {
       title: multiLang ? {en: "Prime Location", ru: "Расположение"} : "Prime Location",
-      description: multiLang ? {en: "Location desc EN", ru: "Описание расположения"} : "Location description",
+      description: multiLang ? {en: "Max 30 words, 1-2 sentences", ru: "Макс 30 слов, 1-2 предложения"} : "Max 30 words, 1-2 sentences",
       distances: [{ place: multiLang ? {en: "Airport", ru: "Аэропорт"} : "Airport", time: multiLang ? {en: "15 min", ru: "15 мин"} : "15 min" }],
       map_embed: "https://www.google.com/maps/embed?..."
     },
     developer: {
       image: "URL",
       name: "Developer Name",
-      description: multiLang ? {en: "About developer EN", ru: "О застройщике"} : "About developer",
+      description: multiLang ? {en: "Max 30 words about developer", ru: "Макс 30 слов о застройщике"} : "Max 30 words about developer",
       facts: [{ key: multiLang ? {en: "Founded", ru: "Основан"} : "Founded", value: "2010" }]
     },
     contact: { address: "Address", email: "email@example.com", website: "www.example.com" }
@@ -220,19 +220,28 @@ ${jsonSchema}
 
 IMPORTANT RULES:
 - project_slug should be lowercase with dashes (e.g. "anava-samui")
-- For hero.stats provide exactly 4 items (e.g. starting price, ROI, completion date, total units)
-- For concept.paragraphs provide 2-3 paragraphs with <strong> tags for key facts
-- For concept.specs provide 5-8 key project specifications
-- For amenities.items provide 8-12 amenities
-- For layouts provide all available unit types with specs (size, bedrooms, bathrooms, view, furnishing)
-- For roi.rows provide data for each unit type if available
-- For gallery.images use real image URLs from official project website or developer site
-- For location.distances provide 5-8 nearby places with drive/walk times
-- For developer.facts provide 4-6 facts
-- For map_embed create a Google Maps embed URL for the project location
 - All prices in USD
 ${langInstruction}
 - If you cannot find specific data, make a reasonable estimate based on similar projects in the area and mark with [estimated]
+
+TEXT LENGTH LIMITS (THIS IS CRITICAL — the landing page has a fixed layout, long text breaks the design):
+- hero.title: max 6 words (e.g. "Luxury Villas in Phuket")
+- hero.description: max 15 words, one sentence
+- hero.stats: exactly 4 items, value max 10 chars, label max 15 chars
+- concept.paragraphs: exactly 2 paragraphs, each max 40 words. Use <strong> for 2-3 key phrases per paragraph
+- concept.specs: 5-8 items, key max 2 words, value max 4 words
+- amenities.items: 8-12 items, each max 3 words (e.g. "Infinity Pool", "24/7 Security")
+- amenities item descriptions (if object): max 15 words
+- layouts specs: key max 2 words, value max 4 words
+- roi.rows: numbers/short values only
+- location.description: max 30 words, 1-2 sentences
+- location.distances: 5-8 items, place max 3 words, time max 2 words (e.g. "15 min")
+- developer.description: max 30 words, 1-2 sentences
+- developer.facts: 4-6 items, key max 2 words, value max 3 words
+- gallery.images: use real image URLs from official project website or developer site
+- map_embed: Google Maps embed URL for the project location
+
+STYLE: Write like a premium real estate brochure — concise, punchy, elegant. No filler words. Every word must earn its place.
 
 Return ONLY the JSON object, no markdown, no explanation.`;
 
