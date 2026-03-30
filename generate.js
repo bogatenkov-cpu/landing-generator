@@ -1112,57 +1112,67 @@ function getFileTemplates() {
 // Mini template engine
 // Supports: {{var}}, {{=var}}, {{{raw}}}, {{#array}}...{{/array}}
 function renderTemplateEngine(template, data, langs) {
-  var html = template;
-
-  // 1. Process loops: {{#key}}...{{/key}}
-  html = html.replace(/\{\{#(\w+)\}\}([\s\S]*?)\{\{\/\1\}\}/g, function(match, key, body) {
-    var arr = data[key];
-    if (!Array.isArray(arr)) return '';
-    return arr.map(function(item, i) {
-      var itemHtml = body;
-      // Replace {{{field}}} raw HTML inside loop
-      itemHtml = itemHtml.replace(/\{\{\{(\w+)\}\}\}/g, function(m, k) {
-        return String(item[k] || '');
+  // Recursive render function that supports nested {{#blocks}}
+  function renderBlock(html, ctx) {
+    // 1. Process loops: {{#key}}...{{/key}} — supports nesting
+    var changed = true;
+    var maxPasses = 10;
+    while (changed && maxPasses-- > 0) {
+      changed = false;
+      // Match innermost {{#key}}...{{/key}} (no nested # blocks inside)
+      html = html.replace(/\{\{#(\w+)\}\}((?:(?!\{\{#)[\s\S])*?)\{\{\/\1\}\}/g, function(match, key, body) {
+        changed = true;
+        var arr = ctx[key];
+        // Conditional block: if value is truthy but not array, render once
+        if (arr && !Array.isArray(arr)) return body;
+        if (!Array.isArray(arr) || !arr.length) return '';
+        return arr.map(function(item, i) {
+          var itemHtml = body;
+          // Replace {{{field}}} raw HTML inside loop
+          itemHtml = itemHtml.replace(/\{\{\{(\w+)\}\}\}/g, function(m, k) {
+            return String(item[k] != null ? item[k] : (ctx[k] != null ? ctx[k] : ''));
+          });
+          // Replace {{=field}} attribute-safe inside loop
+          itemHtml = itemHtml.replace(/\{\{=(\w+)\}\}/g, function(m, k) {
+            if (k === '_index') return String(i);
+            var v = item[k] != null ? item[k] : ctx[k];
+            return tAttr(v, langs);
+          });
+          // Replace {{field}} with multi-lang text inside loop — check item first, fall back to parent ctx
+          itemHtml = itemHtml.replace(/\{\{(\w+)\}\}/g, function(m, k) {
+            if (k === '_index') return String(i);
+            if (k === '_num') return String(i + 1);
+            var v = item[k] != null ? item[k] : ctx[k];
+            return t(v || '', langs);
+          });
+          return itemHtml;
+        }).join('');
       });
-      // Replace {{=field}} attribute-safe inside loop
-      itemHtml = itemHtml.replace(/\{\{=(\w+)\}\}/g, function(m, k) {
-        if (k === '_index') return String(i);
-        return tAttr(item[k], langs);
-      });
-      // Replace {{_active_*}} — outputs active class for first item
-      itemHtml = itemHtml.replace(/\{\{_active_class\}\}/g, i === 0 ? ' floorplans__tab--active' : '');
-      itemHtml = itemHtml.replace(/\{\{_active_class_panel\}\}/g, i === 0 ? ' floorplans__panel--active' : '');
-      itemHtml = itemHtml.replace(/\{\{_active\}\}/g, i === 0 ? ' active' : '');
-      // Replace {{field}} with multi-lang text inside loop
-      itemHtml = itemHtml.replace(/\{\{(\w+)\}\}/g, function(m, k) {
-        if (k === '_index') return String(i);
-        if (k === '_num') return String(i + 1);
-        return t(item[k] || '', langs);
-      });
-      return itemHtml;
-    }).join('');
-  });
+    }
 
-  // 2. Raw HTML: {{{key}}}
-  html = html.replace(/\{\{\{(\w+)\}\}\}/g, function(m, key) {
-    return String(data[key] || '');
-  });
+    // 2. Raw HTML: {{{key}}}
+    html = html.replace(/\{\{\{(\w+)\}\}\}/g, function(m, key) {
+      return String(ctx[key] || '');
+    });
 
-  // 3. Attribute-safe: {{=key}}
-  html = html.replace(/\{\{=(\w+)\}\}/g, function(m, key) {
-    var val = data[key];
-    if (val === undefined || val === null) return '';
-    return tAttr(val, langs);
-  });
+    // 3. Attribute-safe: {{=key}}
+    html = html.replace(/\{\{=(\w+)\}\}/g, function(m, key) {
+      var val = ctx[key];
+      if (val === undefined || val === null) return '';
+      return tAttr(val, langs);
+    });
 
-  // 4. Normal text: {{key}}
-  html = html.replace(/\{\{(\w+)\}\}/g, function(m, key) {
-    var val = data[key];
-    if (val === undefined || val === null) return '';
-    return t(val, langs);
-  });
+    // 4. Normal text: {{key}}
+    html = html.replace(/\{\{(\w+)\}\}/g, function(m, key) {
+      var val = ctx[key];
+      if (val === undefined || val === null) return '';
+      return t(val, langs);
+    });
 
-  return html;
+    return html;
+  }
+
+  return renderBlock(template, data);
 }
 
 // Build language switcher HTML for templates (button-style, not links)
@@ -1276,12 +1286,20 @@ function prepareTemplateData(data, langs) {
   // Amenities items — normalize
   var amenitiesItems = [];
   if (d.amenities && d.amenities.items) {
+    var defaultAmenImg = (d.amenities && d.amenities.image) || '';
     amenitiesItems = d.amenities.items.map(function(item) {
-      if (typeof item === 'string') return { title: item, text: '', image: (d.amenities && d.amenities.image) || '' };
+      // Plain string
+      if (typeof item === 'string') return { title: item, text: '', image: defaultAmenImg };
+      // Multilingual string {en: "...", ru: "..."}  — no title/description keys
+      if (item.en || item.ru) {
+        if (!item.title && !item.description && !item.image) {
+          return { title: item, text: '', image: defaultAmenImg };
+        }
+      }
       return {
-        title: item.title || '',
+        title: item.title || item.name || '',
         text: item.description || item.text || '',
-        image: item.image || (d.amenities && d.amenities.image) || ''
+        image: item.image || defaultAmenImg
       };
     });
   }
@@ -1291,24 +1309,55 @@ function prepareTemplateData(data, langs) {
   var rawPlans = d.floorplans && d.floorplans.items || d.layouts || [];
   floorplans = rawPlans.map(function(fp, i) {
     var details = [];
-    if (fp.specs) {
+    if (fp.features && fp.features.length) {
+      // arise-vibe style: simple feature list
+      details = fp.features.map(function(f) {
+        return '<li class="floorplans__plan-detail"><span>' + t(f, langs) + '</span></li>';
+      });
+    } else if (fp.specs) {
       details = fp.specs.map(function(s) {
         return '<li class="floorplans__plan-detail"><span>' + t(s.key, langs) + '</span><strong>' + t(s.value, langs) + '</strong></li>';
       });
     } else if (fp.details) {
-      details = fp.details.map(function(d) {
-        return '<li class="floorplans__plan-detail"><span>' + t(d.label || d.key, langs) + '</span><strong>' + t(d.value, langs) + '</strong></li>';
+      details = fp.details.map(function(dd) {
+        return '<li class="floorplans__plan-detail"><span>' + t(dd.label || dd.key, langs) + '</span><strong>' + t(dd.value, langs) + '</strong></li>';
       });
+    }
+    var fpName = t(fp.name || fp.title || fp.type || '', langs);
+    var fpPrice = t(fp.price_from || fp.price || '', langs);
+    // Build specs array for asi-village nested {{#specs}}
+    var specsArr = [];
+    if (fp.specs) {
+      specsArr = fp.specs.map(function(s) { return { value: t(s.value, langs), label: t(s.key || s.label, langs) }; });
     }
     return {
       id: fp.id || ('type' + (i + 1)),
-      tab_name: fp.tab_name || fp.name || fp.type || ('Type ' + (i + 1)),
-      name: fp.name || fp.type || '',
+      tab_id: fp.id || ('type' + (i + 1)),
+      tab_name: fp.tab_name || fpName || ('Type ' + (i + 1)),
+      tab_label: fp.tab_name || fpName || ('Type ' + (i + 1)),
+      name: fpName,
+      title: fpName,
       image: fp.image || (d.hero && d.hero.image) || '',
+      image_alt: fpName,
+      alt: fpName,
       details_html: details.length ? '<ul class="floorplans__plan-details">' + details.join('') + '</ul>' : '',
-      price: fp.price_from || fp.price || '',
-      modal_title: fp.name || fp.type || '',
-      modal_desc: 'Request detailed specifications and availability.'
+      desc: fp.description || '',
+      price: fpPrice,
+      price_from: {en: 'From', ru: 'От'},
+      price_value: fpPrice,
+      subtitle: fp.subtitle || fpPrice,
+      badge: fp.badge || '',
+      popular_html: fp.popular ? '<span class="floor-plan__card-popular">Popular</span>' : '',
+      _featured_class: fp.featured ? ' floor-plan__card--featured' : '',
+      specs: specsArr,
+      floorplan_btn: {en: 'Request Details', ru: 'Запросить детали'},
+      btn_text: {en: 'Request Details', ru: 'Запросить детали'},
+      unit_type: fpName,
+      modal_title: fpName,
+      modal_desc: 'Request detailed specifications and availability.',
+      _active_class: i === 0 ? ' floorplans__tab--active' : '',
+      _active_class_panel: i === 0 ? ' floorplans__panel--active' : '',
+      _reveal_delay_class: i > 0 ? ' reveal--delay-' + i : ''
     };
   });
 
