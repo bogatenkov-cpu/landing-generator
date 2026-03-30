@@ -145,7 +145,7 @@ function t(val, langs) {
   if (!val) return '';
   if (typeof val === 'string') return esc(val);
   if (typeof val === 'object' && !Array.isArray(val)) {
-    return langs.map(l => `<span data-lang="${l}">${esc(val[l] || '')}</span>`).join('');
+    return langs.map(l => `<span data-lang="${l}">${esc(val[l] || val.en || '')}</span>`).join('');
   }
   return esc(String(val));
 }
@@ -1128,9 +1128,11 @@ function renderTemplateEngine(template, data, langs) {
         if (!Array.isArray(arr) || !arr.length) return '';
         return arr.map(function(item, i) {
           var itemHtml = body;
-          // Replace {{{field}}} raw HTML inside loop
+          // Replace {{{field}}} raw HTML inside loop — supports multilang objects
           itemHtml = itemHtml.replace(/\{\{\{(\w+)\}\}\}/g, function(m, k) {
-            return String(item[k] != null ? item[k] : (ctx[k] != null ? ctx[k] : ''));
+            var v = item[k] != null ? item[k] : (ctx[k] != null ? ctx[k] : '');
+            if (typeof v === 'object' && !Array.isArray(v)) return t(v, langs);
+            return String(v);
           });
           // Replace {{=field}} attribute-safe inside loop
           itemHtml = itemHtml.replace(/\{\{=(\w+)\}\}/g, function(m, k) {
@@ -1150,9 +1152,12 @@ function renderTemplateEngine(template, data, langs) {
       });
     }
 
-    // 2. Raw HTML: {{{key}}}
+    // 2. Raw HTML: {{{key}}} — supports multilang objects
     html = html.replace(/\{\{\{(\w+)\}\}\}/g, function(m, key) {
-      return String(ctx[key] || '');
+      var val = ctx[key];
+      if (val === undefined || val === null) return '';
+      if (typeof val === 'object' && !Array.isArray(val)) return t(val, langs);
+      return String(val);
     });
 
     // 3. Attribute-safe: {{=key}}
@@ -1417,7 +1422,7 @@ function prepareTemplateData(data, langs) {
         for (var c = 0; c < count && idx < galleryImages.length; c++, idx++) {
           var img = galleryImages[idx];
           var src = typeof img === 'string' ? img : (img.url || img.src || '');
-          var alt = typeof img === 'object' && img.alt ? esc(img.alt) : 'Gallery ' + (idx + 1);
+          var alt = typeof img === 'object' && img.alt ? tAttr(img.alt, langs) : 'Gallery ' + (idx + 1);
           var grow = (c === 0 && count === 2) ? '1.5' : '1';
           rowItems.push('            <div class="gallery__item" style="flex-grow:' + grow + '">\n              <img src="' + esc(src) + '" alt="' + alt + '" width="900" height="600" loading="lazy">\n            </div>');
         }
@@ -1429,7 +1434,7 @@ function prepareTemplateData(data, langs) {
       var items = [];
       galleryImages.forEach(function(img, i) {
         var src = typeof img === 'string' ? img : (img.url || img.src || '');
-        var alt = typeof img === 'object' && img.alt ? esc(img.alt) : 'Gallery ' + (i + 1);
+        var alt = typeof img === 'object' && img.alt ? tAttr(img.alt, langs) : 'Gallery ' + (i + 1);
         var cls = 'gallery__item';
         // Anchan-indigo & asi-village: 4-col grid, first item spans 2x2
         if ((templateId === 'anchan-indigo' || templateId === 'asi-village') && i === 0) {
@@ -1517,7 +1522,22 @@ function prepareTemplateData(data, langs) {
     // Developer
     developer_name: d.developer && d.developer.name || '',
     developer_title: d.developer && d.developer.title || {en: 'Built by Experts', ru: 'Построено экспертами'},
-    developer_text: d.developer && d.developer.description || '',
+    developer_text: (function() {
+      var desc = d.developer && d.developer.description;
+      if (!desc) return '';
+      if (Array.isArray(desc)) {
+        // Array of multilang objects → merge into single multilang object
+        var result = {};
+        langs.forEach(function(l) {
+          result[l] = desc.map(function(p) {
+            if (typeof p === 'object' && !Array.isArray(p)) return p[l] || p.en || '';
+            return String(p);
+          }).join(' ');
+        });
+        return result;
+      }
+      return desc;
+    })(),
     developer_image: d.developer && d.developer.image || '',
     developer_facts: developerFacts,
 
