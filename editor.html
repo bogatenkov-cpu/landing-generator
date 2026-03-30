@@ -601,7 +601,10 @@ function collectFormData() {
         specs.push({ key: collectMl(si[0].id), value: collectMl(si[1].id) });
       }
     });
-    layouts.push({ name: collectMl(nameInp.id), price_from: collectMl(priceInp.id), specs: specs });
+    var imgInp = card.querySelector('.img-input-wrap input[id^="layout_img_"]');
+    var layout = { name: collectMl(nameInp.id), price_from: collectMl(priceInp.id), specs: specs };
+    if (imgInp && imgInp.value.trim()) layout.image = imgInp.value.trim();
+    layouts.push(layout);
   });
 
   var roiRows = [];
@@ -763,14 +766,33 @@ async function previewProject() {
   }
   // User projects — POST data, show in iframe
   var data = collectFormData();
+  // Convert relative image paths to absolute for srcdoc preview
+  var slug = data.project_slug;
+  function absImg(v) {
+    if (!v || typeof v !== 'string') return v;
+    if (v.startsWith('http://') || v.startsWith('https://') || v.startsWith('//') || v.startsWith('/')) return v;
+    return slug ? '/api/image/' + slug + '/' + v.replace(/^images\//, '') : v;
+  }
+  if (slug) {
+    if (data.hero && data.hero.image) data.hero.image = absImg(data.hero.image);
+    if (data.amenities && data.amenities.image) data.amenities.image = absImg(data.amenities.image);
+    if (data.developer && data.developer.image) data.developer.image = absImg(data.developer.image);
+    if (data.catalogue && data.catalogue.image) data.catalogue.image = absImg(data.catalogue.image);
+    if (data.sell_banner && data.sell_banner.image) data.sell_banner.image = absImg(data.sell_banner.image);
+    if (data.gallery && data.gallery.images) data.gallery.images = data.gallery.images.map(absImg);
+    if (data.layouts) data.layouts.forEach(function(l) { if (l.image) l.image = absImg(l.image); });
+  }
   try {
     var r = await apiFetch('/api/preview', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
     if (r.status === 401) { showLogin(); return; }
     if (!r.ok) { var err = await r.json(); showStatus(err.error || 'Preview error', 'err'); return; }
+    var html = await r.text();
+    // Add base tag so relative resources resolve correctly
+    html = html.replace('<head>', '<head><base href="' + window.location.origin + '/">');
     var frame = document.getElementById('previewFrame');
     frame.style.display = 'block';
     document.getElementById('content').style.display = 'none';
-    frame.srcdoc = await r.text();
+    frame.srcdoc = html;
     document.getElementById('topbarTitle').textContent = '\u2190 Back  |  ' + ((document.getElementById('f_name') || {}).value || 'Preview');
     document.getElementById('topbarTitle').style.cursor = 'pointer';
     document.getElementById('topbarTitle').onclick = closePreview;
@@ -873,12 +895,14 @@ function addCatTag() {
 }
 function addLayout() {
   var nId = mlId(), pId = mlId(), s1 = mlId(), s2 = mlId();
+  var imgId = 'layout_img_' + nId;
   mlInit(nId, ''); mlInit(pId, ''); mlInit(s1, ''); mlInit(s2, '');
   addItem('layoutsList', '<div class="sub-card layout-card">'
     + '<div class="sub-card__header">'
     +   '<span class="sub-card__title">Layout</span>'
     +   '<button class="btn btn-danger" style="padding:4px 10px;font-size:12px" onclick="removeItem(this)">Remove</button>'
     + '</div>'
+    + imgField(imgId, '', 'Floor Plan Image', 'https://... or Upload')
     + '<div class="field-row">'
     +   '<div class="field"><label>Unit Type</label><input id="' + nId + '" class="layout-name" data-ml placeholder="e.g. Studio" /></div>'
     +   '<div class="field"><label>Price From</label><input id="' + pId + '" class="layout-price" data-ml placeholder="e.g. $105,000" /></div>'
@@ -1172,11 +1196,13 @@ function renderForm(d) {
     + (d.layouts || []).map(function(l) {
         var nId = mlId(), pId = mlId();
         mlInit(nId, l.name); mlInit(pId, l.price_from);
+        var imgId = 'layout_img_' + nId;
         return '<div class="sub-card layout-card">'
           + '<div class="sub-card__header">'
           +   '<span class="sub-card__title">' + s(mlVal(l.name)) + '</span>'
           +   '<button class="btn btn-danger" style="padding:4px 10px;font-size:12px" onclick="removeItem(this)">Remove</button>'
           + '</div>'
+          + imgField(imgId, l.image || '', 'Floor Plan Image', 'https://... or Upload')
           + '<div class="field-row">'
           +   '<div class="field"><label>Unit Type</label><input id="' + nId + '" class="layout-name" data-ml value="' + s(mlVal(l.name)) + '" placeholder="Studio" /></div>'
           +   '<div class="field"><label>Price From</label><input id="' + pId + '" class="layout-price" data-ml value="' + s(mlVal(l.price_from)) + '" placeholder="$105,000" /></div>'

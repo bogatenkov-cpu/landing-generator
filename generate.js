@@ -374,7 +374,7 @@ function buildFloorplansSection(variant, d, langs) {
       }).join('');
       return '        <div class="fp-tabs__panel' + (i===0?' fp-tabs__panel--active':'') + '" id="' + slug + '">' +
         '\n          <div class="fp-tabs__plan-grid">' +
-        '\n            <div class="fp-tabs__plan-image"><div style="color:var(--text-muted);font-family:var(--font-ui);font-size:14px;text-align:center;padding:40px">' + ui('floor_plan_note', langs) + '</div></div>' +
+        '\n            <div class="fp-tabs__plan-image">' + (l.image ? '<img src="' + esc(typeof l.image === 'object' ? l.image.en || l.image.ru || '' : l.image) + '" alt="' + esc(typeof l.name === 'object' ? l.name.en || '' : l.name || '') + '" style="width:100%;height:100%;object-fit:cover" loading="lazy" />' : '<div style="color:var(--text-muted);font-family:var(--font-ui);font-size:14px;text-align:center;padding:40px">' + ui('floor_plan_note', langs) + '</div>') + '</div>' +
         '\n            <div class="fp-tabs__plan-details">' +
         '\n              <h3 class="fp-tabs__plan-title">' + t(l.name, langs) + ' — ' + t(l.price_from, langs) + '</h3>' +
         '\n              <div class="fp-tabs__plan-specs">' + specs + '</div>' +
@@ -399,7 +399,7 @@ function buildFloorplansSection(variant, d, langs) {
       var badge = i === 1 ? '\n          <span class="fp-cards__badge">Popular</span>' : '';
       return '      <div class="fp-cards__card' + (i===1?' fp-cards__card--featured':'') + ' reveal">' +
         '\n        <div class="fp-cards__card-image">' +
-        '\n          <div style="width:100%;height:220px;background:var(--cream);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:14px">' + ui('floor_plan_note', langs) + '</div>' +
+        '\n          ' + (l.image ? '<img src="' + esc(typeof l.image === 'object' ? l.image.en || l.image.ru || '' : l.image) + '" alt="' + esc(typeof l.name === 'object' ? l.name.en || '' : l.name || '') + '" style="width:100%;height:220px;object-fit:cover" loading="lazy" />' : '<div style="width:100%;height:220px;background:var(--cream);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:14px">' + ui('floor_plan_note', langs) + '</div>') +
         '\n          <span class="fp-cards__price">' + t(l.price_from, langs) + '</span>' + badge +
         '\n        </div>' +
         '\n        <div class="fp-cards__card-body">' +
@@ -424,7 +424,7 @@ function buildFloorplansSection(variant, d, langs) {
     return '        <div class="layout-item">' +
       '\n          <button class="layout-item__header" onclick="toggleLayout(this)"><span>' + t(l.name, langs) + ' — from ' + t(l.price_from, langs) + '</span><span class="toggle">+</span></button>' +
       '\n          <div class="layout-item__body">' +
-      '\n            <div class="layout-item__plan"><div style="color:rgba(255,255,255,.4);font-family:var(--font-ui);font-size:14px;text-align:center">' + ui('floor_plan_note', langs) + '</div></div>' +
+      '\n            <div class="layout-item__plan">' + (l.image ? '<img src="' + esc(typeof l.image === 'object' ? l.image.en || l.image.ru || '' : l.image) + '" alt="' + esc(typeof l.name === 'object' ? l.name.en || '' : l.name || '') + '" style="width:100%;height:100%;object-fit:cover" loading="lazy" />' : '<div style="color:rgba(255,255,255,.4);font-family:var(--font-ui);font-size:14px;text-align:center">' + ui('floor_plan_note', langs) + '</div>') + '</div>' +
       '\n            <div class="layout-item__specs"><div>' + specRows + '</div><button class="btn btn--gold layout-item__cta" onclick="openModal(\'layouts\')">' + ui('request_floor_plan', langs) + '</button></div>' +
       '\n          </div>' +
       '\n        </div>';
