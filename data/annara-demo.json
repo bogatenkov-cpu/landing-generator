@@ -1,44 +1,79 @@
 {
   "project_slug": "annara-demo",
-  "project_name": { "en": "Annara", "ru": "Annara" },
+  "project_name": "Annara",
   "template": "annara",
-  "languages": ["en", "ru"],
+  "languages": [
+    "en",
+    "ru"
+  ],
   "currency": "THB",
-  "meta_title": { "en": "Annara in Phuket", "ru": "Annara на Пхукете" },
+  "meta_title": {
+    "en": "Annara in Phuket",
+    "ru": "Annara на Пхукете"
+  },
   "meta_description": {
     "en": "Annara is a new luxury villa project in Phuket. The project features well-designed layouts and comprehensive infrastructure. An excellent opportunity for comfortable living and investment.",
     "ru": "Annara — это новый роскошный проект вилл на Пхукете. В проекте продуманы удобные планировки и развитая инфраструктура. Отличная возможность для комфортной жизни и инвестиций."
   },
-  "canonical_url": "https://annara-phuket.com/",
   "crm_webhook": "",
   "hero": {
     "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80&fit=crop",
-    "title": { "en": "Annara", "ru": "Annara" },
+    "title": {
+      "en": "Annara",
+      "ru": "Annara"
+    },
     "description": {
       "en": "A new era of luxury living on the shores of Phuket",
       "ru": "Новая эра роскошной жизни на берегу Пхукета"
     },
     "stats": [
       {
-        "value": "8.9M",
-        "label": { "en": "Starting price, THB", "ru": "Цена от, THB" }
+        "value": {
+          "en": "8.9M",
+          "ru": "8.9M"
+        },
+        "label": {
+          "en": "Starting price, THB",
+          "ru": "Цена от, THB"
+        }
       },
       {
-        "value": "8%",
-        "label": { "en": "Expected yield", "ru": "Ожидаемая доходность" }
+        "value": {
+          "en": "8%",
+          "ru": "8%"
+        },
+        "label": {
+          "en": "Expected yield",
+          "ru": "Ожидаемая доходность"
+        }
       },
       {
-        "value": "2027",
-        "label": { "en": "Handover year", "ru": "Год сдачи" }
+        "value": {
+          "en": "2027",
+          "ru": "2027"
+        },
+        "label": {
+          "en": "Handover year",
+          "ru": "Год сдачи"
+        }
       },
       {
-        "value": "Villas",
-        "label": { "en": "Property type", "ru": "Тип недвижимости" }
+        "value": {
+          "en": "Villas",
+          "ru": "Villas"
+        },
+        "label": {
+          "en": "Property type",
+          "ru": "Тип недвижимости"
+        }
       }
     ]
   },
   "concept": {
-    "title": { "en": "Annara Concept", "ru": "Концепция Annara" },
+    "title": {
+      "en": "Annara Concept",
+      "ru": "Концепция Annara"
+    },
     "paragraphs": [
       {
         "en": "Annara is a boutique collection of luxury villas nestled in the lush hillside of Phuket. Every residence is meticulously crafted to harmonize modern architecture with the natural beauty of the Andaman coast. Spacious layouts, floor-to-ceiling windows, and private pools define an elevated lifestyle where comfort meets serenity.",
@@ -47,28 +82,40 @@
     ],
     "specs": [
       {
-        "key": { "en": "Prime Location", "ru": "Премиальная локация" },
+        "key": {
+          "en": "Prime Location",
+          "ru": "Премиальная локация"
+        },
         "value": {
           "en": "Situated in the prestigious Laguna area, minutes from Bang Tao Beach and world-class dining.",
           "ru": "Расположен в престижном районе Лагуна, в нескольких минутах от пляжа Банг Тао и ресторанов мирового уровня."
         }
       },
       {
-        "key": { "en": "Generous Area", "ru": "Просторная площадь" },
+        "key": {
+          "en": "Generous Area",
+          "ru": "Просторная площадь"
+        },
         "value": {
           "en": "Villas from 180 to 420 sq.m. on plots of 300 to 800 sq.m. with private tropical gardens.",
           "ru": "Виллы от 180 до 420 кв.м. на участках от 300 до 800 кв.м. с собственными тропическими садами."
         }
       },
       {
-        "key": { "en": "800m to Sea", "ru": "800 м до моря" },
+        "key": {
+          "en": "800m to Sea",
+          "ru": "800 м до моря"
+        },
         "value": {
           "en": "A short walk or bike ride brings you to one of Phuket's finest stretches of white sand.",
           "ru": "Короткая прогулка или поездка на велосипеде — и вы на одном из лучших пляжей Пхукета с белоснежным песком."
         }
       },
       {
-        "key": { "en": "Full Infrastructure", "ru": "Вся инфраструктура" },
+        "key": {
+          "en": "Full Infrastructure",
+          "ru": "Вся инфраструктура"
+        },
         "value": {
           "en": "24-hour security, landscaped communal gardens, clubhouse, gym, and concierge services.",
           "ru": "Круглосуточная охрана, ландшафтные сады, клубный дом, фитнес-центр и консьерж-сервис."
@@ -76,196 +123,333 @@
       }
     ]
   },
+  "sell_banner": {
+    "image": "",
+    "title": {
+      "en": "",
+      "ru": ""
+    },
+    "subtitle": {
+      "en": "",
+      "ru": ""
+    },
+    "show": false
+  },
   "amenities": {
-    "title": { "en": "Annara Amenities", "ru": "Удобства в Annara" },
     "image": "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=600&q=80&fit=crop",
+    "title": {
+      "en": "Annara Amenities",
+      "ru": "Удобства в Annara"
+    },
     "items": [
       {
-        "title": { "en": "Panoramic Pool", "ru": "Панорамный бассейн" },
-        "description": {
-          "en": "A stunning 50-meter pool overlooking the Andaman Sea horizon.",
-          "ru": "Впечатляющий 50-метровый бассейн с видом на горизонт Андаманского моря."
-        },
-        "image": "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=600&q=80&fit=crop"
+        "en": "Panoramic Pool",
+        "ru": ""
       },
       {
-        "title": { "en": "Fitness Center", "ru": "Фитнес-центр" },
-        "description": {
-          "en": "State-of-the-art gym with personal training and yoga studio.",
-          "ru": "Современный тренажёрный зал с персональными тренировками и студией йоги."
-        },
-        "image": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80&fit=crop"
+        "en": "Fitness Center",
+        "ru": ""
       },
       {
-        "title": { "en": "Spa & Wellness", "ru": "Спа и велнес" },
-        "description": {
-          "en": "Thai and international treatments in a tranquil tropical setting.",
-          "ru": "Тайские и международные процедуры в умиротворяющей тропической обстановке."
-        },
-        "image": "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80&fit=crop"
+        "en": "Spa & Wellness",
+        "ru": ""
       },
       {
-        "title": { "en": "Restaurant & Lounge", "ru": "Ресторан и лаунж" },
-        "description": {
-          "en": "Curated dining experience with Thai and international cuisine.",
-          "ru": "Изысканная гастрономия с блюдами тайской и международной кухни."
-        },
-        "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80&fit=crop"
+        "en": "Restaurant & Lounge",
+        "ru": ""
       },
       {
-        "title": { "en": "Tropical Gardens", "ru": "Тропические сады" },
-        "description": {
-          "en": "Lush landscaped grounds with walking paths and meditation zones.",
-          "ru": "Ухоженные ландшафтные территории с прогулочными дорожками и зонами для медитации."
-        },
-        "image": "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=600&q=80&fit=crop"
+        "en": "Tropical Gardens",
+        "ru": ""
       },
       {
-        "title": { "en": "Kids Club", "ru": "Детский клуб" },
-        "description": {
-          "en": "Safe and stimulating play areas designed for young residents.",
-          "ru": "Безопасные и увлекательные игровые зоны для юных резидентов."
-        },
-        "image": "https://images.unsplash.com/photo-1566454544259-f4b94c3d758c?w=600&q=80&fit=crop"
+        "en": "Kids Club",
+        "ru": ""
       }
     ]
   },
   "catalogue": {
     "image": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=80&fit=crop",
     "tags": [
-      { "en": "Floor Plans", "ru": "Планировки" },
-      { "en": "Pricing", "ru": "Цены" },
-      { "en": "Finishes", "ru": "Отделка" },
-      { "en": "Investment Prospectus", "ru": "Инвестиционный проспект" }
+      {
+        "en": "Floor Plans",
+        "ru": "Планировки"
+      },
+      {
+        "en": "Pricing",
+        "ru": "Цены"
+      },
+      {
+        "en": "Finishes",
+        "ru": "Отделка"
+      },
+      {
+        "en": "Investment Prospectus",
+        "ru": "Инвестиционный проспект"
+      }
     ]
   },
   "layouts": [
     {
-      "name": { "en": "Villa Type A \u2014 2 Bedrooms", "ru": "Вилла тип A \u2014 2 спальни" },
-      "price_from": { "en": "8,900,000 THB", "ru": "8 900 000 THB" },
-      "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80&fit=crop",
+      "name": {
+        "en": "Villa Type A — 2 Bedrooms",
+        "ru": "Вилла тип A — 2 спальни"
+      },
+      "price_from": {
+        "en": "8,900,000 THB",
+        "ru": "8 900 000 THB"
+      },
       "specs": [
         {
-          "key": { "en": "Living area", "ru": "Жилая площадь" },
-          "value": { "en": "180 sq.m.", "ru": "180 кв.м." }
+          "key": {
+            "en": "Living area",
+            "ru": "Жилая площадь"
+          },
+          "value": {
+            "en": "180 sq.m.",
+            "ru": "180 кв.м."
+          }
         },
         {
-          "key": { "en": "Plot area", "ru": "Площадь участка" },
-          "value": { "en": "300 sq.m.", "ru": "300 кв.м." }
+          "key": {
+            "en": "Plot area",
+            "ru": "Площадь участка"
+          },
+          "value": {
+            "en": "300 sq.m.",
+            "ru": "300 кв.м."
+          }
         },
         {
-          "key": { "en": "Bedrooms", "ru": "Спальни" },
-          "value": { "en": "2", "ru": "2" }
+          "key": {
+            "en": "Bedrooms",
+            "ru": "Спальни"
+          },
+          "value": {
+            "en": "2",
+            "ru": "2"
+          }
         },
         {
-          "key": { "en": "Bathrooms", "ru": "Ванные комнаты" },
-          "value": { "en": "2", "ru": "2" }
+          "key": {
+            "en": "Bathrooms",
+            "ru": "Ванные комнаты"
+          },
+          "value": {
+            "en": "2",
+            "ru": "2"
+          }
         },
         {
-          "key": { "en": "Private pool", "ru": "Собственный бассейн" },
-          "value": { "en": "Yes", "ru": "Да" }
+          "key": {
+            "en": "Private pool",
+            "ru": "Собственный бассейн"
+          },
+          "value": {
+            "en": "Yes",
+            "ru": "Да"
+          }
         }
       ]
     },
     {
-      "name": { "en": "Villa Type B \u2014 3 Bedrooms", "ru": "Вилла тип B \u2014 3 спальни" },
-      "price_from": { "en": "14,500,000 THB", "ru": "14 500 000 THB" },
-      "image": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80&fit=crop",
+      "name": {
+        "en": "Villa Type B — 3 Bedrooms",
+        "ru": "Вилла тип B — 3 спальни"
+      },
+      "price_from": {
+        "en": "14,500,000 THB",
+        "ru": "14 500 000 THB"
+      },
       "specs": [
         {
-          "key": { "en": "Living area", "ru": "Жилая площадь" },
-          "value": { "en": "280 sq.m.", "ru": "280 кв.м." }
+          "key": {
+            "en": "Living area",
+            "ru": "Жилая площадь"
+          },
+          "value": {
+            "en": "280 sq.m.",
+            "ru": "280 кв.м."
+          }
         },
         {
-          "key": { "en": "Plot area", "ru": "Площадь участка" },
-          "value": { "en": "500 sq.m.", "ru": "500 кв.м." }
+          "key": {
+            "en": "Plot area",
+            "ru": "Площадь участка"
+          },
+          "value": {
+            "en": "500 sq.m.",
+            "ru": "500 кв.м."
+          }
         },
         {
-          "key": { "en": "Bedrooms", "ru": "Спальни" },
-          "value": { "en": "3", "ru": "3" }
+          "key": {
+            "en": "Bedrooms",
+            "ru": "Спальни"
+          },
+          "value": {
+            "en": "3",
+            "ru": "3"
+          }
         },
         {
-          "key": { "en": "Bathrooms", "ru": "Ванные комнаты" },
-          "value": { "en": "3", "ru": "3" }
+          "key": {
+            "en": "Bathrooms",
+            "ru": "Ванные комнаты"
+          },
+          "value": {
+            "en": "3",
+            "ru": "3"
+          }
         },
         {
-          "key": { "en": "Private pool", "ru": "Собственный бассейн" },
-          "value": { "en": "Yes", "ru": "Да" }
+          "key": {
+            "en": "Private pool",
+            "ru": "Собственный бассейн"
+          },
+          "value": {
+            "en": "Yes",
+            "ru": "Да"
+          }
         }
       ]
     },
     {
-      "name": { "en": "Villa Type C \u2014 4 Bedrooms", "ru": "Вилла тип C \u2014 4 спальни" },
-      "price_from": { "en": "22,000,000 THB", "ru": "22 000 000 THB" },
-      "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80&fit=crop",
+      "name": {
+        "en": "Villa Type C — 4 Bedrooms",
+        "ru": "Вилла тип C — 4 спальни"
+      },
+      "price_from": {
+        "en": "22,000,000 THB",
+        "ru": "22 000 000 THB"
+      },
       "specs": [
         {
-          "key": { "en": "Living area", "ru": "Жилая площадь" },
-          "value": { "en": "420 sq.m.", "ru": "420 кв.м." }
+          "key": {
+            "en": "Living area",
+            "ru": "Жилая площадь"
+          },
+          "value": {
+            "en": "420 sq.m.",
+            "ru": "420 кв.м."
+          }
         },
         {
-          "key": { "en": "Plot area", "ru": "Площадь участка" },
-          "value": { "en": "800 sq.m.", "ru": "800 кв.м." }
+          "key": {
+            "en": "Plot area",
+            "ru": "Площадь участка"
+          },
+          "value": {
+            "en": "800 sq.m.",
+            "ru": "800 кв.м."
+          }
         },
         {
-          "key": { "en": "Bedrooms", "ru": "Спальни" },
-          "value": { "en": "4", "ru": "4" }
+          "key": {
+            "en": "Bedrooms",
+            "ru": "Спальни"
+          },
+          "value": {
+            "en": "4",
+            "ru": "4"
+          }
         },
         {
-          "key": { "en": "Bathrooms", "ru": "Ванные комнаты" },
-          "value": { "en": "4", "ru": "4" }
+          "key": {
+            "en": "Bathrooms",
+            "ru": "Ванные комнаты"
+          },
+          "value": {
+            "en": "4",
+            "ru": "4"
+          }
         },
         {
-          "key": { "en": "Private pool", "ru": "Собственный бассейн" },
-          "value": { "en": "Yes", "ru": "Да" }
+          "key": {
+            "en": "Private pool",
+            "ru": "Собственный бассейн"
+          },
+          "value": {
+            "en": "Yes",
+            "ru": "Да"
+          }
         }
       ]
     }
   ],
   "roi": {
-    "title": { "en": "Investment Potential", "ru": "Инвестиционный потенциал" },
-    "subtitle": {
-      "en": "Phuket's thriving tourism market ensures strong rental yields and long-term capital appreciation.",
-      "ru": "Процветающий туристический рынок Пхукета обеспечивает высокую арендную доходность и долгосрочный рост капитала."
+    "title": {
+      "en": "Investment Potential",
+      "ru": "Инвестиционный потенциал"
     },
-    "columns": [
-      { "en": "Villa Type", "ru": "Тип виллы" },
-      { "en": "Price (THB)", "ru": "Цена (THB)" },
-      { "en": "Monthly Rent (THB)", "ru": "Аренда / мес. (THB)" },
-      { "en": "Annual Yield", "ru": "Годовая доходность" },
-      { "en": "5-Year Growth", "ru": "Рост за 5 лет" },
-      { "en": "ROI (5 Years)", "ru": "ROI (5 лет)" }
-    ],
     "rows": [
       {
-        "type": { "en": "2 Bed Villa", "ru": "Вилла 2 спальни" },
-        "price": "8,900,000",
-        "monthly_rent": "60,000",
-        "annual_yield": "8.1%",
-        "growth_5y": "+35%",
-        "roi_5y": "75%"
+        "type": {
+          "en": "2 Bed Villa",
+          "ru": "Вилла 2 спальни"
+        },
+        "size": {
+          "en": "",
+          "ru": ""
+        },
+        "price": {
+          "en": "8,900,000",
+          "ru": "8,900,000"
+        },
+        "roi": {
+          "en": "",
+          "ru": ""
+        },
+        "annual_income": {
+          "en": "",
+          "ru": ""
+        }
       },
       {
-        "type": { "en": "3 Bed Villa", "ru": "Вилла 3 спальни" },
-        "price": "14,500,000",
-        "monthly_rent": "95,000",
-        "annual_yield": "7.9%",
-        "growth_5y": "+38%",
-        "roi_5y": "78%"
+        "type": {
+          "en": "3 Bed Villa",
+          "ru": "Вилла 3 спальни"
+        },
+        "size": {
+          "en": "",
+          "ru": ""
+        },
+        "price": {
+          "en": "14,500,000",
+          "ru": "14,500,000"
+        },
+        "roi": {
+          "en": "",
+          "ru": ""
+        },
+        "annual_income": {
+          "en": "",
+          "ru": ""
+        }
       },
       {
-        "type": { "en": "4 Bed Villa", "ru": "Вилла 4 спальни" },
-        "price": "22,000,000",
-        "monthly_rent": "150,000",
-        "annual_yield": "8.2%",
-        "growth_5y": "+42%",
-        "roi_5y": "83%"
+        "type": {
+          "en": "4 Bed Villa",
+          "ru": "Вилла 4 спальни"
+        },
+        "size": {
+          "en": "",
+          "ru": ""
+        },
+        "price": {
+          "en": "22,000,000",
+          "ru": "22,000,000"
+        },
+        "roi": {
+          "en": "",
+          "ru": ""
+        },
+        "annual_income": {
+          "en": "",
+          "ru": ""
+        }
       }
-    ],
-    "disclaimer": {
-      "en": "* Projected figures based on current market trends. Actual returns may vary.",
-      "ru": "* Прогнозные данные на основе текущих рыночных тенденций. Фактическая доходность может отличаться."
-    }
+    ]
   },
   "gallery": {
     "images": [
@@ -279,62 +463,115 @@
     ]
   },
   "location": {
-    "title": { "en": "Annara Location", "ru": "Расположение Annara" },
+    "title": {
+      "en": "Annara Location",
+      "ru": "Расположение Annara"
+    },
     "description": {
       "en": "Annara is ideally positioned in the Laguna area of Phuket, surrounded by pristine beaches, international schools, hospitals, and world-class golf courses.",
       "ru": "Annara идеально расположен в районе Лагуна на Пхукете, в окружении чистейших пляжей, международных школ, больниц и полей для гольфа мирового класса."
     },
     "distances": [
       {
-        "place": { "en": "Phuket International Airport", "ru": "Международный аэропорт Пхукета" },
-        "time": { "en": "20 min", "ru": "20 мин" }
+        "place": {
+          "en": "Phuket International Airport",
+          "ru": "Международный аэропорт Пхукета"
+        },
+        "time": {
+          "en": "20 min",
+          "ru": "20 мин"
+        }
       },
       {
-        "place": { "en": "Bang Tao Beach", "ru": "Пляж Банг Тао" },
-        "time": { "en": "5 min", "ru": "5 мин" }
+        "place": {
+          "en": "Bang Tao Beach",
+          "ru": "Пляж Банг Тао"
+        },
+        "time": {
+          "en": "5 min",
+          "ru": "5 мин"
+        }
       },
       {
-        "place": { "en": "Central Phuket Mall", "ru": "Central Phuket Mall" },
-        "time": { "en": "15 min", "ru": "15 мин" }
+        "place": {
+          "en": "Central Phuket Mall",
+          "ru": "Central Phuket Mall"
+        },
+        "time": {
+          "en": "15 min",
+          "ru": "15 мин"
+        }
       },
       {
-        "place": { "en": "International School", "ru": "Международная школа" },
-        "time": { "en": "10 min", "ru": "10 мин" }
+        "place": {
+          "en": "International School",
+          "ru": "Международная школа"
+        },
+        "time": {
+          "en": "10 min",
+          "ru": "10 мин"
+        }
       },
       {
-        "place": { "en": "Bangkok Hospital Phuket", "ru": "Bangkok Hospital Phuket" },
-        "time": { "en": "12 min", "ru": "12 мин" }
+        "place": {
+          "en": "Bangkok Hospital Phuket",
+          "ru": "Bangkok Hospital Phuket"
+        },
+        "time": {
+          "en": "12 min",
+          "ru": "12 мин"
+        }
       }
     ],
     "map_embed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15813.775100976405!2d98.2950!3d7.9519!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x305031e2c462524f%3A0xe9e069ac3e194c28!2sBang%20Tao%20Beach!5e0!3m2!1sen!2sth!4v1700000000000!5m2!1sen!2sth"
   },
   "developer": {
     "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80&fit=crop",
-    "name": { "en": "Built by Experts", "ru": "Построено экспертами" },
+    "name": {
+      "en": "Built by Experts",
+      "ru": "Построено экспертами"
+    },
     "description": {
       "en": "Annara is developed by a team with over 15 years of experience in premium real estate across Southeast Asia. With a portfolio of completed luxury projects in Phuket, Koh Samui, and Bangkok, the developer is known for meticulous attention to quality, on-time delivery, and thoughtful architectural design that respects the natural landscape.",
       "ru": "Annara создан командой с более чем 15-летним опытом в сфере премиальной недвижимости Юго-Восточной Азии. Портфолио включает завершённые проекты класса люкс на Пхукете, Самуи и в Бангкоке. Застройщик известен безупречным вниманием к качеству, своевременной сдачей объектов и продуманным архитектурным дизайном, который уважает природный ландшафт."
     },
     "facts": [
       {
-        "key": { "en": "Experience", "ru": "Опыт" },
-        "value": { "en": "15+ years in premium real estate", "ru": "15+ лет в премиальной недвижимости" }
+        "key": {
+          "en": "Experience",
+          "ru": "Опыт"
+        },
+        "value": {
+          "en": "15+ years in premium real estate",
+          "ru": "15+ лет в премиальной недвижимости"
+        }
       },
       {
-        "key": { "en": "Portfolio", "ru": "Портфолио" },
-        "value": { "en": "30+ completed projects", "ru": "30+ завершённых проектов" }
+        "key": {
+          "en": "Portfolio",
+          "ru": "Портфолио"
+        },
+        "value": {
+          "en": "30+ completed projects",
+          "ru": "30+ завершённых проектов"
+        }
       },
       {
-        "key": { "en": "Delivery", "ru": "Сдача" },
-        "value": { "en": "100% on-time delivery record", "ru": "100% сдача объектов в срок" }
+        "key": {
+          "en": "Delivery",
+          "ru": "Сдача"
+        },
+        "value": {
+          "en": "100% on-time delivery record",
+          "ru": "100% сдача объектов в срок"
+        }
       }
     ]
   },
   "contact": {
     "phone": "+66 81 234 5678",
     "whatsapp": "+66812345678",
-    "email": "info@annara-phuket.com",
     "website": "annara-phuket.com"
   },
-  "sell_banner": { "show": false, "image": "", "title": "", "subtitle": "" }
+  "canonical_url": "https://annara-phuket.com/"
 }

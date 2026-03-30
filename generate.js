@@ -1492,35 +1492,162 @@ function prepareTemplateData(data, langs) {
     cta_modal_title: d.cta_modal_title || {en: 'Get a Special Offer', ru: 'Получить специальное предложение'},
     cta_modal_desc: d.cta_modal_desc || {en: 'Leave your details and our manager will prepare a personalized offer for you.', ru: 'Оставьте ваши данные и наш менеджер подготовит для вас персональное предложение.'},
 
-    // Hero buttons
+    // Hero buttons (aliases for different template naming conventions)
     hero_btn_primary: {en: 'View Floor Plans', ru: 'Смотреть планировки'},
     hero_btn_secondary: {en: 'Request a Consultation', ru: 'Заказать консультацию'},
+    hero_cta_primary: {en: 'View Floor Plans', ru: 'Смотреть планировки'},
+    hero_cta_secondary: {en: 'Explore the Project', ru: 'Узнать больше'},
+    hero_cta_modal_title: {en: 'Request a Consultation', ru: 'Заказать консультацию'},
+    hero_cta_modal_desc: {en: 'Our expert will contact you to discuss the best options for your goals.', ru: 'Наш эксперт свяжется с вами для обсуждения лучших вариантов.'},
     hero_consult_title: {en: 'Request a Consultation', ru: 'Заказать консультацию'},
     hero_consult_desc: {en: 'Our expert will contact you to discuss the best options for your goals.', ru: 'Наш эксперт свяжется с вами для обсуждения лучших вариантов.'},
+    hero_description: d.hero && d.hero.description || '',
+    hero_badge: d.hero && d.hero.badge || '',
+    hero_tagline: d.hero && d.hero.tagline || '',
+    hero_btn_explore: {en: 'Explore', ru: 'Подробнее'},
+    hero_btn_brochure: {en: 'Download Brochure', ru: 'Скачать брошюру'},
     hero_image_alt: tAttr(d.project_name, langs) + ' luxury property',
     scroll_text: {en: 'Scroll', ru: 'Прокрутка'},
+    mobile_cta_text: {en: 'Get Offer', ru: 'Получить предложение'},
 
     // Concept extras
+    concept_lead: d.concept && d.concept.lead || (d.concept && d.concept.paragraphs && d.concept.paragraphs[0]) || '',
     concept_image_alt: tAttr(d.project_name, langs) + ' exterior',
+    concept_accent_number: '',
+    concept_accent_text: '',
+    project_name_accent: '',
+    project_name_plain: tAttr(d.project_name, langs),
 
-    // Floor plan button
+    // Floor plan extras
     floorplan_btn: {en: 'Request Details', ru: 'Запросить детали'},
+    floorplans_intro: d.floorplans && d.floorplans.intro || '',
+    floorplans_description: d.floorplans && d.floorplans.description || '',
+    floorplans_subtitle: d.floorplans && d.floorplans.subtitle || '',
 
-    // Form placeholders
+    // CTA Banner
+    cta_banner_title: {en: 'Ready to Invest?', ru: 'Готовы инвестировать?'},
+    cta_banner_text: {en: 'Get exclusive pricing and available units directly from the developer.', ru: 'Получите эксклюзивные цены и доступные юниты напрямую от застройщика.'},
+    cta_banner_btn: {en: 'Get Special Offer', ru: 'Получить предложение'},
+    cta_banner_modal_title: {en: 'Get a Special Offer', ru: 'Получить специальное предложение'},
+    cta_banner_modal_desc: {en: 'Leave your details and receive an exclusive offer from the developer.', ru: 'Оставьте ваши данные и получите эксклюзивное предложение от застройщика.'},
+    cta_heading: {en: 'Interested?', ru: 'Заинтересованы?'},
+    cta_description: {en: 'Leave a request and we will contact you.', ru: 'Оставьте заявку и мы свяжемся с вами.'},
+    cta_presentation: {en: 'Download Presentation', ru: 'Скачать презентацию'},
+    cta_text: d.cta_text || {en: 'Get Offer', ru: 'Получить предложение'},
+    cta_form_title: {en: 'Request a Callback', ru: 'Заказать обратный звонок'},
+    cta_form_subtitle: {en: 'We will call you back within 15 minutes', ru: 'Перезвоним в течение 15 минут'},
+
+    // Form placeholders & labels
     placeholder_name: {en: 'Your name', ru: 'Ваше имя'},
     placeholder_email: {en: 'Email address', ru: 'Email'},
     placeholder_phone: {en: '+66 XXX XXX XXXX', ru: '+66 XXX XXX XXXX'},
+    placeholder_message: {en: 'Your message (optional)', ru: 'Ваше сообщение (необязательно)'},
     form_submit: {en: 'Send Request', ru: 'Отправить заявку'},
+    form_submit_short: {en: 'Send', ru: 'Отправить'},
+    form_label_name: {en: 'Name', ru: 'Имя'},
+    form_label_email: {en: 'Email', ru: 'Email'},
+    form_label_phone: {en: 'Phone', ru: 'Телефон'},
+    form_label_message: {en: 'Message', ru: 'Сообщение'},
+    form_label_villa: {en: 'Villa type', ru: 'Тип виллы'},
+    form_placeholder_name: {en: 'Your name', ru: 'Ваше имя'},
+    form_placeholder_email: {en: 'your@email.com', ru: 'ваш@email.com'},
+    form_placeholder_phone: {en: '+66 XXX XXX XXXX', ru: '+66 XXX XXX XXXX'},
+    form_placeholder_message: {en: 'Your message...', ru: 'Ваше сообщение...'},
+    form_consent: {en: 'I agree to the processing of personal data', ru: 'Я согласен на обработку персональных данных'},
+    form_consent_html: {en: 'I agree to the <a href="#">privacy policy</a>', ru: 'Я согласен с <a href="#">политикой конфиденциальности</a>'},
+    consent_text: {en: 'I agree to the processing of personal data', ru: 'Я согласен на обработку персональных данных'},
+    form_error_name: {en: 'Please enter your name', ru: 'Введите имя'},
+    form_error_email: {en: 'Please enter a valid email', ru: 'Введите корректный email'},
+    form_error_phone: {en: 'Please enter your phone number', ru: 'Введите номер телефона'},
+    form_success_title: {en: 'Thank you!', ru: 'Спасибо!'},
+    form_success_text: {en: 'We will contact you shortly.', ru: 'Мы свяжемся с вами в ближайшее время.'},
+    villa_options_html: '',
+    contact_select_options: '',
 
-    // Contact display
+    // Success modal
+    success_title: {en: 'Thank you!', ru: 'Спасибо!'},
+    success_text: {en: 'Your request has been sent. We will contact you shortly.', ru: 'Ваша заявка отправлена. Мы свяжемся с вами в ближайшее время.'},
+    success_desc: {en: 'Our manager will contact you within 15 minutes.', ru: 'Наш менеджер свяжется с вами в течение 15 минут.'},
+    success_close_btn: {en: 'Close', ru: 'Закрыть'},
+
+    // Contact section extras
+    contact_label: {en: 'Get in Touch', ru: 'Связаться'},
+    contact_title: {en: 'Contact Us', ru: 'Контакты'},
+    contact_lead: {en: 'Get in touch with our team for personalized assistance.', ru: 'Свяжитесь с нашей командой для персональной помощи.'},
+    contact_text: d.contact && d.contact.text || '',
+    contact_desc: d.contact && d.contact.description || '',
+    contact_address: d.contact && d.contact.address || '',
+    contact_showroom: d.contact && d.contact.showroom || '',
+    contact_form_title: {en: 'Send a Request', ru: 'Отправить заявку'},
+    contact_form_submit: {en: 'Send Request', ru: 'Отправить заявку'},
+    contact_form_subtitle: {en: 'We will call you back', ru: 'Мы перезвоним вам'},
+    contact_form_success: {en: 'Request sent!', ru: 'Заявка отправлена!'},
+    contact_phone_title: {en: 'Phone', ru: 'Телефон'},
+    contact_email_title: {en: 'Email', ru: 'Email'},
+    contact_hours_title: {en: 'Working hours', ru: 'Часы работы'},
+    contact_office_title: {en: 'Office', ru: 'Офис'},
     phone_display: phone,
     map_title: tAttr(d.project_name, langs) + ' location on Google Maps',
 
     // Developer extras
     developer_image_alt: tAttr(d.developer && d.developer.name || '', langs),
+    developer_tagline: d.developer && d.developer.tagline || '',
+    developer_logo_brand: d.developer && d.developer.name || '',
+    developer_logo_sub: d.developer && d.developer.sub || '',
+    developer_logo_text: d.developer && d.developer.name || '',
 
     // FAQ
+    faq_label: {en: 'Questions & Answers', ru: 'Вопросы и ответы'},
+    faq_title: {en: 'Frequently Asked Questions', ru: 'Часто задаваемые вопросы'},
     faq_items: faqItems,
+
+    // Footer
+    footer_nav_title: {en: 'Navigation', ru: 'Навигация'},
+    footer_nav_heading: {en: 'Navigation', ru: 'Навигация'},
+    footer_contacts_title: {en: 'Contacts', ru: 'Контакты'},
+    footer_contact_title: {en: 'Contacts', ru: 'Контакты'},
+    footer_contact_heading: {en: 'Contact Us', ru: 'Связаться'},
+    footer_residences_heading: {en: 'Residences', ru: 'Резиденции'},
+    footer_villas_title: {en: 'Villas', ru: 'Виллы'},
+    footer_address: d.contact && d.contact.address || '',
+    footer_privacy: {en: 'Privacy Policy', ru: 'Политика конфиденциальности'},
+    footer_terms: {en: 'Terms of Use', ru: 'Условия использования'},
+    footer_rights: {en: 'All rights reserved.', ru: 'Все права защищены.'},
+
+    // Investment extras
+    investment_text: d.roi && d.roi.text || '',
+    investment_cta_title: {en: 'Calculate Your Returns', ru: 'Рассчитайте доходность'},
+    investment_cta_text: {en: 'Get a detailed investment analysis', ru: 'Получите детальный инвестиционный анализ'},
+    investment_cta_btn: {en: 'Get Analysis', ru: 'Получить анализ'},
+    investment_form_submit: {en: 'Calculate', ru: 'Рассчитать'},
+    investment_form_success: {en: 'Sent!', ru: 'Отправлено!'},
+    disclaimer_text: d.roi && d.roi.disclaimer || {en: '* Projected figures. Actual returns may vary.', ru: '* Прогнозные данные. Фактическая доходность может отличаться.'},
+
+    // Modal extras
+    modal_title: {en: 'Request Information', ru: 'Запросить информацию'},
+    modal_subtitle: {en: 'Leave your details', ru: 'Оставьте ваши данные'},
+    modal_brochure_title: {en: 'Download Brochure', ru: 'Скачать брошюру'},
+    modal_brochure_subtitle: {en: 'Get the full project brochure', ru: 'Получите полную брошюру проекта'},
+    modal_brochure_submit: {en: 'Download', ru: 'Скачать'},
+    modal_brochure_success: {en: 'Check your email!', ru: 'Проверьте почту!'},
+    modal_brochure_success_title: {en: 'Brochure Sent!', ru: 'Брошюра отправлена!'},
+    modal_callback_title: {en: 'Request a Callback', ru: 'Заказать звонок'},
+    modal_callback_subtitle: {en: 'We will call you back', ru: 'Мы перезвоним'},
+    modal_callback_submit: {en: 'Call Me', ru: 'Перезвоните мне'},
+    modal_callback_success: {en: 'We will call you shortly!', ru: 'Скоро перезвоним!'},
+    modal_floorplan_title: {en: 'Request Floor Plans', ru: 'Запросить планировки'},
+    modal_floorplan_subtitle: {en: 'Get detailed floor plans and pricing', ru: 'Получите детальные планировки и цены'},
+    modal_floorplan_submit: {en: 'Send Request', ru: 'Отправить'},
+    modal_floorplan_success: {en: 'Sent!', ru: 'Отправлено!'},
+    modal_floorplan_success_title: {en: 'Request Sent!', ru: 'Заявка отправлена!'},
+    modal_investment_title: {en: 'Investment Analysis', ru: 'Инвестиционный анализ'},
+    modal_investment_subtitle: {en: 'Get a detailed ROI calculation', ru: 'Получите детальный расчёт доходности'},
+    modal_investment_submit: {en: 'Get Analysis', ru: 'Получить анализ'},
+    modal_investment_success: {en: 'Sent!', ru: 'Отправлено!'},
+    modal_investment_success_title: {en: 'Analysis Sent!', ru: 'Анализ отправлен!'},
+
+    // Gallery extras
+    gallery_subtitle: d.gallery && d.gallery.subtitle || '',
 
     // Pre-built HTML
     inline_css: '',  // filled by generateFromTemplate
