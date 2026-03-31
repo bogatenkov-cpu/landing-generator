@@ -1059,6 +1059,15 @@ function generateHTML(data) {
       if(s) s.style.display = 'block';
     }
   </script>
+  <script>
+    // Hide empty sections
+    document.querySelectorAll('.floor-plan__grid, .faq__list, .amenities__grid, .investment__table-wrap').forEach(function(el) {
+      if (!el.children.length || !el.innerHTML.trim()) {
+        var section = el.closest('section') || el.closest('.section');
+        if (section) section.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>`;
 }
@@ -1257,9 +1266,9 @@ function prepareTemplateData(data, langs) {
   var d = data;
   var multiLang = langs.length > 1;
   var defaultLang = langs[0];
-  var phone = d.contact && d.contact.phone || '';
+  var phone = d.contact && d.contact.phone || '+66 XX XXX XXXX';
   var phoneClean = phone.replace(/[^\d+]/g, '');
-  var email = d.contact && d.contact.email || '';
+  var email = d.contact && d.contact.email || ('info@' + (d.project_slug || 'project') + '.com');
   var wa = d.contact && d.contact.whatsapp || phone;
   var waClean = wa ? wa.replace(/[^\d]/g, '') : '';
   var waLink = waClean ? 'https://wa.me/' + waClean : '';
@@ -1575,7 +1584,7 @@ function prepareTemplateData(data, langs) {
     nav_location: {en: 'Location', ru: 'Расположение'},
     nav_contact: {en: 'Contact', ru: 'Контакты'},
     nav_developer: {en: 'Developer', ru: 'Застройщик'},
-    nav_faq: {en: 'FAQ', ru: 'Вопросы'},
+    nav_faq: faqItems && faqItems.length ? {en: 'FAQ', ru: 'Вопросы'} : '',
 
     // Section labels
     concept_label: {en: 'About the project', ru: 'О проекте'},
@@ -1679,7 +1688,7 @@ function prepareTemplateData(data, langs) {
     contact_lead: {en: 'Get in touch with our team for personalized assistance.', ru: 'Свяжитесь с нашей командой для персональной помощи.'},
     contact_text: d.contact && d.contact.text || '',
     contact_desc: d.contact && d.contact.description || {en: 'Leave your details and our expert will contact you shortly', ru: 'Оставьте контакты — наш эксперт свяжется с вами'},
-    contact_address: d.contact && d.contact.address || '',
+    contact_address: d.contact && d.contact.address || (d.location && d.location.description) || (d.location && d.location.address) || '',
     contact_showroom: d.contact && d.contact.showroom || '',
     contact_form_title: {en: 'Send a Request', ru: 'Отправить заявку'},
     contact_form_submit: {en: 'Send Request', ru: 'Отправить заявку'},
@@ -1786,7 +1795,8 @@ function generateFromTemplate(data) {
   // Override reveal animations to ensure content is always visible
   var revealFix = '\n    [class*="reveal"]{opacity:1!important;transform:none!important;transition:none!important}.js-reveal-ready [class*="reveal"]{opacity:1!important;transform:none!important}';
   tplData.inline_css = css + revealFix + (tplData.lang_css ? '\n    ' + tplData.lang_css : '');
-  tplData.inline_js = js + (tplData.lang_js || '');
+  var hideEmptyJS = '\n    // Hide empty sections\n    document.querySelectorAll(".floor-plan__grid, .faq__list, .amenities__grid, .investment__table-wrap").forEach(function(el) {\n      if (!el.children.length || !el.innerHTML.trim()) {\n        var section = el.closest("section") || el.closest(".section");\n        if (section) section.style.display = "none";\n      }\n    });';
+  tplData.inline_js = js + (tplData.lang_js || '') + hideEmptyJS;
 
   // Render template
   return renderTemplateEngine(templateHtml, tplData, langs);
