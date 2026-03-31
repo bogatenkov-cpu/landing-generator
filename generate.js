@@ -1131,7 +1131,7 @@ function renderTemplateEngine(template, data, langs) {
           // Replace {{{field}}} raw HTML inside loop — supports multilang objects
           itemHtml = itemHtml.replace(/\{\{\{(\w+)\}\}\}/g, function(m, k) {
             var v = item[k] != null ? item[k] : (ctx[k] != null ? ctx[k] : '');
-            if (typeof v === 'object' && !Array.isArray(v)) return t(v, langs);
+            if (typeof v === 'object' && !Array.isArray(v)) return tHtml(v, langs);
             return String(v);
           });
           // Replace {{=field}} attribute-safe inside loop
@@ -1156,7 +1156,7 @@ function renderTemplateEngine(template, data, langs) {
     html = html.replace(/\{\{\{(\w+)\}\}\}/g, function(m, key) {
       var val = ctx[key];
       if (val === undefined || val === null) return '';
-      if (typeof val === 'object' && !Array.isArray(val)) return t(val, langs);
+      if (typeof val === 'object' && !Array.isArray(val)) return tHtml(val, langs);
       return String(val);
     });
 
@@ -1328,18 +1328,20 @@ function prepareTemplateData(data, langs) {
   var rawPlans = d.floorplans && d.floorplans.items || d.layouts || [];
   floorplans = rawPlans.map(function(fp, i) {
     var details = [];
+    var isAriseVibe = (d.template || 'default') === 'arise-vibe';
+    var liClass = isAriseVibe ? 'floor-plan__card-feature' : 'floorplans__plan-detail';
     if (fp.features && fp.features.length) {
       // arise-vibe style: simple feature list
       details = fp.features.map(function(f) {
-        return '<li class="floorplans__plan-detail"><span>' + t(f, langs) + '</span></li>';
+        return '<li class="' + liClass + '"><span>' + t(f, langs) + '</span></li>';
       });
     } else if (fp.specs) {
       details = fp.specs.map(function(s) {
-        return '<li class="floorplans__plan-detail"><span>' + t(s.key, langs) + '</span><strong>' + t(s.value, langs) + '</strong></li>';
+        return '<li class="' + liClass + '"><span>' + t(s.key, langs) + '</span> <strong>' + t(s.value, langs) + '</strong></li>';
       });
     } else if (fp.details) {
       details = fp.details.map(function(dd) {
-        return '<li class="floorplans__plan-detail"><span>' + t(dd.label || dd.key, langs) + '</span><strong>' + t(dd.value, langs) + '</strong></li>';
+        return '<li class="' + liClass + '"><span>' + t(dd.label || dd.key, langs) + '</span> <strong>' + t(dd.value, langs) + '</strong></li>';
       });
     }
     var fpName = t(fp.name || fp.title || fp.type || '', langs);
@@ -1359,7 +1361,7 @@ function prepareTemplateData(data, langs) {
       image: fp.image || (d.hero && d.hero.image) || '',
       image_alt: fpName,
       alt: fpName,
-      details_html: details.length ? '<ul class="floorplans__plan-details">' + details.join('') + '</ul>' : '',
+      details_html: details.length ? (isAriseVibe ? details.join('') : '<ul class="floorplans__plan-details">' + details.join('') + '</ul>') : '',
       desc: fp.description || '',
       price: fpPrice,
       price_from: {en: 'From', ru: 'От'},
