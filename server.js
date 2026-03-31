@@ -626,7 +626,7 @@ const server = http.createServer(async (req, res) => {
       const layouts = [];
 
       for (const f of files) {
-        const directUrl = `https://drive.google.com/uc?export=view&id=${f.id}`;
+        const directUrl = `https://lh3.googleusercontent.com/d/${f.id}`;
         const name = f.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/\s+/g, '-');
 
         if (name === 'hero' || name === 'main' || name.startsWith('hero')) {
@@ -663,7 +663,7 @@ const server = http.createServer(async (req, res) => {
         ok: true,
         total_files: files.length,
         mapping: mapping,
-        all_files: files.map(f => ({ name: f.name, url: `https://drive.google.com/uc?export=view&id=${f.id}` }))
+        all_files: files.map(f => ({ name: f.name, url: `https://lh3.googleusercontent.com/d/${f.id}` }))
       }));
     } catch(e) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
