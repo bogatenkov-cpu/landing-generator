@@ -199,7 +199,8 @@ async function aiFillProject(query, apiKey, languages) {
       description: multiLang ? {en: "Max 30 words about developer", ru: "Макс 30 слов о застройщике"} : "Max 30 words about developer",
       facts: [{ key: multiLang ? {en: "Founded", ru: "Основан"} : "Founded", value: "2010" }]
     },
-    contact: { address: "Address", email: "email@example.com", website: "www.example.com" }
+    contact: { address: "Address", email: "email@example.com", phone: "+66 XX XXX XXXX", website: "www.example.com" },
+    faq: [{ question: multiLang ? {en: "Question?", ru: "Вопрос?"} : "Question?", answer: multiLang ? {en: "Answer max 30 words", ru: "Ответ макс 30 слов"} : "Answer max 30 words" }]
   });
 
   const langInstruction = multiLang
@@ -238,6 +239,8 @@ TEXT LENGTH LIMITS (THIS IS CRITICAL — the landing page has a fixed layout, lo
 - location.distances: 5-8 items, place max 3 words, time max 2 words (e.g. "15 min")
 - developer.description: max 30 words, 1-2 sentences
 - developer.facts: 4-6 items, key max 2 words, value max 3 words
+- faq: 5-7 items, question max 10 words, answer max 30 words. Cover: ownership rules, ROI, construction timeline, payment plans, management
+- contact.phone: use real developer phone if found, otherwise use "+66 XX XXX XXXX" placeholder
 - gallery.images: use real image URLs from official project website or developer site
 - map_embed: Google Maps embed URL for the project location
 

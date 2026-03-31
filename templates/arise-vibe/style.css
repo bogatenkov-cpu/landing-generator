@@ -617,6 +617,10 @@ input, textarea {
     transition: transform var(--transition-slow);
 }
 
+.concept__card-img[src^="data:"] {
+    display: none;
+}
+
 .concept__card:hover .concept__card-img {
     transform: scale(1.03);
 }

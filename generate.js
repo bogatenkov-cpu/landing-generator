@@ -1297,7 +1297,9 @@ function prepareTemplateData(data, langs) {
         text: s.value || '',
         desc: s.value || '',
         icon: defaultIcons[i % defaultIcons.length],
-        image: s.image || (d.concept && d.concept.image) || (d.hero && d.hero.image) || ''
+        image: s.image || (d.concept && d.concept.image) || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+        alt: s.key || '',
+        _no_image: s.image || (d.concept && d.concept.image) ? '' : ' concept__card--no-img'
       };
     });
   }
