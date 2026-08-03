@@ -1261,8 +1261,12 @@ function buildTemplateInvestmentTable(d, langs) {
   if (!rows.length) return '';
   // Auto-detect columns from first row keys
   var cols = Object.keys(rows[0]).filter(function(k) { return k !== 'id'; });
-  var thead = '<thead><tr>' + cols.map(function(c) {
-    return '<th class="investment__th investment__th--sticky">' + t(c.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); }), langs) + '</th>';
+  // Prefer explicit column labels from data (they carry currency context,
+  // e.g. "Price (OMR)"); fall back to humanized keys
+  var colLabels = d.roi && Array.isArray(d.roi.columns) ? d.roi.columns : null;
+  var thead = '<thead><tr>' + cols.map(function(c, i) {
+    var label = colLabels && colLabels[i] ? colLabels[i] : c.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+    return '<th class="investment__th investment__th--sticky">' + t(label, langs) + '</th>';
   }).join('') + '</tr></thead>';
   var tbody = '<tbody>' + rows.map(function(r) {
     return '<tr class="investment__tr">' + cols.map(function(c) {
@@ -1403,9 +1407,19 @@ function prepareTemplateData(data, langs) {
       details_html: details.length ? (isAriseVibe ? details.join('') : '<ul class="floorplans__plan-details">' + details.join('') + '</ul>') : '',
       desc: fp.description || '',
       price: fpPrice,
+      // Card prints "{{price_from}} {{price_value}}" — strip a leading
+      // "from/от" out of the value so it doesn't read "From from OMR…"
       price_from: {en: 'From', ru: 'От'},
-      price_value: fpPrice,
-      subtitle: fp.subtitle || fpPrice,
+      price_value: (function(p) {
+        var strip = function(s) { return String(s).replace(/^\s*(from|от)\s+/i, ''); };
+        if (p && typeof p === 'object' && !Array.isArray(p)) {
+          var out = {};
+          Object.keys(p).forEach(function(k) { out[k] = strip(p[k]); });
+          return out;
+        }
+        return typeof p === 'string' ? strip(p) : p;
+      })(fpPrice),
+      subtitle: fp.subtitle || '',
       badge: fp.badge || '',
       popular_html: fp.popular ? '<span class="floor-plan__card-popular">Popular</span>' : '',
       _featured_class: fp.featured ? ' floor-plan__card--featured' : '',
@@ -1530,6 +1544,9 @@ function prepareTemplateData(data, langs) {
     hero_image: d.hero && d.hero.image || '',
     hero_title: d.hero && d.hero.title || d.project_name || '',
     hero_subtitle: d.hero && (d.hero.subtitle || d.hero.description) || '',
+    // Kicker above the title (anchan-indigo): only an explicit subtitle —
+    // falling back to description would duplicate the paragraph below
+    hero_kicker: d.hero && d.hero.subtitle || '',
     hero_stats: (d.hero && d.hero.stats || []).map(function(s, i) {
       return { value: s.value || '', label: s.label || '', _reveal_delay: i > 0 ? 'reveal--delay-' + i : '' };
     }),
@@ -1625,7 +1642,7 @@ function prepareTemplateData(data, langs) {
     amenities_label: {en: 'Lifestyle', ru: 'Образ жизни'},
     floorplans_label: {en: 'Residences', ru: 'Резиденции'},
     investment_label: {en: 'Returns', ru: 'Доходность'},
-    investment_disclaimer: {en: '* Projected figures based on current market trends. Actual returns may vary.', ru: '* Прогнозные данные на основе текущих рыночных тенденций. Фактическая доходность может отличаться.'},
+    investment_disclaimer: (d.roi && d.roi.disclaimer) || {en: '* Projected figures based on current market trends. Actual returns may vary.', ru: '* Прогнозные данные на основе текущих рыночных тенденций. Фактическая доходность может отличаться.'},
     leadmagnet_label: {en: 'Free Download', ru: 'Бесплатная загрузка'},
     leadmagnet_submit: {en: 'Download Catalog', ru: 'Скачать каталог'},
     gallery_label: {en: 'Visual Tour', ru: 'Визуальный тур'},
@@ -1828,8 +1845,14 @@ function generateFromTemplate(data) {
   // Inject CSS and JS
   // Override reveal animations to ensure content is always visible
   var revealFix = '\n    [class*="reveal"]{opacity:1!important;transform:none!important;transition:none!important}.js-reveal-ready [class*="reveal"]{opacity:1!important;transform:none!important}';
-  tplData.inline_css = css + revealFix + (tplData.lang_css ? '\n    ' + tplData.lang_css : '');
-  var hideEmptyJS = '\n    // Hide empty sections\n    document.querySelectorAll(".floor-plan__grid, .faq__list, .amenities__grid, .investment__table-wrap").forEach(function(el) {\n      if (!el.children.length || !el.innerHTML.trim()) {\n        var section = el.closest("section") || el.closest(".section");\n        if (section) section.style.display = "none";\n      }\n    });';
+  // Cross-template polish: never show broken-image icons; keep long project
+  // names from pushing the header CTA off-screen
+  var globalFixCSS = '\n    img[src=""]{display:none}' +
+    '\n    .header__logo{display:block;min-width:0;max-width:42vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+    '\n    @media (max-width:1100px){.header__logo{font-size:clamp(14px,2vw,20px)!important}}';
+  tplData.inline_css = css + revealFix + globalFixCSS + (tplData.lang_css ? '\n    ' + tplData.lang_css : '');
+  var hideEmptyJS = '\n    // Hide empty sections\n    document.querySelectorAll(".floor-plan__grid, .faq__list, .amenities__grid, .investment__table-wrap").forEach(function(el) {\n      if (!el.children.length || !el.innerHTML.trim()) {\n        var section = el.closest("section") || el.closest(".section");\n        if (section) section.style.display = "none";\n      }\n    });' +
+    '\n    // Graceful no-image state: hide empty imgs, collapse their wrappers and 2-col grids\n    document.querySelectorAll("img").forEach(function(im) {\n      if (im.getAttribute("src")) return;\n      im.style.display = "none";\n      var wrap = im.closest("[class*=\\"__image\\"],[class*=\\"__media\\"],[class*=\\"__photo\\"]") || im.parentElement;\n      if (wrap && wrap !== document.body && wrap.children.length === 1) {\n        wrap.style.display = "none";\n        var parent = wrap.parentElement;\n        if (parent && getComputedStyle(parent).display === "grid") parent.style.gridTemplateColumns = "1fr";\n      }\n    });\n    // Floor plan panels without an image: stack to a single column\n    document.querySelectorAll(".floorplans__panel, .floor-plan__card").forEach(function(p) {\n      var im = p.querySelector("img");\n      if (im && !im.getAttribute("src")) {\n        if (getComputedStyle(p).display === "grid") p.style.gridTemplateColumns = "1fr";\n      }\n    });\n    // Gallery sections with no real images: hide entirely until photos are added\n    document.querySelectorAll("section, .section").forEach(function(sec) {\n      if (!/gallery/i.test(sec.className || "")) return;\n      var real = Array.prototype.filter.call(sec.querySelectorAll("img"), function(im) { return im.getAttribute("src"); });\n      if (!real.length) sec.style.display = "none";\n    });\n    // Empty badges/labels and buttons render as styled husks — hide them\n    document.querySelectorAll("[class*=\\"__badge\\"], [class*=\\"__label\\"]").forEach(function(el) {\n      if (!el.textContent.trim() && !el.children.length) el.style.display = "none";\n    });\n    document.querySelectorAll("button, a[class*=\\"btn\\"]").forEach(function(el) {\n      if (!el.textContent.trim() && !el.querySelector("img,svg")) el.style.display = "none";\n    });\n    // Map containers without an embed: hide the empty box\n    document.querySelectorAll("[class*=\\"__map\\"], [class*=\\"map-\\"]").forEach(function(el) {\n      if (!el.querySelector("iframe,img") && !el.textContent.trim()) el.style.display = "none";\n    });';
   tplData.inline_js = js + (tplData.lang_js || '') + hideEmptyJS;
 
   // Render template
