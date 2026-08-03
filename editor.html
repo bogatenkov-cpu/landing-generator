@@ -23,6 +23,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sidebar__item-slug{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
 .sidebar__empty{padding:20px;font-size:12px;color:rgba(255,255,255,.3);text-align:center}
 .sidebar__divider{border-top:1px solid rgba(255,255,255,.08);margin:8px 0 0}
+.sidebar__group-header{padding:10px 20px 6px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#bfa177;cursor:pointer;user-select:none}
+.sidebar__group-header:hover{color:#d4b98d}
+.sidebar__group-arrow{font-size:9px;display:inline-block;width:10px}
+.sidebar__group-count{color:rgba(255,255,255,.35);font-weight:400;margin-left:4px}
+.sidebar__group--collapsed .sidebar__group-items{display:none}
+.sidebar__group .sidebar__item{padding-left:32px}
 .sidebar__section-label{padding:10px 20px 4px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35)}
 .sidebar__list--demos .sidebar__item{color:rgba(255,255,255,.5)}
 .sidebar__list--demos .sidebar__item-slug{color:rgba(255,255,255,.25)}
@@ -408,6 +414,22 @@ async function loadProjects() {
   } catch(e) {}
 }
 
+function projectItemHtml(p) {
+  var name = typeof p.name === 'object' ? (p.name.en || p.name.ru || p.slug) : (p.name || p.slug);
+  return '<div class="sidebar__item' + (p.slug === currentSlug ? ' active' : '') + '" onclick="loadProject(\'' + s(p.slug) + '\')">'
+    + '<div class="sidebar__item-name">' + s(name) + '</div>'
+    + '<div class="sidebar__item-slug">' + s(p.slug) + '</div>'
+    + '</div>';
+}
+
+function toggleGroup(g) {
+  var collapsed = {};
+  try { collapsed = JSON.parse(localStorage.getItem('collapsedGroups') || '{}'); } catch(e) {}
+  collapsed[g] = !collapsed[g];
+  localStorage.setItem('collapsedGroups', JSON.stringify(collapsed));
+  loadProjects();
+}
+
 function renderProjectList(projects) {
   var list = document.getElementById('projectList');
   var userProjects = projects.filter(function(p) { return !p.slug.endsWith('-demo'); });
@@ -415,11 +437,30 @@ function renderProjectList(projects) {
     list.innerHTML = '<div class="sidebar__empty">No projects yet</div>';
     return;
   }
-  list.innerHTML = userProjects.map(function(p) {
-    var name = typeof p.name === 'object' ? (p.name.en || p.name.ru || p.slug) : (p.name || p.slug);
-    return '<div class="sidebar__item' + (p.slug === currentSlug ? ' active' : '') + '" onclick="loadProject(\'' + s(p.slug) + '\')">'
-      + '<div class="sidebar__item-name">' + s(name) + '</div>'
-      + '<div class="sidebar__item-slug">' + s(p.slug) + '</div>'
+  var groups = {};
+  userProjects.forEach(function(p) {
+    var g = p.group || 'Ungrouped';
+    (groups[g] = groups[g] || []).push(p);
+  });
+  var names = Object.keys(groups).sort(function(a, b) {
+    if (a === 'Ungrouped') return 1;
+    if (b === 'Ungrouped') return -1;
+    return a.localeCompare(b);
+  });
+  // Single unnamed group → flat list, no folder chrome
+  if (names.length === 1 && names[0] === 'Ungrouped') {
+    list.innerHTML = userProjects.map(projectItemHtml).join('');
+    return;
+  }
+  var collapsed = {};
+  try { collapsed = JSON.parse(localStorage.getItem('collapsedGroups') || '{}'); } catch(e) {}
+  list.innerHTML = names.map(function(g) {
+    var isCollapsed = !!collapsed[g];
+    return '<div class="sidebar__group' + (isCollapsed ? ' sidebar__group--collapsed' : '') + '">'
+      + '<div class="sidebar__group-header" onclick="toggleGroup(\'' + s(g) + '\')">'
+      + '<span class="sidebar__group-arrow">' + (isCollapsed ? '&#9656;' : '&#9662;') + '</span> '
+      + s(g) + ' <span class="sidebar__group-count">' + groups[g].length + '</span></div>'
+      + '<div class="sidebar__group-items">' + groups[g].map(projectItemHtml).join('') + '</div>'
       + '</div>';
   }).join('');
 }
@@ -743,7 +784,8 @@ function collectFormData() {
       whatsapp: v('f_contact_whatsapp'),
       website: v('f_contact_website')
     },
-    canonical_url: v('f_canonical_url')
+    canonical_url: v('f_canonical_url'),
+    group: v('f_group')
   };
 }
 
@@ -1365,6 +1407,7 @@ function renderForm(d) {
     + '<div class="field-row">'
     + '<div class="field"><label>Website</label><input id="f_contact_website" value="' + s(contact.website || '') + '" placeholder="www.example.com" /></div>'
     + '<div class="field"><label>Canonical URL</label><input id="f_canonical_url" value="' + s(d.canonical_url || '') + '" placeholder="https://project-name.com" /></div>'
+    + '<div class="field"><label>Group / Region</label><input id="f_group" value="' + s(d.group || '') + '" placeholder="Oman" /></div>'
     + '</div>'
     + '<div class="field"><label>Domain Suggestions</label><button type="button" class="btn-small" onclick="suggestDomains()">Suggest SEO Domains</button><div id="domainSuggestions" style="margin-top:8px;font-size:13px;color:#6b7280"></div></div>'
     + '</div></div>'

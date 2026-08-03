@@ -425,7 +425,7 @@ const server = http.createServer(async (req, res) => {
         .map(f => {
           try {
             const d = JSON.parse(fs.readFileSync(path.join(dataDir, f), 'utf8'));
-            return { slug: d.project_slug, name: d.project_name, file: f };
+            return { slug: d.project_slug, name: d.project_name, group: d.group || null, file: f };
           } catch(e) { return null; }
         }).filter(Boolean);
     }

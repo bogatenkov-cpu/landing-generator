@@ -31,6 +31,7 @@ function assemble(research, slug, template) {
     project_slug: slug,
     project_name: name,
     template: template,
+    group: 'Oman',
     languages: ['en', 'ru'],
     currency: 'OMR',
     country_code: 'OM',

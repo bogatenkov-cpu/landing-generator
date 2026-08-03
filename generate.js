@@ -213,6 +213,18 @@ function tHtml(val, langs) {
   return sanitizeHtml(String(val));
 }
 
+// Plain text, no escaping — for values that will be escaped later by the
+// template engine ({{=x}} → tAttr). Escaping here too would double-escape.
+function tPlain(val, langs) {
+  if (!val) return '';
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object' && !Array.isArray(val)) {
+    for (const l of langs) { if (val[l]) return val[l]; }
+    return String(Object.values(val)[0] || '');
+  }
+  return String(val);
+}
+
 // For attribute values (no spans, pick first available language)
 function tAttr(val, langs) {
   if (!val) return '';
@@ -1368,18 +1380,21 @@ function prepareTemplateData(data, langs) {
         return '<li class="' + liClass + '"><span>' + t(dd.label || dd.key, langs) + '</span> <strong>' + t(dd.value, langs) + '</strong></li>';
       });
     }
-    var fpName = t(fp.name || fp.title || fp.type || '', langs);
-    var fpPrice = t(fp.price_from || fp.price || '', langs);
+    // Keep raw multilang values — the template engine renders them at insert
+    // time ({{x}} → t(), {{=x}} → tAttr()). Pre-rendering here would get the
+    // span markup escaped when inserted via {{x}}.
+    var fpName = fp.name || fp.title || fp.type || ('Type ' + (i + 1));
+    var fpPrice = fp.price_from || fp.price || '';
     // Build specs array for asi-village nested {{#specs}}
     var specsArr = [];
     if (fp.specs) {
-      specsArr = fp.specs.map(function(s) { return { value: t(s.value, langs), label: t(s.key || s.label, langs) }; });
+      specsArr = fp.specs.map(function(s) { return { value: s.value, label: s.key || s.label }; });
     }
     return {
       id: fp.id || ('type' + (i + 1)),
       tab_id: fp.id || ('type' + (i + 1)),
-      tab_name: fp.tab_name || fpName || ('Type ' + (i + 1)),
-      tab_label: fp.tab_name || fpName || ('Type ' + (i + 1)),
+      tab_name: fp.tab_name || fpName,
+      tab_label: fp.tab_name || fpName,
       name: fpName,
       title: fpName,
       image: fp.image || (d.hero && d.hero.image) || '',
@@ -1636,17 +1651,17 @@ function prepareTemplateData(data, langs) {
     hero_tagline: d.hero && d.hero.tagline || '',
     hero_btn_explore: {en: 'Explore', ru: 'Подробнее'},
     hero_btn_brochure: {en: 'Download Brochure', ru: 'Скачать брошюру'},
-    hero_image_alt: tAttr(d.project_name, langs) + ' luxury property',
+    hero_image_alt: tPlain(d.project_name, langs) + ' luxury property',
     scroll_text: {en: 'Scroll', ru: 'Прокрутка'},
     mobile_cta_text: {en: 'Get Offer', ru: 'Получить предложение'},
 
     // Concept extras
     concept_lead: d.concept && d.concept.lead || (d.concept && d.concept.paragraphs && d.concept.paragraphs[0]) || '',
-    concept_image_alt: tAttr(d.project_name, langs) + ' exterior',
+    concept_image_alt: tPlain(d.project_name, langs) + ' exterior',
     concept_accent_number: '',
     concept_accent_text: '',
     project_name_accent: '',
-    project_name_plain: tAttr(d.project_name, langs),
+    project_name_plain: tPlain(d.project_name, langs),
 
     // Floor plan extras
     floorplan_btn: {en: 'Request Details', ru: 'Запросить детали'},
@@ -1718,10 +1733,10 @@ function prepareTemplateData(data, langs) {
     contact_hours_title: {en: 'Working hours', ru: 'Часы работы'},
     contact_office_title: {en: 'Office', ru: 'Офис'},
     phone_display: phone,
-    map_title: tAttr(d.project_name, langs) + ' location on Google Maps',
+    map_title: tPlain(d.project_name, langs) + ' location on Google Maps',
 
     // Developer extras
-    developer_image_alt: tAttr(d.developer && d.developer.name || '', langs),
+    developer_image_alt: tPlain(d.developer && d.developer.name || '', langs),
     developer_tagline: d.developer && d.developer.tagline || '',
     developer_logo_brand: d.developer && d.developer.name || '',
     developer_logo_sub: d.developer && d.developer.sub || '',
