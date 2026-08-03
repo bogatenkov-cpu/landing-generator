@@ -6,10 +6,18 @@ No npm dependencies. Deployed on Railway (auto-deploy from GitHub main).
 
 ## Architecture
 - `server.js` — HTTP server (port 3333), API endpoints, auth
-- `generate.js` — HTML generation engine (programmatic + file-based templates)
+- `generate.js` — HTML generation engine (programmatic + file-based templates) + `generateSite()` (per-language pages, sitemap, robots)
 - `editor.html` — Single-page editor UI (sidebar, form, preview)
-- `deploy.js` — GitHub + Vercel deployment
+- `deploy.js` — Cloudflare Pages deployment (wrangler direct upload) + custom domain/DNS attach
 - `favicon.svg` — Editor favicon
+
+## Site generation (SEO mode)
+`generateSite(data)` renders each language as a separate static page:
+- `/` = default language, `/ru/` = Russian (etc.), each with its own canonical, hreflang set, og:locale, `<html lang>`
+- Language switcher becomes real links between URLs (editor preview keeps the JS toggle)
+- `sitemap.xml` (with xhtml alternates), `robots.txt`, `_headers` (immutable cache for /images/)
+- Image paths absolutized to `/images/...` so subpages resolve them
+- Schema.org: RealEstateAgent (+ FAQPage if faq present); addressCountry inferred from `country_code` or currency (OMR→OM, THB→TH, AED→AE…)
 
 ## Templates (6 total)
 | ID | Name | Type | Design |
@@ -80,7 +88,7 @@ Project JSON structure (all text fields are `{en: "...", ru: "..."}` for multi-l
 - `faq` — title, items[] (question/answer)
 
 ## Key Files
-- `.env` — GITHUB_TOKEN, VERCEL_TOKEN, GITHUB_USERNAME, ADMIN_PASSWORD, ANTHROPIC_API_KEY
+- `.env` — CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, ADMIN_PASSWORD, ANTHROPIC_API_KEY, GOOGLE_DRIVE_API_KEY
 - `.gitignore` — ignores `data/*` (except `*-demo.json`), `.env`, `node_modules/`, `dist/`
 - `package.json` — `npm start` runs `node server.js`
 
@@ -95,6 +103,6 @@ Project JSON structure (all text fields are `{en: "...", ru: "..."}` for multi-l
 - Save + Deploy to Vercel
 
 ## Deployment
-- GitHub: `bogatenkov-cpu/landing-generator`
-- Railway: auto-deploys from `main` branch
-- Admin password: set in Railway env vars (ADMIN_PASSWORD)
+- Editor itself: GitHub `bogatenkov-cpu/landing-generator` → Railway auto-deploys from `main`
+- Landings: Cloudflare Pages via wrangler (`<slug>.pages.dev`), custom domain from project's `custom_domain`/`canonical_url` — attached via CF API; DNS CNAME auto-created when the zone is in the same CF account
+- Requires Railway env vars: CLOUDFLARE_API_TOKEN (Pages:Edit + Zone:DNS:Edit), CLOUDFLARE_ACCOUNT_ID, ADMIN_PASSWORD

@@ -130,6 +130,59 @@ function getTemplate(id) {
   return TEMPLATES[id] || TEMPLATES.default;
 }
 
+// Country for schema.org: explicit country_code, else inferred from currency
+const CURRENCY_COUNTRY = { THB: 'TH', OMR: 'OM', AED: 'AE', SAR: 'SA', QAR: 'QA', BHD: 'BH', KWD: 'KW', EUR: '', USD: '' };
+function schemaCountry(d) {
+  if (d.country_code) return d.country_code;
+  const byCurrency = CURRENCY_COUNTRY[d.currency];
+  return byCurrency !== undefined ? byCurrency : 'TH';
+}
+
+// Shared schema.org JSON-LD builder: main entity + FAQPage (if FAQ present)
+function buildSchemaObjects(d, langs) {
+  const country = schemaCountry(d);
+  const address = { '@type': 'PostalAddress', addressLocality: tAttr(d.location ? d.location.title : '', langs) };
+  if (country) address.addressCountry = country;
+  const main = {
+    '@context': 'https://schema.org',
+    '@type': 'RealEstateAgent',
+    name: tAttr(d.project_name, langs),
+    description: tAttr(d.meta_description || '', langs),
+    url: d.canonical_url || '',
+    address: address,
+    openingHoursSpecification: {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+      opens: '09:00', closes: '18:00'
+    }
+  };
+  if (d.contact && d.contact.phone) main.telephone = d.contact.phone;
+  const img = d.og_image || (d.hero && d.hero.image) || '';
+  if (img) main.image = img;
+  const rows = d.roi && d.roi.rows || [];
+  if (rows.length) {
+    main.makesOffer = rows.map(function(r) {
+      return { '@type': 'Offer', name: tAttr(r.type, langs), price: tAttr(r.price, langs), priceCurrency: d.currency || 'USD' };
+    });
+  }
+  const schemas = [main];
+  let faqItems = (d.faq && d.faq.items) || (Array.isArray(d.faq) ? d.faq : []);
+  if (Array.isArray(faqItems) && faqItems.length) {
+    schemas.push({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map(function(f) {
+        return {
+          '@type': 'Question',
+          name: tAttr(f.question || f.q || '', langs),
+          acceptedAnswer: { '@type': 'Answer', text: tAttr(f.answer || f.a || '', langs) }
+        };
+      })
+    });
+  }
+  return schemas;
+}
+
 function esc(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -630,11 +683,18 @@ function generateHTML(data) {
   const variantCSS = [conceptResult.css, amenitiesResult.css, floorplansResult.css, galleryResult.css].join('\n    ');
   const variantJS = [conceptResult.js, amenitiesResult.js, floorplansResult.js, galleryResult.js].filter(Boolean).join('\n    ');
 
-  // Language switcher HTML for nav
+  // Language switcher HTML for nav: JS toggle for multi-lang preview,
+  // real links between language URLs in site mode
+  const siteLangs = d._site && d._site.langs.length > 1 ? d._site : null;
   const langSwitcher = multiLang ? `
     <div class="lang-switch" id="langSwitch">
       ${langs.map(l => `<button class="lang-switch__btn${l === defaultLang ? ' active' : ''}" data-lang="${l}" onclick="switchLang('${l}')">${l.toUpperCase()}</button>`).join('')}
-    </div>` : '';
+    </div>` : (siteLangs ? `
+    <div class="lang-switch" id="langSwitch">
+      ${siteLangs.langs.map(l => l === siteLangs.current
+        ? `<span class="lang-switch__btn active">${l.toUpperCase()}</span>`
+        : `<a class="lang-switch__btn" href="/${langPath(l, siteLangs.defaultLang)}">${l.toUpperCase()}</a>`).join('')}
+    </div>` : '');
 
   const sellBannerSection = d.sell_banner && d.sell_banner.show ? `
   <section class="sell-banner">
@@ -658,38 +718,7 @@ function generateHTML(data) {
   // SEO: Schema.org JSON-LD
   const canonicalUrl = d.canonical_url || '';
   const ogImage = d.og_image || d.hero.image || '';
-  const priceMin = d.roi && d.roi.rows && d.roi.rows[0] ? tAttr(d.roi.rows[0].price, langs) : '';
-  const schemaLD = {
-    '@context': 'https://schema.org',
-    '@type': 'RealEstateAgent',
-    name: tAttr(d.project_name, langs),
-    description: tAttr(d.meta_description, langs),
-    url: canonicalUrl,
-    image: ogImage,
-    address: {
-      '@type': 'PostalAddress',
-      addressCountry: 'TH',
-      addressLocality: tAttr(d.location ? d.location.title : '', langs)
-    },
-    openingHoursSpecification: {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
-      opens: '09:00',
-      closes: '18:00'
-    },
-    makesOffer: (d.roi && d.roi.rows || []).map(function(r) {
-      return {
-        '@type': 'Offer',
-        name: tAttr(r.type, langs),
-        price: tAttr(r.price, langs),
-        priceCurrency: d.currency || 'USD'
-      };
-    })
-  };
-  if (d.contact && d.contact.phone) {
-    schemaLD.telephone = d.contact.phone;
-  }
-  const schemaJSON = JSON.stringify(schemaLD);
+  const schemaJSON = JSON.stringify(buildSchemaObjects(d, langs));
 
   // Contact info: phone + WhatsApp (no email)
   const contactPhone = d.contact && d.contact.phone ? d.contact.phone : '';
@@ -703,10 +732,11 @@ function generateHTML(data) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${tAttr(d.meta_title, langs)}</title>
   <meta name="description" content="${tAttr(d.meta_description, langs)}" />
-  ${canonicalUrl ? `<link rel="canonical" href="${esc(canonicalUrl)}" />` : ''}
+  ${d._site && d._site.origin ? buildSeoLinks(d._site) : (canonicalUrl ? `<link rel="canonical" href="${esc(canonicalUrl)}" />` : '')}
   <meta property="og:title" content="${tAttr(d.meta_title, langs)}" />
   <meta property="og:description" content="${tAttr(d.meta_description, langs)}" />
   <meta property="og:type" content="website" />
+  <meta property="og:locale" content="${OG_LOCALES[defaultLang] || 'en_US'}" />
   ${canonicalUrl ? `<meta property="og:url" content="${esc(canonicalUrl)}" />` : ''}
   ${ogImage ? `<meta property="og:image" content="${esc(ogImage)}" />` : ''}
   <script type="application/ld+json">${schemaJSON}</script>
@@ -846,7 +876,7 @@ function generateHTML(data) {
     ${variantCSS}
   </style>
 </head>
-<body${multiLang ? ` data-lang="${defaultLang}"` : ''}>
+<body data-lang="${defaultLang}">
   <nav class="nav transparent" id="mainNav">
     <a href="#" class="nav__logo">${t(d.project_name, langs)}</a>
     <ul class="nav__links" id="navLinks">
@@ -1082,11 +1112,13 @@ function main() {
       var data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
       var slug = data.project_slug;
       var distDir = path.join(__dirname, 'dist', slug);
-      fs.mkdirSync(distDir, {recursive:true});
-      var html = generateHTML(data);
-      var outPath = path.join(distDir, 'index.html');
-      fs.writeFileSync(outPath, html, 'utf8');
-      console.log('✓ ' + slug + ' → ' + outPath);
+      var files = generateSite(data);
+      Object.keys(files).forEach(function(rel) {
+        var p = path.join(distDir, rel);
+        fs.mkdirSync(path.dirname(p), {recursive:true});
+        fs.writeFileSync(p, files[rel], 'utf8');
+      });
+      console.log('✓ ' + slug + ' → ' + distDir + ' (' + Object.keys(files).join(', ') + ')');
     } catch(err) {
       console.error('✗ ' + jsonPath + ': ' + err.message);
     }
@@ -1200,34 +1232,15 @@ function buildTemplateLangSwitcher(langs, cssPrefix) {
   }).join('');
 }
 
-// Build Schema.org JSON-LD for template
-function buildTemplateSchema(d, langs) {
-  var schema = {
-    '@context': 'https://schema.org',
-    '@type': 'RealEstateAgent',
-    name: tAttr(d.project_name, langs),
-    description: tAttr(d.meta_description || '', langs),
-    url: d.canonical_url || '',
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: tAttr(d.location ? d.location.title : '', langs),
-      addressCountry: 'TH'
-    },
-    openingHoursSpecification: {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
-      opens: '09:00', closes: '18:00'
-    }
-  };
-  if (d.contact && d.contact.phone) schema.telephone = d.contact.phone;
-  if (d.hero && d.hero.image) schema.image = d.hero.image;
-  var rows = d.roi && d.roi.rows || [];
-  if (rows.length) {
-    schema.makesOffer = rows.map(function(r) {
-      return { '@type': 'Offer', name: tAttr(r.type, langs), price: tAttr(r.price, langs), priceCurrency: d.currency || 'USD' };
-    });
-  }
-  return JSON.stringify(schema, null, 2);
+// Link-based language switcher for site mode (separate URLs per language)
+function buildTemplateLangLinks(site, cssPrefix) {
+  var cls = cssPrefix || 'header__lang';
+  return site.langs.map(function(l, i) {
+    var tag = l === site.current
+      ? '<span class="' + cls + '-link ' + cls + '-link--active">' + l.toUpperCase() + '</span>'
+      : '<a class="' + cls + '-link" href="/' + langPath(l, site.defaultLang) + '">' + l.toUpperCase() + '</a>';
+    return (i > 0 ? '<span class="' + cls + '-sep">|</span>' : '') + tag;
+  }).join('');
 }
 
 // Build investment table HTML for template (pre-built, since table structure varies)
@@ -1479,13 +1492,19 @@ function prepareTemplateData(data, langs) {
     });
   }
 
+  var site = d._site && d._site.langs.length > 1 ? d._site : null;
   return {
     // SEO & Meta
     meta_title: d.meta_title || d.project_name || '',
     meta_description: d.meta_description || '',
     canonical_url: d.canonical_url || '',
     og_image: d.og_image || (d.hero && d.hero.image) || '',
-    schema_json: buildTemplateSchema(d, langs),
+    page_lang: defaultLang,
+    og_locale: OG_LOCALES[defaultLang] || 'en_US',
+    seo_links: d._site && d._site.origin
+      ? buildSeoLinks(d._site)
+      : (d.canonical_url ? '<link rel="canonical" href="' + esc(d.canonical_url) + '">' : ''),
+    schema_json: JSON.stringify(buildSchemaObjects(d, langs), null, 2),
     font_import: '<link rel="preconnect" href="https://fonts.googleapis.com">\n  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <link href="' + esc(fontImport) + '" rel="stylesheet">',
 
     // Project
@@ -1765,9 +1784,9 @@ function prepareTemplateData(data, langs) {
     inline_css: '',  // filled by generateFromTemplate
     inline_js: '',   // filled by generateFromTemplate
     lang_css: multiLang ? ':not(body)[data-lang]{display:none}' + langs.map(function(l) { return 'body[data-lang="' + l + '"] [data-lang="' + l + '"]{display:inline}'; }).join('') : '',
-    body_lang_attr: multiLang ? ' data-lang="' + defaultLang + '"' : '',
-    lang_switcher_header: buildTemplateLangSwitcher(langs, 'header__lang'),
-    lang_switcher_mobile: buildTemplateLangSwitcher(langs, 'mobile-menu__lang'),
+    body_lang_attr: ' data-lang="' + defaultLang + '"',
+    lang_switcher_header: site ? buildTemplateLangLinks(site, 'header__lang') : buildTemplateLangSwitcher(langs, 'header__lang'),
+    lang_switcher_mobile: site ? buildTemplateLangLinks(site, 'mobile-menu__lang') : buildTemplateLangSwitcher(langs, 'mobile-menu__lang'),
     lang_js: buildTemplateLangJS(langs),
 
     // Webhook
@@ -1818,5 +1837,76 @@ generateHTML = function(data) {
   return originalGenerateHTML(data);
 };
 
-module.exports = { generateHTML, TEMPLATES, getFileTemplates, hasTemplateFiles };
+// ══════════════════════════════════════════════════════════════════
+// SITE GENERATION: per-language static pages + sitemap + robots
+// Each language gets its own URL (/ = default lang, /ru/ = Russian…)
+// ══════════════════════════════════════════════════════════════════
+
+var OG_LOCALES = { en: 'en_US', ru: 'ru_RU', ar: 'ar_OM', de: 'de_DE', fr: 'fr_FR' };
+
+// Site origin (with trailing slash) from custom_domain or canonical_url
+function siteOrigin(data) {
+  var url = String(data.custom_domain || data.canonical_url || '').trim();
+  if (!url) return '';
+  if (!/^https?:\/\//.test(url)) url = 'https://' + url;
+  try { return new URL(url).origin + '/'; } catch(e) { return ''; }
+}
+
+function langPath(lang, defaultLang) {
+  return lang === defaultLang ? '' : lang + '/';
+}
+
+// Canonical + hreflang link tags for one page
+function buildSeoLinks(site) {
+  if (!site.origin) return '';
+  var lines = ['<link rel="canonical" href="' + site.origin + site.path + '">'];
+  site.langs.forEach(function(l) {
+    lines.push('<link rel="alternate" hreflang="' + l + '" href="' + site.origin + langPath(l, site.defaultLang) + '">');
+  });
+  lines.push('<link rel="alternate" hreflang="x-default" href="' + site.origin + '">');
+  return lines.join('\n  ');
+}
+
+function buildSitemap(origin, langs, defaultLang) {
+  var alternates = langs.map(function(a) {
+    return '    <xhtml:link rel="alternate" hreflang="' + a + '" href="' + origin + langPath(a, defaultLang) + '"/>';
+  }).join('\n') + '\n    <xhtml:link rel="alternate" hreflang="x-default" href="' + origin + '"/>';
+  var urls = langs.map(function(l) {
+    return '  <url>\n    <loc>' + origin + langPath(l, defaultLang) + '</loc>\n' + alternates + '\n  </url>';
+  }).join('\n');
+  return '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' +
+    urls + '\n</urlset>\n';
+}
+
+// Subpages like /ru/ can't reference images/ relatively — make paths absolute
+function absolutizeAssetPaths(html) {
+  return html.replace(/(src="|href="|srcset="|url\('|url\("|url\()images\//g, '$1/images/');
+}
+
+function generateSite(data) {
+  var langs = data.languages && data.languages.length ? data.languages : ['en'];
+  var defaultLang = langs[0];
+  var origin = siteOrigin(data);
+  var files = {};
+  langs.forEach(function(l) {
+    var sub = langPath(l, defaultLang);
+    var single = Object.assign({}, data, {
+      languages: [l],
+      canonical_url: origin ? origin + sub : (data.canonical_url || ''),
+      _site: { origin: origin, langs: langs, defaultLang: defaultLang, current: l, path: sub }
+    });
+    files[sub + 'index.html'] = absolutizeAssetPaths(generateHTML(single));
+  });
+  if (origin) {
+    files['sitemap.xml'] = buildSitemap(origin, langs, defaultLang);
+    files['robots.txt'] = 'User-agent: *\nAllow: /\n\nSitemap: ' + origin + 'sitemap.xml\n';
+  } else {
+    files['robots.txt'] = 'User-agent: *\nAllow: /\n';
+  }
+  files['_headers'] = '/images/*\n  Cache-Control: public, max-age=31536000, immutable\n';
+  return files;
+}
+
+module.exports = { generateHTML, generateSite, TEMPLATES, getFileTemplates, hasTemplateFiles };
 if (require.main === module) main();

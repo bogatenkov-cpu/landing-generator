@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{=page_lang}}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +7,7 @@
   <meta name="description" content="{{=meta_description}}">
 
   <!-- hreflang -->
-  <link rel="alternate" hreflang="en" href="{{=canonical_url}}">
-  <link rel="alternate" hreflang="ru" href="{{=canonical_url}}ru/">
-  <link rel="alternate" hreflang="x-default" href="{{=canonical_url}}">
+  {{{seo_links}}}
 
   <!-- Open Graph -->
   <meta property="og:title" content="{{=meta_title}}">
@@ -17,6 +15,7 @@
   <meta property="og:type" content="website">
   <meta property="og:image" content="{{=og_image}}">
   <meta property="og:url" content="{{=canonical_url}}">
+  <meta property="og:locale" content="{{=og_locale}}">
 
   <!-- JSON-LD Schema.org -->
   <script type="application/ld+json">

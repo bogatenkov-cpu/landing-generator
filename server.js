@@ -6,7 +6,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { generateHTML, TEMPLATES, getFileTemplates, hasTemplateFiles } = require('./generate.js');
+const { generateHTML, generateSite, TEMPLATES, getFileTemplates, hasTemplateFiles } = require('./generate.js');
 const { deploy } = require('./deploy.js');
 
 const PORT = process.env.PORT || 3333;
@@ -559,12 +559,15 @@ const server = http.createServer(async (req, res) => {
       if (!isValidSlug(slug)) throw new Error('Invalid slug format (lowercase letters, digits, dashes only)');
       fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
       fs.writeFileSync(path.join(__dirname, 'data', `${slug}.json`), JSON.stringify(data, null, 2), 'utf8');
-      const html = generateHTML(data);
+      const files = generateSite(data);
       const distDir = path.join(__dirname, 'dist', slug);
-      fs.mkdirSync(distDir, { recursive: true });
-      fs.writeFileSync(path.join(distDir, 'index.html'), html, 'utf8');
+      for (const [rel, content] of Object.entries(files)) {
+        const p = path.join(distDir, rel);
+        fs.mkdirSync(path.dirname(p), { recursive: true });
+        fs.writeFileSync(p, content, 'utf8');
+      }
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: true, slug }));
+      res.end(JSON.stringify({ ok: true, slug, pages: Object.keys(files) }));
     } catch(e) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: e.message }));
@@ -709,8 +712,17 @@ const server = http.createServer(async (req, res) => {
       if (!isValidSlug(slug)) throw new Error('Invalid slug format');
       const distPath = path.join(__dirname, 'dist', slug, 'index.html');
       if (!fs.existsSync(distPath)) throw new Error(`Run save first for ${slug}`);
-      const html = fs.readFileSync(distPath, 'utf8');
-      const result = await deploy(slug, html);
+      // Custom domain from project JSON (custom_domain or canonical_url host)
+      let domain = null;
+      try {
+        const pj = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', `${slug}.json`), 'utf8'));
+        const raw = String(pj.custom_domain || pj.canonical_url || '').trim();
+        if (raw) {
+          const host = new URL(/^https?:\/\//.test(raw) ? raw : 'https://' + raw).hostname;
+          if (host && !host.endsWith('.pages.dev') && !host.endsWith('.vercel.app')) domain = host;
+        }
+      } catch(e) { /* no saved project json or bad URL — deploy without domain */ }
+      const result = await deploy(slug, { domain });
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: true, ...result }));
     } catch(e) {

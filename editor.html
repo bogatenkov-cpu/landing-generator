@@ -850,7 +850,7 @@ async function deployProject() {
   var btn = document.getElementById('deployBtn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>Deploying...';
-  showStatus('Deploying to GitHub & Vercel...', 'info');
+  showStatus('Deploying to Cloudflare Pages...', 'info');
 
   try {
     var r = await apiFetch('/api/deploy', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ slug: data.project_slug }) });
@@ -860,9 +860,18 @@ async function deployProject() {
       showStatus('Deployed!', 'ok');
       var result = document.getElementById('deployResult');
       result.style.display = 'block';
-      document.getElementById('deployLinks').innerHTML =
-        '<a href="' + res.deployUrl + '" target="_blank">' + res.deployUrl + '</a><br>'
-        + '<a href="' + res.githubUrl + '" target="_blank">' + res.githubUrl + '</a>';
+      var links = '<a href="' + res.deployUrl + '" target="_blank">' + res.deployUrl + '</a>';
+      if (res.pagesUrl && res.pagesUrl !== res.deployUrl) {
+        links += '<br><a href="' + res.pagesUrl + '" target="_blank">' + res.pagesUrl + '</a>';
+      }
+      if (res.domain) {
+        if (res.domain.dnsConfigured) {
+          links += '<br><span style="color:#16a34a">✓ Domain + DNS configured: ' + s(res.domain.domain) + '</span>';
+        } else if (res.domain.instructions) {
+          links += '<br><span style="color:#d97706">⚠ ' + s(res.domain.instructions) + '</span>';
+        }
+      }
+      document.getElementById('deployLinks').innerHTML = links;
     } else {
       showStatus('Deploy failed: ' + res.error, 'err');
     }
