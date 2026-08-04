@@ -823,7 +823,17 @@ async function saveProject() {
       currentSlug = res.slug;
       document.getElementById('topbarTitle').textContent = data.project_name || res.slug;
       loadProjects();
-      showStatus('Saved', 'ok');
+      var errs = (res.qa || []).filter(function(x) { return x.level === 'error'; });
+      var warns = (res.qa || []).filter(function(x) { return x.level === 'warn'; });
+      if (errs.length) {
+        showStatus('Saved, но QA: ' + errs.length + ' ошибок, ' + warns.length + ' предупр. — детали в консоли (F12)', 'err');
+        console.warn('QA report:', res.qa);
+      } else if (warns.length) {
+        showStatus('Saved. QA: ' + warns.length + ' предупреждений — детали в консоли (F12)', 'info');
+        console.warn('QA report:', res.qa);
+      } else {
+        showStatus('Saved ✓ QA clean', 'ok');
+      }
     } else { showStatus(res.error, 'err'); }
   } catch(e) { showStatus(e.message, 'err'); }
 }

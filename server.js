@@ -7,6 +7,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { generateHTML, generateSite, TEMPLATES, getFileTemplates, hasTemplateFiles } = require('./generate.js');
+const { runQA } = require('./qa-check.js');
 const { deploy } = require('./deploy.js');
 
 const PORT = process.env.PORT || 3333;
@@ -568,8 +569,10 @@ const server = http.createServer(async (req, res) => {
         fs.mkdirSync(path.dirname(p), { recursive: true });
         fs.writeFileSync(p, content, 'utf8');
       }
+      let qa = [];
+      try { qa = runQA(data, path.join(__dirname, 'data')); } catch(e) { /* QA must never break save */ }
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: true, slug, pages: Object.keys(files) }));
+      res.end(JSON.stringify({ ok: true, slug, pages: Object.keys(files), qa }));
     } catch(e) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: e.message }));
