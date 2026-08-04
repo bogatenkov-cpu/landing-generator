@@ -2132,7 +2132,7 @@ function applyResponsiveImages(html, slug) {
   var hasFile = function(n) { return !!have[n]; };
 
   // <img src="…/images/hero.jpg"> → webp + srcset
-  html = html.replace(/<img([^>]*?)src="([^"]*?images\/)([^"\/]+?)\.(jpe?g|png)"([^>]*?)>/gi,
+  html = html.replace(/<img([^>]*?)src="([^"]*?images\/)([^"\/]+?)\.(jpe?g|png|webp|avif)"([^>]*?)>/gi,
     function(m, pre, prefix, base, ext, post) {
       if (!hasFile(base + '.webp')) return m;
       if (/srcset=/i.test(m)) return m;
@@ -2140,13 +2140,15 @@ function applyResponsiveImages(html, slug) {
       [800, 1280].forEach(function(w) {
         if (hasFile(base + '-' + w + '.webp')) srcset.push(prefix + base + '-' + w + '.webp ' + w + 'w');
       });
+      // у мелких исходников вариантов нет — тогда srcset не нужен вовсе
+      if (!srcset.length) return '<img' + pre + 'src="' + prefix + base + '.webp"' + post + '>';
       srcset.push(prefix + base + '.webp 1920w');
       var sizes = ' sizes="(max-width:760px) 100vw, (max-width:1280px) 90vw, 1200px"';
       return '<img' + pre + 'src="' + prefix + base + '.webp" srcset="' + srcset.join(', ') + '"' + sizes + post + '>';
     });
 
   // CSS background: url(…/images/hero.jpg) → webp (fallback keeps the JPEG)
-  html = html.replace(/url\((["']?)([^"')]*?images\/)([^"')\/]+?)\.(jpe?g|png)\1\)/gi,
+  html = html.replace(/url\((["']?)([^"')]*?images\/)([^"')\/]+?)\.(jpe?g|png|avif)\1\)/gi,
     function(m, q, prefix, base, ext) {
       if (!hasFile(base + '.webp')) return m;
       return 'image-set(url(' + q + prefix + base + '.webp' + q + ') type("image/webp"), url(' + q + prefix + base + '.' + ext + q + ') type("image/' + (ext.toLowerCase() === 'png' ? 'png' : 'jpeg') + '"))';

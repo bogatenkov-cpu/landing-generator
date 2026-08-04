@@ -20,7 +20,19 @@ const path = require('path');
 // Widths we ship, from the design-system media budget
 const WIDTHS = [1920, 1280, 800];
 const QUALITY = { 1920: 76, 1280: 74, 800: 72 };
-const SOURCE_RE = /\.(jpe?g|png)$/i;
+// Исходники приходят и в webp/avif — их тоже надо привести к нашим
+// размерам, иначе страница сошлётся на несуществующий вариант
+const SOURCE_RE = /\.(jpe?g|png|webp|avif)$/i;
+
+// Наши собственные результаты не должны попадать на вход повторно:
+// иначе появляются hero-1280-800.webp и подобный мусор.
+function isOurVariant(file, allFiles) {
+  if (!/\.webp$/i.test(file)) return false;
+  if (/-(?:800|1280|1920)\.webp$/i.test(file)) return true;
+  const base = file.replace(/\.webp$/i, '');
+  // hero.webp рядом с hero.jpg — это результат, а не исходник
+  return allFiles.some(f => f !== file && f.replace(/\.[a-z0-9]+$/i, '') === base && !/\.webp$/i.test(f));
+}
 
 function loadSharp() {
   try { return require('sharp'); } catch (e) { return null; }
@@ -57,7 +69,8 @@ async function optimizeProject(slug, baseDir) {
   const sharp = loadSharp();
   const dir = path.join(baseDir || path.join(__dirname, 'data'), slug, 'images');
   if (!sharp || !fs.existsSync(dir)) return { slug, skipped: true, reason: sharp ? 'no images dir' : 'sharp unavailable' };
-  const sources = fs.readdirSync(dir).filter(f => SOURCE_RE.test(f));
+  const all = fs.readdirSync(dir);
+  const sources = all.filter(f => SOURCE_RE.test(f) && !isOurVariant(f, all));
   let before = 0, after = 0, count = 0;
   for (const f of sources) {
     before += fs.statSync(path.join(dir, f)).size;

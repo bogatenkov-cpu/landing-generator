@@ -473,7 +473,7 @@ const server = http.createServer(async (req, res) => {
       let variants = 0;
       try {
         const sharp = require('sharp');
-        const made = await optimizeFile(sharp, imgDir, safe);
+        const made = /\.(jpe?g|png|webp|avif)$/i.test(safe) ? await optimizeFile(sharp, imgDir, safe) : [];
         variants = made.length;
       } catch(e) { /* sharp missing or unsupported format — original still serves */ }
       res.writeHead(200, { 'Content-Type': 'application/json' });
