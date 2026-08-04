@@ -1431,6 +1431,7 @@ function prepareTemplateData(data, langs) {
       modal_desc: 'Request detailed specifications and availability.',
       _active_class: i === 0 ? ' floorplans__tab--active' : '',
       _active_class_panel: i === 0 ? ' floorplans__panel--active' : '',
+      _active_class_content: i === 0 ? ' floorplans__content--active' : '',
       _reveal_delay_class: i > 0 ? ' reveal--delay-' + i : ''
     };
   });
@@ -1849,7 +1850,27 @@ function generateFromTemplate(data) {
   // names from pushing the header CTA off-screen
   var globalFixCSS = '\n    img[src=""]{display:none}' +
     '\n    .header__logo{display:block;min-width:0;max-width:42vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
-    '\n    @media (max-width:1100px){.header__logo{font-size:clamp(14px,2vw,20px)!important}}';
+    '\n    @media (max-width:1100px){.header__logo{font-size:clamp(14px,2vw,20px)!important}}' +
+    '\n    @media (max-width:900px){.concept__image-accent{display:none}}';
+  // Some template stylesheets ship stock Unsplash backgrounds (hero, concept,
+  // gallery…). When the project provides real images, override those hooks so
+  // the landing shows the actual project, not placeholder stock.
+  var cssUrl = function(u) { return 'url("' + String(u).replace(/"/g, '%22') + '")'; };
+  var imgOverrides = [];
+  if (tplData.hero_image) {
+    imgOverrides.push('.hero__bg{background-image:' + cssUrl(tplData.hero_image) + '!important}');
+    imgOverrides.push('.cta-banner__bg{background-image:' + cssUrl(tplData.hero_image) + '!important}');
+  }
+  if (tplData.concept_image) imgOverrides.push('.concept__image-main{background-image:' + cssUrl(tplData.concept_image) + '!important}');
+  if (tplData.developer_image) imgOverrides.push('.developer__logo-box{background-image:' + cssUrl(tplData.developer_image) + ';background-size:cover;background-position:center!important}');
+  if (tplData.floorplans && tplData.floorplans[0] && tplData.floorplans[0].image) {
+    imgOverrides.push('.floorplans__visual{background-image:' + cssUrl(tplData.floorplans[0].image) + '!important}');
+  }
+  (tplData.gallery_items || []).slice(0, 8).forEach(function(g, i) {
+    var u = g && (g.url || g.src);
+    if (u) imgOverrides.push('.gallery__item:nth-child(' + (i + 1) + '){background-image:' + cssUrl(u) + '!important}');
+  });
+  globalFixCSS += '\n    ' + imgOverrides.join('\n    ');
   tplData.inline_css = css + revealFix + globalFixCSS + (tplData.lang_css ? '\n    ' + tplData.lang_css : '');
   var hideEmptyJS = '\n    // Hide empty sections\n    document.querySelectorAll(".floor-plan__grid, .faq__list, .amenities__grid, .investment__table-wrap").forEach(function(el) {\n      if (!el.children.length || !el.innerHTML.trim()) {\n        var section = el.closest("section") || el.closest(".section");\n        if (section) section.style.display = "none";\n      }\n    });' +
     '\n    // Graceful no-image state: hide empty imgs, collapse their wrappers and 2-col grids\n    document.querySelectorAll("img").forEach(function(im) {\n      if (im.getAttribute("src")) return;\n      im.style.display = "none";\n      var wrap = im.closest("[class*=\\"__image\\"],[class*=\\"__media\\"],[class*=\\"__photo\\"]") || im.parentElement;\n      if (wrap && wrap !== document.body && wrap.children.length === 1) {\n        wrap.style.display = "none";\n        var parent = wrap.parentElement;\n        if (parent && getComputedStyle(parent).display === "grid") parent.style.gridTemplateColumns = "1fr";\n      }\n    });\n    // Floor plan panels without an image: stack to a single column\n    document.querySelectorAll(".floorplans__panel, .floor-plan__card").forEach(function(p) {\n      var im = p.querySelector("img");\n      if (im && !im.getAttribute("src")) {\n        if (getComputedStyle(p).display === "grid") p.style.gridTemplateColumns = "1fr";\n      }\n    });\n    // Gallery sections with no real images: hide entirely until photos are added\n    document.querySelectorAll("section, .section").forEach(function(sec) {\n      if (!/gallery/i.test(sec.className || "")) return;\n      var real = Array.prototype.filter.call(sec.querySelectorAll("img"), function(im) { return im.getAttribute("src"); });\n      if (!real.length) sec.style.display = "none";\n    });\n    // Empty badges/labels and buttons render as styled husks — hide them\n    document.querySelectorAll("[class*=\\"__badge\\"], [class*=\\"__label\\"]").forEach(function(el) {\n      if (!el.textContent.trim() && !el.children.length) el.style.display = "none";\n    });\n    document.querySelectorAll("button, a[class*=\\"btn\\"]").forEach(function(el) {\n      if (!el.textContent.trim() && !el.querySelector("img,svg")) el.style.display = "none";\n    });\n    // Map containers without an embed: hide the empty box\n    document.querySelectorAll("[class*=\\"__map\\"], [class*=\\"map-\\"]").forEach(function(el) {\n      if (!el.querySelector("iframe,img") && !el.textContent.trim()) el.style.display = "none";\n    });';

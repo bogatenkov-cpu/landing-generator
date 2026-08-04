@@ -320,7 +320,9 @@ const server = http.createServer(async (req, res) => {
     if (!fs.existsSync(jsonPath)) { res.writeHead(404); res.end('Not found'); return; }
     try {
       const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-      const html = generateHTML(data);
+      let html = generateHTML(data);
+      // Uploaded images live on disk per-slug — point relative refs at the image route
+      html = html.replace(/(src="|href="|srcset="|url\('|url\("|url\()\/?images\//g, `$1/api/image/${slug}/`);
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(html);
     } catch(e) {
@@ -330,14 +332,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // All /api/* routes require auth
-  if (url.pathname.startsWith('/api/') && !checkAuth(req)) {
-    res.writeHead(401, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Unauthorized' }));
-    return;
-  }
-
-  // Serve project image for editor preview
+  // Serve project image (public — used by /preview pages and the editor)
   // GET /api/image/:slug/:filename
   if (req.method === 'GET' && url.pathname.startsWith('/api/image/')) {
     const parts = url.pathname.replace('/api/image/', '').split('/');
@@ -354,6 +349,13 @@ const server = http.createServer(async (req, res) => {
       }
     }
     res.writeHead(404); res.end('Not found');
+    return;
+  }
+
+  // All /api/* routes require auth
+  if (url.pathname.startsWith('/api/') && !checkAuth(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Unauthorized' }));
     return;
   }
 
