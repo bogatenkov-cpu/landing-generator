@@ -1,8 +1,15 @@
 # Landing Generator — Project Context
 
 ## Overview
-Node.js landing page generator for Tranio Thailand real estate.
-No npm dependencies. Deployed on Railway (auto-deploy from GitHub main).
+Node.js landing page generator for a network of brand landings — one domain per
+residential project. Editor deployed on Railway (auto-deploy from GitHub main);
+landings deployed to Cloudflare Pages.
+
+Deps: `sharp` (image pipeline), `wrangler` (Pages upload). Node >= 20.
+
+**For the current state of the Oman network, open work and known pitfalls, see
+[HANDOFF.md](HANDOFF.md).** Editorial rules live in `LANDING_RULES.md`, the
+technical contract in `LANDING_SPEC.md`.
 
 ## Architecture
 - `server.js` — HTTP server (port 3333), API endpoints, auth
@@ -64,7 +71,7 @@ All `/api/*` require `x-admin-password` header.
 | GET | `/api/project/:slug` | Load project JSON (checks `data/` then `demos/`) |
 | POST | `/api/preview` | Generate HTML from posted JSON |
 | POST | `/api/save` | Save project JSON + generate dist HTML |
-| POST | `/api/deploy` | Deploy to GitHub + Vercel |
+| POST | `/api/deploy` | Rebuild from `data/<slug>.json` and deploy to Cloudflare Pages |
 | POST | `/api/ai-fill` | Claude AI web search to fill project data |
 | POST | `/api/upload` | Upload image (base64) |
 | POST | `/api/fetch-image` | Download image from URL |
@@ -100,7 +107,7 @@ Project JSON structure (all text fields are `{en: "...", ru: "..."}` for multi-l
 - Image upload/fetch from URL
 - Domain name suggestions
 - Preview (demo: navigates to `/preview/:slug`, user: iframe srcdoc)
-- Save + Deploy to Vercel
+- Save (returns QA findings) + Deploy to Cloudflare Pages
 
 ## Deployment
 - Editor itself: GitHub `bogatenkov-cpu/landing-generator` → Railway auto-deploys from `main`
