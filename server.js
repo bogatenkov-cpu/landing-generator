@@ -715,18 +715,28 @@ const server = http.createServer(async (req, res) => {
     const { slug } = body;
     try {
       if (!isValidSlug(slug)) throw new Error('Invalid slug format');
-      const distPath = path.join(__dirname, 'dist', slug, 'index.html');
-      if (!fs.existsSync(distPath)) throw new Error(`Run save first for ${slug}`);
+      // Always rebuild from the saved project: dist/ lives in the container and
+      // is wiped on every restart, while data/ is on the persistent volume.
+      // Regenerating here also guarantees we ship the current content.
+      const projectPath = path.join(__dirname, 'data', `${slug}.json`);
+      if (!fs.existsSync(projectPath)) throw new Error(`No saved project ${slug} — save it first`);
+      const projectData = JSON.parse(fs.readFileSync(projectPath, 'utf8'));
+      const siteFiles = generateSite(projectData);
+      const distDir = path.join(__dirname, 'dist', slug);
+      for (const [rel, content] of Object.entries(siteFiles)) {
+        const p = path.join(distDir, rel);
+        fs.mkdirSync(path.dirname(p), { recursive: true });
+        fs.writeFileSync(p, content, 'utf8');
+      }
       // Custom domain from project JSON (custom_domain or canonical_url host)
       let domain = null;
       try {
-        const pj = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', `${slug}.json`), 'utf8'));
-        const raw = String(pj.custom_domain || pj.canonical_url || '').trim();
+        const raw = String(projectData.custom_domain || projectData.canonical_url || '').trim();
         if (raw) {
           const host = new URL(/^https?:\/\//.test(raw) ? raw : 'https://' + raw).hostname;
           if (host && !host.endsWith('.pages.dev') && !host.endsWith('.vercel.app')) domain = host;
         }
-      } catch(e) { /* no saved project json or bad URL — deploy without domain */ }
+      } catch(e) { /* bad URL in project — deploy without a custom domain */ }
       const result = await deploy(slug, { domain });
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: true, ...result }));

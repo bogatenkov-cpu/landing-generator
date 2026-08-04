@@ -78,7 +78,13 @@ function copyImages(slug) {
 
 function runWrangler(args) {
   return new Promise((resolve, reject) => {
-    const child = spawn('npx', ['--yes', 'wrangler', ...args], {
+    // Prefer the installed binary: npx would try to fetch wrangler at runtime,
+    // which fails in a read-only/offline container
+    const local = path.join(__dirname, 'node_modules', '.bin', 'wrangler');
+    const useLocal = fs.existsSync(local);
+    const cmd = useLocal ? local : 'npx';
+    const cmdArgs = useLocal ? args : ['--yes', 'wrangler', ...args];
+    const child = spawn(cmd, cmdArgs, {
       cwd: __dirname,
       env: process.env,
       stdio: ['ignore', 'pipe', 'pipe']
