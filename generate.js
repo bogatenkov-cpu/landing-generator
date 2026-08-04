@@ -1964,6 +1964,7 @@ function generateFromTemplate(data) {
     '@media (min-width:900px){.investment__highlights{display:grid!important;grid-template-columns:1fr 1fr;gap:16px;align-content:start}}',
     // Amenities: 3 across on wide screens keeps the section near one screen
     '@media (min-width:1100px){.amenities__grid{grid-template-columns:repeat(3,1fr)!important}}',
+    '.amenities__card-img{height:150px!important}',
     // Contact must not bleed into the footer
     '.cta-section{border-bottom:1px solid rgba(255,255,255,.12)}',
     'footer.footer{border-top:1px solid rgba(255,255,255,.12)}',
