@@ -132,6 +132,11 @@ function getTemplate(id) {
 
 // Country for schema.org: explicit country_code, else inferred from currency
 const CURRENCY_COUNTRY = { THB: 'TH', OMR: 'OM', AED: 'AE', SAR: 'SA', QAR: 'QA', BHD: 'BH', KWD: 'KW', EUR: '', USD: '' };
+const DIAL_CODES = {
+  OM: '+968', TH: '+66', AE: '+971', SA: '+966', QA: '+974', BH: '+973',
+  KW: '+965', EG: '+20', TR: '+90', CY: '+357', GR: '+30', ES: '+34',
+  PT: '+351', IT: '+39', FR: '+33', GB: '+44', ID: '+62', VN: '+84', BR: '+55'
+};
 function schemaCountry(d) {
   if (d.country_code) return d.country_code;
   const byCurrency = CURRENCY_COUNTRY[d.currency];
@@ -1295,7 +1300,10 @@ function prepareTemplateData(data, langs) {
   var d = data;
   var multiLang = langs.length > 1;
   var defaultLang = langs[0];
-  var phone = d.contact && d.contact.phone || '+66 XX XXX XXXX';
+  // Phone hints follow the project's country, not the template's origin —
+  // a Thai +66 placeholder on an Oman landing reads as a copy-paste mistake
+  var dial = DIAL_CODES[schemaCountry(d)] || '+';
+  var phone = d.contact && d.contact.phone || (dial + ' XX XXX XXXX');
   var phoneClean = phone.replace(/[^\d+]/g, '');
   var email = d.contact && d.contact.email || ('info@' + (d.project_slug || 'project') + '.com');
   var wa = d.contact && d.contact.whatsapp || phone;
@@ -1446,10 +1454,43 @@ function prepareTemplateData(data, langs) {
     '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
   ];
   var locationDistances = distances.map(function(d, i) {
+    var placeVal = d.place || d.name || '';
+    var timeVal = d.time || d.value || d.distance || '';
+    // Templates disagree on field names ({{place}}/{{time}} vs {{name}}/{{value}});
+    // ship every alias so no template renders blank rows
     return {
-      place: d.place || d.name || '',
-      time: d.time || d.value || d.distance || '',
+      place: placeVal, name: placeVal,
+      time: timeVal, value: timeVal,
       icon: distIcons[i % distIcons.length]
+    };
+  });
+
+  // Investment highlights — card list some templates render instead of a table.
+  // Built from the ROI rows so the section is never an empty column.
+  var invIcons = [
+    '<path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6h-6"/>',
+    '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
+    '<path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>',
+    '<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>',
+    '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',
+    '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>'
+  ];
+  var roiRows = (d.roi && d.roi.rows) || [];
+  var investmentHighlights = roiRows.map(function(r, i) {
+    // Row shape varies by project (price/size/views or price/yield/growth) —
+    // take the type as the title and join the rest into a single line
+    var title = r.type || r.unit || r.name || '';
+    var parts = Object.keys(r)
+      .filter(function(k) { return k !== 'type' && k !== 'unit' && k !== 'name' && k !== 'id'; })
+      .map(function(k) { return tPlain(r[k], langs); })
+      .filter(function(v) { return v && v !== '—'; });
+    return {
+      title: title,
+      text: parts.join(' · '),
+      value: tPlain(r.price || parts[0] || '', langs),
+      label: title,
+      icon: invIcons[i % invIcons.length],
+      _reveal_delay: i > 0 ? 'reveal--delay-' + i : ''
     };
   });
 
@@ -1644,6 +1685,7 @@ function prepareTemplateData(data, langs) {
     floorplans_label: {en: 'Residences', ru: 'Резиденции'},
     investment_label: {en: 'Returns', ru: 'Доходность'},
     investment_disclaimer: (d.roi && d.roi.disclaimer) || {en: '* Projected figures based on current market trends. Actual returns may vary.', ru: '* Прогнозные данные на основе текущих рыночных тенденций. Фактическая доходность может отличаться.'},
+    investment_highlights: investmentHighlights,
     leadmagnet_label: {en: 'Free Download', ru: 'Бесплатная загрузка'},
     leadmagnet_submit: {en: 'Download Catalog', ru: 'Скачать каталог'},
     gallery_label: {en: 'Visual Tour', ru: 'Визуальный тур'},
@@ -1676,8 +1718,10 @@ function prepareTemplateData(data, langs) {
     // Concept extras
     concept_lead: d.concept && d.concept.lead || (d.concept && d.concept.paragraphs && d.concept.paragraphs[0]) || '',
     concept_image_alt: tPlain(d.project_name, langs) + ' exterior',
-    concept_accent_number: '',
-    concept_accent_text: '',
+    // Accent badge over the concept image — reuse the headline stat rather
+    // than leaving a blank decorative square
+    concept_accent_number: (d.hero && d.hero.stats && d.hero.stats[0] && d.hero.stats[0].value) || '',
+    concept_accent_text: (d.hero && d.hero.stats && d.hero.stats[0] && d.hero.stats[0].label) || '',
     project_name_accent: '',
     project_name_plain: tPlain(d.project_name, langs),
 
@@ -1703,7 +1747,7 @@ function prepareTemplateData(data, langs) {
     // Form placeholders & labels
     placeholder_name: {en: 'Your name', ru: 'Ваше имя'},
     placeholder_email: {en: 'Email address', ru: 'Email'},
-    placeholder_phone: {en: '+66 XXX XXX XXXX', ru: '+66 XXX XXX XXXX'},
+    placeholder_phone: {en: dial + ' XXX XXX XXXX', ru: dial + ' XXX XXX XXXX'},
     placeholder_message: {en: 'Your message (optional)', ru: 'Ваше сообщение (необязательно)'},
     form_submit: {en: 'Send Request', ru: 'Отправить заявку'},
     form_submit_short: {en: 'Send', ru: 'Отправить'},
@@ -1714,7 +1758,7 @@ function prepareTemplateData(data, langs) {
     form_label_villa: {en: 'Villa type', ru: 'Тип виллы'},
     form_placeholder_name: {en: 'Your name', ru: 'Ваше имя'},
     form_placeholder_email: {en: 'your@email.com', ru: 'ваш@email.com'},
-    form_placeholder_phone: {en: '+66 XXX XXX XXXX', ru: '+66 XXX XXX XXXX'},
+    form_placeholder_phone: {en: dial + ' XXX XXX XXXX', ru: dial + ' XXX XXX XXXX'},
     form_placeholder_message: {en: 'Your message...', ru: 'Ваше сообщение...'},
     form_consent: {en: 'I agree to the processing of personal data', ru: 'Я согласен на обработку персональных данных'},
     form_consent_html: {en: 'I agree to the <a href="#">privacy policy</a>', ru: 'Я согласен с <a href="#">политикой конфиденциальности</a>'},
@@ -1875,7 +1919,7 @@ function generateFromTemplate(data) {
   globalFixCSS += '\n    ' + imgOverrides.join('\n    ');
   tplData.inline_css = css + revealFix + globalFixCSS + (tplData.lang_css ? '\n    ' + tplData.lang_css : '');
   var hideEmptyJS = '\n    // Hide empty sections\n    document.querySelectorAll(".floor-plan__grid, .faq__list, .amenities__grid, .investment__table-wrap").forEach(function(el) {\n      if (!el.children.length || !el.innerHTML.trim()) {\n        var section = el.closest("section") || el.closest(".section");\n        if (section) section.style.display = "none";\n      }\n    });' +
-    '\n    // Graceful no-image state: hide empty imgs, collapse their wrappers and 2-col grids\n    document.querySelectorAll("img").forEach(function(im) {\n      if (im.getAttribute("src")) return;\n      im.style.display = "none";\n      var wrap = im.closest("[class*=\\"__image\\"],[class*=\\"__media\\"],[class*=\\"__photo\\"]") || im.parentElement;\n      if (wrap && wrap !== document.body && wrap.children.length === 1) {\n        wrap.style.display = "none";\n        var parent = wrap.parentElement;\n        if (parent && getComputedStyle(parent).display === "grid") parent.style.gridTemplateColumns = "1fr";\n      }\n    });\n    // Floor plan panels without an image: stack to a single column\n    document.querySelectorAll(".floorplans__panel, .floor-plan__card").forEach(function(p) {\n      var im = p.querySelector("img");\n      if (im && !im.getAttribute("src")) {\n        if (getComputedStyle(p).display === "grid") p.style.gridTemplateColumns = "1fr";\n      }\n    });\n    // Gallery sections with no real images: hide entirely until photos are added\n    document.querySelectorAll("section, .section").forEach(function(sec) {\n      if (!/gallery/i.test(sec.className || "")) return;\n      var real = Array.prototype.filter.call(sec.querySelectorAll("img"), function(im) { return im.getAttribute("src"); });\n      if (!real.length) sec.style.display = "none";\n    });\n    // Empty badges/labels and buttons render as styled husks — hide them\n    document.querySelectorAll("[class*=\\"__badge\\"], [class*=\\"__label\\"]").forEach(function(el) {\n      if (!el.textContent.trim() && !el.children.length) el.style.display = "none";\n    });\n    document.querySelectorAll("button, a[class*=\\"btn\\"]").forEach(function(el) {\n      if (!el.textContent.trim() && !el.querySelector("img,svg")) el.style.display = "none";\n    });\n    // Map containers without an embed: hide the empty box\n    document.querySelectorAll("[class*=\\"__map\\"], [class*=\\"map-\\"]").forEach(function(el) {\n      if (!el.querySelector("iframe,img") && !el.textContent.trim()) el.style.display = "none";\n    });\n    // Never show a background photo behind a real <img> — that renders the\n    // same shot twice (template stock CSS + project image)\n    document.querySelectorAll("img[src]").forEach(function(im) {\n      if (!im.getAttribute("src")) return;\n      var box = im.parentElement;\n      for (var i = 0; box && i < 2; i++, box = box.parentElement) {\n        var bg = getComputedStyle(box).backgroundImage;\n        if (bg && bg !== "none" && bg.indexOf("url(") === 0) { box.style.backgroundImage = "none"; break; }\n      }\n    });';
+    '\n    // Graceful no-image state: hide empty imgs, collapse their wrappers and 2-col grids\n    document.querySelectorAll("img").forEach(function(im) {\n      if (im.getAttribute("src")) return;\n      im.style.display = "none";\n      var wrap = im.closest("[class*=\\"__image\\"],[class*=\\"__media\\"],[class*=\\"__photo\\"]") || im.parentElement;\n      if (wrap && wrap !== document.body && wrap.children.length === 1) {\n        wrap.style.display = "none";\n        var parent = wrap.parentElement;\n        if (parent && getComputedStyle(parent).display === "grid") parent.style.gridTemplateColumns = "1fr";\n      }\n    });\n    // Floor plan panels without an image: stack to a single column\n    document.querySelectorAll(".floorplans__panel, .floor-plan__card").forEach(function(p) {\n      var im = p.querySelector("img");\n      if (im && !im.getAttribute("src")) {\n        if (getComputedStyle(p).display === "grid") p.style.gridTemplateColumns = "1fr";\n      }\n    });\n    // Gallery sections with no real images: hide entirely until photos are added\n    document.querySelectorAll("section, .section").forEach(function(sec) {\n      if (!/gallery/i.test(sec.className || "")) return;\n      var real = Array.prototype.filter.call(sec.querySelectorAll("img"), function(im) { return im.getAttribute("src"); });\n      if (!real.length) sec.style.display = "none";\n    });\n    // Empty badges/labels and buttons render as styled husks — hide them\n    document.querySelectorAll("[class*=\\"__badge\\"], [class*=\\"__label\\"], [class*=\\"__accent\\"]").forEach(function(el) {\n      if (!el.textContent.trim() && !el.children.length) el.style.display = "none";\n    });\n    document.querySelectorAll("button, a[class*=\\"btn\\"]").forEach(function(el) {\n      if (!el.textContent.trim() && !el.querySelector("img,svg")) el.style.display = "none";\n    });\n    // Map containers without a real embed: an <iframe src=""> still counts as\n    // empty, so drop it first, then hide the box\n    document.querySelectorAll("iframe").forEach(function(f) { if (!f.getAttribute("src")) f.remove(); });\n    document.querySelectorAll("[class*=\\"__map\\"], [class*=\\"map-\\"]").forEach(function(el) {\n      if (!el.querySelector("iframe,img") && !el.textContent.trim()) el.style.display = "none";\n    });\n    // Never show a background photo behind a real <img> — that renders the\n    // same shot twice (template stock CSS + project image)\n    document.querySelectorAll("img[src]").forEach(function(im) {\n      if (!im.getAttribute("src")) return;\n      var box = im.parentElement;\n      for (var i = 0; box && i < 2; i++, box = box.parentElement) {\n        var bg = getComputedStyle(box).backgroundImage;\n        if (bg && bg !== "none" && bg.indexOf("url(") === 0) { box.style.backgroundImage = "none"; break; }\n      }\n    });';
   tplData.inline_js = js + (tplData.lang_js || '') + hideEmptyJS;
 
   // Render template

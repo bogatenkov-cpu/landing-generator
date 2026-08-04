@@ -12,6 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { generateSite } = require('./generate.js');
 
 // ── helpers ────────────────────────────────────────────────────────
 function words(s) { return String(s || '').trim().split(/\s+/).filter(Boolean).length; }
@@ -138,7 +139,58 @@ function runQA(d, baseDir) {
   // R10. Источники данных зафиксированы
   if (!d._sources || !d._sources.length) warn('R10-sources', 'Нет _sources — откуда взяты цены и факты?');
 
+  // R11. Canonical URL — без него нет canonical, hreflang и sitemap
+  if (!String(d.canonical_url || d.custom_domain || '').trim()) {
+    err('R11-canonical', 'Пустой canonical_url — страница уйдёт без canonical, hreflang и sitemap');
+  }
+
+  // R12. Проверка отрендеренной страницы: пустые слоты и пустые контейнеры
+  // ловят рассинхрон «шаблон ждёт одни поля, генератор отдаёт другие»
+  try {
+    const html = generateSite(d)['index.html'] || '';
+    // слот вида <span class="location__distance-name"></span> — данные не доехали
+    const emptySlots = {};
+    const slotRe = /<(span|div|td|li|h3|p)\s+class="([^"]+)"\s*>\s*<\/\1>/g;
+    let m;
+    while ((m = slotRe.exec(html))) {
+      const cls = m[2].split(/\s+/)[0];
+      emptySlots[cls] = (emptySlots[cls] || 0) + 1;
+    }
+    // декоративные пустышки (разделители, бургер, подложки модалок) — норма
+    const DECOR = /divider|burger|backdrop|overlay|line|dot|arrow|scroll|spacer|shape|blur|glow|bar\b|__bg|pattern/i;
+    // необязательные текстовые слоты — предупреждение, не блокер
+    const OPTIONAL = /-desc$|__desc$|-subtitle$|__subtitle$|-note$/i;
+    Object.entries(emptySlots)
+      .filter(([cls, n]) => n >= 2 && !DECOR.test(cls))
+      .forEach(([cls, n]) => {
+        const msg = `Пустые слоты в вёрстке: ${cls} × ${n} — данные не доехали до шаблона`;
+        OPTIONAL.test(cls) ? warn('R12-render', msg) : err('R12-render', msg);
+      });
+    // контейнер цикла, в который не попало ни одного элемента
+    const containerRe = /<div\s+class="([^"]*(?:__list|__grid|__items|__highlights|__distances|__cards)[^"]*)"\s*>\s*<\/div>/g;
+    while ((m = containerRe.exec(html))) {
+      err('R12-render', `Пустой контейнер: ${m[1].split(/\s+/)[0]} — цикл не получил данных`);
+    }
+    // телефонный код не из страны проекта
+    const dialByCountry = { OM: '+968', TH: '+66', AE: '+971', SA: '+966', QA: '+974', BH: '+973', KW: '+965' };
+    const expected = dialByCountry[schemaCountryOf(d)];
+    if (expected) {
+      const foreign = Object.entries(dialByCountry)
+        .filter(([, code]) => code !== expected && html.includes(code + ' '))
+        .map(([, code]) => code);
+      if (foreign.length) warn('R12-render', `Чужие телефонные коды на странице: ${[...new Set(foreign)].join(', ')} (ожидался ${expected})`);
+    }
+  } catch (e) {
+    warn('R12-render', 'Не удалось отрендерить страницу для проверки: ' + e.message);
+  }
+
   return out;
+}
+
+// Страна проекта: явный country_code, иначе по валюте
+function schemaCountryOf(d) {
+  if (d.country_code) return d.country_code;
+  return { THB: 'TH', OMR: 'OM', AED: 'AE', SAR: 'SA', QAR: 'QA', BHD: 'BH', KWD: 'KW' }[d.currency] || '';
 }
 
 // ── CLI ────────────────────────────────────────────────────────────
