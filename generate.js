@@ -1588,7 +1588,9 @@ function prepareTemplateData(data, langs) {
       ? buildSeoLinks(d._site)
       : (d.canonical_url ? '<link rel="canonical" href="' + esc(d.canonical_url) + '">' : '')),
     schema_json: JSON.stringify(buildSchemaObjects(d, langs), null, 2),
-    font_import: '<link rel="preconnect" href="https://fonts.googleapis.com">\n  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <link href="' + esc(fontImport) + '" rel="stylesheet">',
+    // Шрифты грузим не блокируя отрисовку: текст появляется сразу системным
+    // начертанием и подменяется, когда веб-шрифт доедет (display=swap).
+    font_import: '<link rel="preconnect" href="https://fonts.googleapis.com">\n  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <link rel="preload" as="style" href="' + esc(fontImport) + '">\n  <link rel="stylesheet" href="' + esc(fontImport) + '" media="print" onload="this.media=\'all\';this.onload=null">\n  <noscript><link rel="stylesheet" href="' + esc(fontImport) + '"></noscript>',
 
     // Project
     project_name: d.project_name || '',
@@ -2113,6 +2115,52 @@ function absolutizeAssetPaths(html) {
   return html.replace(/(src="|href="|srcset="|url\('|url\("|url\()images\//g, '$1/images/');
 }
 
+// ── Responsive WebP ────────────────────────────────────────────────
+// First paint is dominated by photo weight, so every <img> and every CSS
+// background is rewritten to the WebP variants built by optimize-images.js.
+// A phone then pulls the 800px file (~66KB) instead of the source JPEG (~714KB).
+function imageVariants(slug) {
+  var dir = path.join(__dirname, 'data', slug || '', 'images');
+  var files = {};
+  try { fs.readdirSync(dir).forEach(function(f) { files[f] = true; }); } catch (e) { /* no images yet */ }
+  return files;
+}
+
+function applyResponsiveImages(html, slug) {
+  var have = imageVariants(slug);
+  if (!Object.keys(have).length) return html;
+  var hasFile = function(n) { return !!have[n]; };
+
+  // <img src="…/images/hero.jpg"> → webp + srcset
+  html = html.replace(/<img([^>]*?)src="([^"]*?images\/)([^"\/]+?)\.(jpe?g|png)"([^>]*?)>/gi,
+    function(m, pre, prefix, base, ext, post) {
+      if (!hasFile(base + '.webp')) return m;
+      if (/srcset=/i.test(m)) return m;
+      var srcset = [];
+      [800, 1280].forEach(function(w) {
+        if (hasFile(base + '-' + w + '.webp')) srcset.push(prefix + base + '-' + w + '.webp ' + w + 'w');
+      });
+      srcset.push(prefix + base + '.webp 1920w');
+      var sizes = ' sizes="(max-width:760px) 100vw, (max-width:1280px) 90vw, 1200px"';
+      return '<img' + pre + 'src="' + prefix + base + '.webp" srcset="' + srcset.join(', ') + '"' + sizes + post + '>';
+    });
+
+  // CSS background: url(…/images/hero.jpg) → webp (fallback keeps the JPEG)
+  html = html.replace(/url\((["']?)([^"')]*?images\/)([^"')\/]+?)\.(jpe?g|png)\1\)/gi,
+    function(m, q, prefix, base, ext) {
+      if (!hasFile(base + '.webp')) return m;
+      return 'image-set(url(' + q + prefix + base + '.webp' + q + ') type("image/webp"), url(' + q + prefix + base + '.' + ext + q + ') type("image/' + (ext.toLowerCase() === 'png' ? 'png' : 'jpeg') + '"))';
+    });
+
+  // Preload the hero so it starts downloading with the HTML, not after CSS parse
+  var heroMatch = html.match(/(?:image-set\(url\(|url\()["']?([^"')]*images\/hero(?:-\d+)?\.webp)/i);
+  if (heroMatch) {
+    html = html.replace('</head>',
+      '  <link rel="preload" as="image" href="' + heroMatch[1] + '" fetchpriority="high">\n</head>');
+  }
+  return html;
+}
+
 function generateSite(data) {
   var langs = data.languages && data.languages.length ? data.languages : ['en'];
   var defaultLang = langs[0];
@@ -2125,7 +2173,7 @@ function generateSite(data) {
       canonical_url: origin ? origin + sub : (data.canonical_url || ''),
       _site: { origin: origin, langs: langs, defaultLang: defaultLang, current: l, path: sub }
     });
-    files[sub + 'index.html'] = absolutizeAssetPaths(generateHTML(single));
+    files[sub + 'index.html'] = applyResponsiveImages(absolutizeAssetPaths(generateHTML(single)), data.project_slug);
   });
   if (origin) {
     files['sitemap.xml'] = buildSitemap(origin, langs, defaultLang);

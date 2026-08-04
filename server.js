@@ -8,6 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const { generateHTML, generateSite, TEMPLATES, getFileTemplates, hasTemplateFiles } = require('./generate.js');
 const { runQA } = require('./qa-check.js');
+const { optimizeFile } = require('./optimize-images.js');
 const { deploy } = require('./deploy.js');
 
 const PORT = process.env.PORT || 3333;
@@ -468,8 +469,15 @@ const server = http.createServer(async (req, res) => {
       const imgDir = path.join(__dirname, 'data', slug, 'images');
       fs.mkdirSync(imgDir, { recursive: true });
       fs.writeFileSync(path.join(imgDir, safe), Buffer.from(data, 'base64'));
+      // Build responsive WebP right away so no landing can ship a raw JPEG
+      let variants = 0;
+      try {
+        const sharp = require('sharp');
+        const made = await optimizeFile(sharp, imgDir, safe);
+        variants = made.length;
+      } catch(e) { /* sharp missing or unsupported format — original still serves */ }
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: true, path: `images/${safe}` }));
+      res.end(JSON.stringify({ ok: true, path: `images/${safe}`, variants }));
     } catch(e) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: e.message }));
