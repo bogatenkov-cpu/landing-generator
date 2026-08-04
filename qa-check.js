@@ -99,7 +99,9 @@ function runQA(d, baseDir) {
   // R6. Layouts: у всех есть картинка или ни у одной (никаких вперемешку)
   const layoutImgs = (d.layouts || []).map(l => !!l.image);
   if (layoutImgs.some(Boolean) && !layoutImgs.every(Boolean)) {
-    err('R6-uniform', 'Картинки планировок вперемешку: либо у всех, либо ни у одной');
+    // планировки показываются в табах по одной, поэтому пропуск не ломает вид —
+    // это пробел в данных (нет плана от застройщика), а не дефект вёрстки
+    warn('R6-uniform', `План есть не у всех типов (${layoutImgs.filter(Boolean).length}/${layoutImgs.length}) — запросите недостающие у застройщика`);
   }
   // R6b. Amenities: то же правило
   const amenityImgs = (d.amenities && d.amenities.items || []).map(it => !!it.image);
