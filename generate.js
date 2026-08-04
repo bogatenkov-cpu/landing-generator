@@ -1652,6 +1652,40 @@ function prepareTemplateData(data, langs) {
     location_text: d.location && d.location.description || '',
     location_distances: locationDistances,
     map_embed: d.location && d.location.map_embed || '',
+    // Visual next to the distance list: a real map embed if given, otherwise
+    // a location photo. Never an empty frame.
+    location_visual: (function() {
+      var embed = d.location && d.location.map_embed;
+      if (embed) {
+        return '<div class="location__map"><iframe src="' + esc(embed) + '" allowfullscreen loading="lazy" ' +
+          'referrerpolicy="no-referrer-when-downgrade" title="' + tAttr(d.project_name, langs) + '"></iframe></div>';
+      }
+      var img = d.location && d.location.image;
+      if (img) {
+        return '<div class="location__photo"><img src="' + esc(img) + '" alt="' +
+          tAttr(d.location && d.location.title || d.project_name, langs) + '" loading="lazy" width="900" height="700"></div>';
+      }
+      return '';
+    })(),
+    // Sales contact card — a named person converts better than a bare phone number
+    manager_card: (function() {
+      var mgr = (d.contact && d.contact.manager) || null;
+      if (!mgr || !(mgr.name || mgr.photo)) return '';
+      var name = tAttr(mgr.name || '', langs);
+      var role = mgr.role ? t(mgr.role, langs) : '';
+      var initials = name.split(/\s+/).map(function(w) { return w.charAt(0); }).join('').slice(0, 2).toUpperCase();
+      var avatar = mgr.photo
+        ? '<img class="mgr__photo" src="' + esc(mgr.photo) + '" alt="' + name + '" loading="lazy" width="120" height="120">'
+        : '<div class="mgr__photo mgr__photo--initials">' + esc(initials) + '</div>';
+      var mPhone = mgr.phone || (d.contact && d.contact.phone) || '';
+      var mWa = (mgr.whatsapp || (d.contact && d.contact.whatsapp) || mPhone || '').replace(/[^\d]/g, '');
+      var links = '';
+      if (mPhone) links += '<a class="mgr__btn" href="tel:' + esc(mPhone.replace(/[^\d+]/g, '')) + '">' + esc(mPhone) + '</a>';
+      if (mWa) links += '<a class="mgr__btn mgr__btn--wa" href="https://wa.me/' + mWa + '" target="_blank" rel="noopener">WhatsApp</a>';
+      return '<div class="mgr">' + avatar + '<div class="mgr__info"><div class="mgr__name">' + name + '</div>' +
+        (role ? '<div class="mgr__role">' + role + '</div>' : '') +
+        '<div class="mgr__links">' + links + '</div></div></div>';
+    })(),
 
     // Contact
     phone: phone,
@@ -1916,10 +1950,50 @@ function generateFromTemplate(data) {
   imgOverrides.push('.floorplans__visual{max-height:480px}');
   imgOverrides.push('.floorplans__visual img{width:100%;height:100%;object-fit:cover}');
   imgOverrides.push('.developer__logo-box{max-height:460px}');
+
+  // ── Layout discipline: a section should read as roughly one screen ──
+  imgOverrides.push(
+    // Location: photo instead of a map embed
+    '.location__photo{border-radius:14px;overflow:hidden;max-height:460px}',
+    '.location__photo img{width:100%;height:100%;max-height:460px;object-fit:cover;display:block}',
+    // Developer: long copy sits in a card and never outgrows the portrait
+    '.developer__grid{align-items:center}',
+    '.developer__grid > *:not(.developer__logo-box){max-height:460px;overflow:auto;padding:28px 30px;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(255,255,255,.04)}',
+    '.section--light .developer__grid > *:not(.developer__logo-box){border-color:rgba(0,0,0,.10);background:rgba(0,0,0,.02)}',
+    // Investment: value cards in two columns instead of one tall stack
+    '@media (min-width:900px){.investment__highlights{display:grid!important;grid-template-columns:1fr 1fr;gap:16px;align-content:start}}',
+    // Amenities: 3 across on wide screens keeps the section near one screen
+    '@media (min-width:1100px){.amenities__grid{grid-template-columns:repeat(3,1fr)!important}}',
+    // Contact must not bleed into the footer
+    '.cta-section{border-bottom:1px solid rgba(255,255,255,.12)}',
+    'footer.footer{border-top:1px solid rgba(255,255,255,.12)}',
+    // Sales manager card
+    '.mgr{display:flex;gap:18px;align-items:center;margin-top:26px;padding:18px 20px;border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(255,255,255,.05)}',
+    '.section--light .mgr,.mgr--light{border-color:rgba(0,0,0,.10);background:rgba(0,0,0,.03)}',
+    '.mgr__photo{width:84px;height:84px;border-radius:50%;object-fit:cover;flex:0 0 84px}',
+    '.mgr__photo--initials{display:flex;align-items:center;justify-content:center;background:var(--color-accent,#c9a96e);color:#fff;font-size:26px;font-weight:600;letter-spacing:.04em}',
+    '.mgr__name{font-size:18px;font-weight:600;margin-bottom:2px}',
+    '.mgr__role{font-size:13px;opacity:.7;margin-bottom:10px}',
+    '.mgr__links{display:flex;gap:10px;flex-wrap:wrap}',
+    '.mgr__btn{display:inline-flex;align-items:center;padding:8px 16px;border-radius:100px;border:1px solid currentColor;font-size:13px;text-decoration:none;color:inherit}',
+    '.mgr__btn--wa{background:#25D366;border-color:#25D366;color:#fff}',
+    // ── Gallery as a one-photo slider (works for any number of shots) ──
+    '.gallery__grid{display:flex!important;grid-template-columns:none!important;gap:0;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;border-radius:14px}',
+    '.gallery__grid::-webkit-scrollbar{display:none}',
+    // aspect-ratio from the grid layout would keep a 4:3 box around the photo
+    '.gallery__grid > *{flex:0 0 100%!important;width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:auto!important;scroll-snap-align:center;grid-column:auto!important;grid-row:auto!important;border-radius:0}',
+    '.gallery__grid > * img{width:100%;height:min(66vh,600px);object-fit:cover;display:block}',
+    '.gal-wrap{position:relative}',
+    '.gal-nav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:none;background:rgba(0,0,0,.45);color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;transition:background .2s}',
+    '.gal-nav:hover{background:rgba(0,0,0,.7)}',
+    '.gal-nav--prev{left:14px}.gal-nav--next{right:14px}',
+    '.gal-count{position:absolute;bottom:14px;right:16px;z-index:3;background:rgba(0,0,0,.55);color:#fff;font-size:13px;padding:5px 12px;border-radius:100px;letter-spacing:.04em}',
+    '@media (max-width:700px){.gal-nav{width:38px;height:38px;font-size:18px}}'
+  );
   globalFixCSS += '\n    ' + imgOverrides.join('\n    ');
   tplData.inline_css = css + revealFix + globalFixCSS + (tplData.lang_css ? '\n    ' + tplData.lang_css : '');
   var hideEmptyJS = '\n    // Hide empty sections\n    document.querySelectorAll(".floor-plan__grid, .faq__list, .amenities__grid, .investment__table-wrap").forEach(function(el) {\n      if (!el.children.length || !el.innerHTML.trim()) {\n        var section = el.closest("section") || el.closest(".section");\n        if (section) section.style.display = "none";\n      }\n    });' +
-    '\n    // Graceful no-image state: hide empty imgs, collapse their wrappers and 2-col grids\n    document.querySelectorAll("img").forEach(function(im) {\n      if (im.getAttribute("src")) return;\n      im.style.display = "none";\n      var wrap = im.closest("[class*=\\"__image\\"],[class*=\\"__media\\"],[class*=\\"__photo\\"]") || im.parentElement;\n      if (wrap && wrap !== document.body && wrap.children.length === 1) {\n        wrap.style.display = "none";\n        var parent = wrap.parentElement;\n        if (parent && getComputedStyle(parent).display === "grid") parent.style.gridTemplateColumns = "1fr";\n      }\n    });\n    // Floor plan panels without an image: stack to a single column\n    document.querySelectorAll(".floorplans__panel, .floor-plan__card").forEach(function(p) {\n      var im = p.querySelector("img");\n      if (im && !im.getAttribute("src")) {\n        if (getComputedStyle(p).display === "grid") p.style.gridTemplateColumns = "1fr";\n      }\n    });\n    // Gallery sections with no real images: hide entirely until photos are added\n    document.querySelectorAll("section, .section").forEach(function(sec) {\n      if (!/gallery/i.test(sec.className || "")) return;\n      var real = Array.prototype.filter.call(sec.querySelectorAll("img"), function(im) { return im.getAttribute("src"); });\n      if (!real.length) sec.style.display = "none";\n    });\n    // Empty badges/labels and buttons render as styled husks — hide them\n    document.querySelectorAll("[class*=\\"__badge\\"], [class*=\\"__label\\"], [class*=\\"__accent\\"]").forEach(function(el) {\n      if (!el.textContent.trim() && !el.children.length) el.style.display = "none";\n    });\n    document.querySelectorAll("button, a[class*=\\"btn\\"]").forEach(function(el) {\n      if (!el.textContent.trim() && !el.querySelector("img,svg")) el.style.display = "none";\n    });\n    // Map containers without a real embed: an <iframe src=""> still counts as\n    // empty, so drop it first, then hide the box\n    document.querySelectorAll("iframe").forEach(function(f) { if (!f.getAttribute("src")) f.remove(); });\n    document.querySelectorAll("[class*=\\"__map\\"], [class*=\\"map-\\"]").forEach(function(el) {\n      if (!el.querySelector("iframe,img") && !el.textContent.trim()) el.style.display = "none";\n    });\n    // After hiding things, collapse multi-column grids that are left with a\n    // single visible child — otherwise the removed block leaves dead space\n    document.querySelectorAll("*").forEach(function(el) {\n      var cs = getComputedStyle(el);\n      if (cs.display !== "grid") return;\n      var cols = (cs.gridTemplateColumns || "").split(" ").filter(Boolean);\n      if (cols.length < 2) return;\n      var shown = Array.prototype.filter.call(el.children, function(c) {\n        return getComputedStyle(c).display !== "none" && c.offsetHeight > 0;\n      });\n      if (shown.length === 1) el.style.gridTemplateColumns = "1fr";\n    });\n    // Never show a background photo behind a real <img> — that renders the\n    // same shot twice (template stock CSS + project image)\n    document.querySelectorAll("img[src]").forEach(function(im) {\n      if (!im.getAttribute("src")) return;\n      var box = im.parentElement;\n      for (var i = 0; box && i < 2; i++, box = box.parentElement) {\n        var bg = getComputedStyle(box).backgroundImage;\n        if (bg && bg !== "none" && bg.indexOf("url(") === 0) { box.style.backgroundImage = "none"; break; }\n      }\n    });';
+    '\n    // Graceful no-image state: hide empty imgs, collapse their wrappers and 2-col grids\n    document.querySelectorAll("img").forEach(function(im) {\n      if (im.getAttribute("src")) return;\n      im.style.display = "none";\n      var wrap = im.closest("[class*=\\"__image\\"],[class*=\\"__media\\"],[class*=\\"__photo\\"]") || im.parentElement;\n      if (wrap && wrap !== document.body && wrap.children.length === 1) {\n        wrap.style.display = "none";\n        var parent = wrap.parentElement;\n        if (parent && getComputedStyle(parent).display === "grid") parent.style.gridTemplateColumns = "1fr";\n      }\n    });\n    // Floor plan panels without an image: stack to a single column\n    document.querySelectorAll(".floorplans__panel, .floor-plan__card").forEach(function(p) {\n      var im = p.querySelector("img");\n      if (im && !im.getAttribute("src")) {\n        if (getComputedStyle(p).display === "grid") p.style.gridTemplateColumns = "1fr";\n      }\n    });\n    // Gallery sections with no real images: hide entirely until photos are added\n    document.querySelectorAll("section, .section").forEach(function(sec) {\n      if (!/gallery/i.test(sec.className || "")) return;\n      var real = Array.prototype.filter.call(sec.querySelectorAll("img"), function(im) { return im.getAttribute("src"); });\n      if (!real.length) sec.style.display = "none";\n    });\n    // Empty badges/labels and buttons render as styled husks — hide them\n    document.querySelectorAll("[class*=\\"__badge\\"], [class*=\\"__label\\"], [class*=\\"__accent\\"]").forEach(function(el) {\n      if (!el.textContent.trim() && !el.children.length) el.style.display = "none";\n    });\n    document.querySelectorAll("button, a[class*=\\"btn\\"]").forEach(function(el) {\n      if (!el.textContent.trim() && !el.querySelector("img,svg")) el.style.display = "none";\n    });\n    // Map containers without a real embed: an <iframe src=""> still counts as\n    // empty, so drop it first, then hide the box\n    document.querySelectorAll("iframe").forEach(function(f) { if (!f.getAttribute("src")) f.remove(); });\n    document.querySelectorAll("[class*=\\"__map\\"], [class*=\\"map-\\"]").forEach(function(el) {\n      if (!el.querySelector("iframe,img") && !el.textContent.trim()) el.style.display = "none";\n    });\n    // Gallery → one-photo slider with arrows and a counter. Photo count varies\n    // per project, so the control is built from whatever items exist.\n    (function() {\n      var grid = document.querySelector(".gallery__grid, .gallery__justified, .gallery__masonry");\n      if (!grid) return;\n      var items = Array.prototype.filter.call(grid.children, function(c) { return c.querySelector("img[src]"); });\n      if (items.length < 2) return;\n      var wrap = document.createElement("div");\n      wrap.className = "gal-wrap";\n      grid.parentNode.insertBefore(wrap, grid);\n      wrap.appendChild(grid);\n      var prev = document.createElement("button");\n      prev.className = "gal-nav gal-nav--prev"; prev.type = "button";\n      prev.setAttribute("aria-label", "Previous"); prev.innerHTML = "\\u2039";\n      var next = document.createElement("button");\n      next.className = "gal-nav gal-nav--next"; next.type = "button";\n      next.setAttribute("aria-label", "Next"); next.innerHTML = "\\u203A";\n      var count = document.createElement("div");\n      count.className = "gal-count";\n      wrap.appendChild(prev); wrap.appendChild(next); wrap.appendChild(count);\n      var idx = 0;\n      function render() {\n        count.textContent = (idx + 1) + " / " + items.length;\n        prev.style.opacity = idx === 0 ? ".35" : "1";\n        next.style.opacity = idx === items.length - 1 ? ".35" : "1";\n      }\n      function go(i) {\n        idx = Math.max(0, Math.min(items.length - 1, i));\n        grid.scrollTo({ left: items[idx].offsetLeft - grid.offsetLeft, behavior: "smooth" });\n        render();\n      }\n      prev.addEventListener("click", function() { go(idx - 1); });\n      next.addEventListener("click", function() { go(idx + 1); });\n      grid.addEventListener("scroll", function() {\n        var n = Math.round(grid.scrollLeft / grid.clientWidth);\n        if (n !== idx) { idx = Math.max(0, Math.min(items.length - 1, n)); render(); }\n      }, { passive: true });\n      render();\n    })();\n    // After hiding things, collapse multi-column grids that are left with a\n    // single visible child — otherwise the removed block leaves dead space\n    document.querySelectorAll("*").forEach(function(el) {\n      var cs = getComputedStyle(el);\n      if (cs.display !== "grid") return;\n      var cols = (cs.gridTemplateColumns || "").split(" ").filter(Boolean);\n      if (cols.length < 2) return;\n      var shown = Array.prototype.filter.call(el.children, function(c) {\n        return getComputedStyle(c).display !== "none" && c.offsetHeight > 0;\n      });\n      if (shown.length === 1) el.style.gridTemplateColumns = "1fr";\n    });\n    // Never show a background photo behind a real <img> — that renders the\n    // same shot twice (template stock CSS + project image)\n    document.querySelectorAll("img[src]").forEach(function(im) {\n      if (!im.getAttribute("src")) return;\n      var box = im.parentElement;\n      for (var i = 0; box && i < 2; i++, box = box.parentElement) {\n        var bg = getComputedStyle(box).backgroundImage;\n        if (bg && bg !== "none" && bg.indexOf("url(") === 0) { box.style.backgroundImage = "none"; break; }\n      }\n    });';
   tplData.inline_js = js + (tplData.lang_js || '') + hideEmptyJS;
 
   // Render template

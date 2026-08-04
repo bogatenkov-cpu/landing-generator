@@ -163,9 +163,7 @@
           </div>
           {{/location_distances}}
         </div>
-        <div class="location__map">
-          <iframe src="{{=map_embed}}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="{{=map_title}}"></iframe>
-        </div>
+        {{{location_visual}}}
       </div>
     </div>
   </section>
@@ -366,6 +364,7 @@
               {{=email}}
             </a>
           </div>
+          {{{manager_card}}}
         </div>
         <div class="reveal reveal--right">
           <form class="form" id="contactForm" novalidate>

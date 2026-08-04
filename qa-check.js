@@ -180,6 +180,29 @@ function runQA(d, baseDir) {
         .map(([, code]) => code);
       if (foreign.length) warn('R12-render', `Чужие телефонные коды на странице: ${[...new Set(foreign)].join(', ')} (ожидался ${expected})`);
     }
+    // R13. Секция ≈ один экран. Точную высоту без браузера не измерить,
+    // но перегруз контентом виден по объёму: считаем «вес» секции.
+    const SECTION_BUDGET = { concept: 900, location: 900, amenities: 1300, investment: 1200, developer: 800, faq: 2600 };
+    Object.entries(SECTION_BUDGET).forEach(([id, budget]) => {
+      const m = new RegExp('<section[^>]*id="' + id + '"[\\s\\S]*?</section>').exec(html);
+      if (!m) return;
+      const text = m[0].replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+      // грубая оценка объёма; у FAQ ответы свёрнуты в аккордеон, поэтому бюджет выше
+      if (text.length > budget) {
+        warn('R13-height', `Секция «${id}» перегружена текстом (${text.length} симв. при бюджете ${budget}) — вероятно, вылезет за один экран`);
+      }
+    });
+
+    // R14. Галерея должна быть слайдером (>3 фото в сетке растянут страницу)
+    const galCount = (d.gallery && d.gallery.images || []).filter(Boolean).length;
+    if (galCount > 3 && !html.includes('gal-wrap') && !html.includes('gal-nav')) {
+      warn('R14-gallery', `${galCount} фото в галерее без слайдера — секция растянется`);
+    }
+
+    // R15. Карточка менеджера в контактах
+    if (!(d.contact && d.contact.manager && (d.contact.manager.name || d.contact.manager.photo))) {
+      warn('R15-manager', 'Нет карточки менеджера в контактах (contact.manager) — форма без живого человека конвертит хуже');
+    }
   } catch (e) {
     warn('R12-render', 'Не удалось отрендерить страницу для проверки: ' + e.message);
   }
