@@ -1172,43 +1172,55 @@ function getFileTemplates() {
 function renderTemplateEngine(template, data, langs) {
   // Recursive render function that supports nested {{#blocks}}
   function renderBlock(html, ctx) {
-    // 1. Process loops: {{#key}}...{{/key}} — supports nesting
-    var changed = true;
-    var maxPasses = 10;
-    while (changed && maxPasses-- > 0) {
-      changed = false;
-      // Match innermost {{#key}}...{{/key}} (no nested # blocks inside)
-      html = html.replace(/\{\{#(\w+)\}\}((?:(?!\{\{#)[\s\S])*?)\{\{\/\1\}\}/g, function(match, key, body) {
-        changed = true;
-        var arr = ctx[key];
-        // Conditional block: if value is truthy but not array, render once
-        if (arr && !Array.isArray(arr)) return body;
-        if (!Array.isArray(arr) || !arr.length) return '';
-        return arr.map(function(item, i) {
-          var itemHtml = body;
-          // Replace {{{field}}} raw HTML inside loop — supports multilang objects
-          itemHtml = itemHtml.replace(/\{\{\{(\w+)\}\}\}/g, function(m, k) {
-            var v = item[k] != null ? item[k] : (ctx[k] != null ? ctx[k] : '');
-            if (typeof v === 'object' && !Array.isArray(v)) return tHtml(v, langs);
-            return String(v);
-          });
-          // Replace {{=field}} attribute-safe inside loop
-          itemHtml = itemHtml.replace(/\{\{=(\w+)\}\}/g, function(m, k) {
-            if (k === '_index') return String(i);
-            var v = item[k] != null ? item[k] : ctx[k];
-            return tAttr(v, langs);
-          });
-          // Replace {{field}} with multi-lang text inside loop — check item first, fall back to parent ctx
-          itemHtml = itemHtml.replace(/\{\{(\w+)\}\}/g, function(m, k) {
-            if (k === '_index') return String(i);
-            if (k === '_num') return String(i + 1);
-            var v = item[k] != null ? item[k] : ctx[k];
-            return t(v || '', langs);
-          });
-          return itemHtml;
-        }).join('');
-      });
-    }
+    // 1. Loops: {{#key}}...{{/key}}, processed OUTERMOST first.
+    // Matching the innermost block first would resolve a nested {{#specs}}
+    // against the page context (where it doesn't exist) and blank it out
+    // before the parent {{#floorplans}} ever ran.
+    html = (function expandLoops(src, context) {
+      var out = '';
+      var pos = 0;
+      var open = /\{\{#(\w+)\}\}/g;
+      var m;
+      open.lastIndex = 0;
+      while ((m = open.exec(src))) {
+        var key = m[1];
+        var bodyStart = m.index + m[0].length;
+        // walk forward to the matching {{/key}}, honouring nested blocks
+        var depth = 1, scan = bodyStart, bodyEnd = -1, closeEnd = -1;
+        var token = /\{\{([#\/])(\w+)\}\}/g;
+        token.lastIndex = bodyStart;
+        var t2;
+        while ((t2 = token.exec(src))) {
+          if (t2[2] !== key) continue;
+          depth += t2[1] === '#' ? 1 : -1;
+          if (depth === 0) { bodyEnd = t2.index; closeEnd = t2.index + t2[0].length; break; }
+        }
+        if (bodyEnd === -1) break; // unbalanced tag — leave the rest as-is
+        out += src.slice(pos, m.index);
+        var body = src.slice(bodyStart, bodyEnd);
+        var arr = context[key];
+        if (arr && !Array.isArray(arr)) {
+          // truthy non-array acts as a conditional block
+          out += expandLoops(body, context);
+        } else if (Array.isArray(arr) && arr.length) {
+          out += arr.map(function(item, i) {
+            // item context inherits from the parent so shared fields still resolve
+            var scope = Object.create(context);
+            if (item && typeof item === 'object' && !Array.isArray(item)) {
+              Object.keys(item).forEach(function(k) { scope[k] = item[k]; });
+            } else {
+              scope['.'] = item;
+            }
+            scope._index = String(i);
+            scope._num = String(i + 1);
+            return renderBlock(expandLoops(body, scope), scope);
+          }).join('');
+        }
+        pos = closeEnd;
+        open.lastIndex = closeEnd;
+      }
+      return out + src.slice(pos);
+    })(html, ctx);
 
     // 2. Raw HTML: {{{key}}} — supports multilang objects
     html = html.replace(/\{\{\{(\w+)\}\}\}/g, function(m, key) {
@@ -1572,9 +1584,9 @@ function prepareTemplateData(data, langs) {
     og_image: d.og_image || (d.hero && d.hero.image) || '',
     page_lang: defaultLang,
     og_locale: OG_LOCALES[defaultLang] || 'en_US',
-    seo_links: d._site && d._site.origin
+    seo_links: robotsMeta(d) + (d._site && d._site.origin
       ? buildSeoLinks(d._site)
-      : (d.canonical_url ? '<link rel="canonical" href="' + esc(d.canonical_url) + '">' : ''),
+      : (d.canonical_url ? '<link rel="canonical" href="' + esc(d.canonical_url) + '">' : '')),
     schema_json: JSON.stringify(buildSchemaObjects(d, langs), null, 2),
     font_import: '<link rel="preconnect" href="https://fonts.googleapis.com">\n  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <link href="' + esc(fontImport) + '" rel="stylesheet">',
 
@@ -1720,6 +1732,10 @@ function prepareTemplateData(data, langs) {
     investment_label: {en: 'Returns', ru: 'Доходность'},
     investment_disclaimer: (d.roi && d.roi.disclaimer) || {en: '* Projected figures based on current market trends. Actual returns may vary.', ru: '* Прогнозные данные на основе текущих рыночных тенденций. Фактическая доходность может отличаться.'},
     investment_highlights: investmentHighlights,
+    // Short trust bullets next to the closing CTA (asi-village and friends)
+    cta_highlights: ((d.catalogue && d.catalogue.tags) || []).slice(0, 4).map(function(tag, i) {
+      return { text: tag, icon: invIcons[i % invIcons.length], _reveal_delay: i > 0 ? 'reveal--delay-' + i : '' };
+    }),
     leadmagnet_label: {en: 'Free Download', ru: 'Бесплатная загрузка'},
     leadmagnet_submit: {en: 'Download Catalog', ru: 'Скачать каталог'},
     gallery_label: {en: 'Visual Tour', ru: 'Визуальный тур'},
@@ -1967,7 +1983,15 @@ function generateFromTemplate(data) {
     '.amenities__card-img{height:150px!important}',
     // Contact must not bleed into the footer
     '.cta-section{border-bottom:1px solid rgba(255,255,255,.12)}',
-    'footer.footer{border-top:1px solid rgba(255,255,255,.12)}',
+    // Footer is a closing note, not a section: tighter padding and type
+    'footer.footer{border-top:1px solid rgba(255,255,255,.12);padding:44px 0 22px!important}',
+    'footer.footer .footer__grid{gap:28px 40px!important;padding-bottom:24px!important}',
+    'footer.footer .footer__grid > *{max-height:200px}',
+    'footer.footer .footer__brand-name{font-size:20px!important;margin-bottom:8px!important}',
+    'footer.footer .footer__brand-text{font-size:13px!important;line-height:1.5!important;max-width:34ch}',
+    'footer.footer .footer__col-title{font-size:12px!important;margin-bottom:10px!important}',
+    'footer.footer .footer__link,footer.footer .footer__contact{font-size:13px!important;line-height:1.9!important}',
+    'footer.footer .footer__bottom{padding-top:16px!important;font-size:12px!important}',
     // Sales manager card
     '.mgr{display:flex;gap:18px;align-items:center;margin-top:26px;padding:18px 20px;border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(255,255,255,.05)}',
     '.section--light .mgr,.mgr--light{border-color:rgba(0,0,0,.10);background:rgba(0,0,0,.03)}',
@@ -2036,6 +2060,14 @@ function langPath(lang, defaultLang) {
   return lang === defaultLang ? '' : lang + '/';
 }
 
+// Draft landings are published for review only — they must never be indexed
+function isDraft(data) {
+  return String(data && data.status || '').toLowerCase() === 'draft';
+}
+function robotsMeta(data) {
+  return isDraft(data) ? '<meta name="robots" content="noindex,nofollow">\n  ' : '';
+}
+
 // Canonical + hreflang link tags for one page
 function buildSeoLinks(site) {
   if (!site.origin) return '';
@@ -2080,9 +2112,11 @@ function generateSite(data) {
   });
   if (origin) {
     files['sitemap.xml'] = buildSitemap(origin, langs, defaultLang);
-    files['robots.txt'] = 'User-agent: *\nAllow: /\n\nSitemap: ' + origin + 'sitemap.xml\n';
+    files['robots.txt'] = isDraft(data)
+      ? 'User-agent: *\nDisallow: /\n'
+      : 'User-agent: *\nAllow: /\n\nSitemap: ' + origin + 'sitemap.xml\n';
   } else {
-    files['robots.txt'] = 'User-agent: *\nAllow: /\n';
+    files['robots.txt'] = isDraft(data) ? 'User-agent: *\nDisallow: /\n' : 'User-agent: *\nAllow: /\n';
   }
   files['_headers'] = '/images/*\n  Cache-Control: public, max-age=31536000, immutable\n';
   return files;

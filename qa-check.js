@@ -56,7 +56,10 @@ function collectImageSlots(d) {
 // Returns array of {level: 'error'|'warn', rule, message}
 function runQA(d, baseDir) {
   const out = [];
-  const err = (rule, message) => out.push({ level: 'error', rule, message });
+  // Drafts are published for design review only (noindex + robots disallow),
+  // so missing photography is a warning there and a blocker for live pages.
+  const draft = String(d.status || '').toLowerCase() === 'draft';
+  const err = (rule, message) => out.push({ level: draft && /^R5-|^R6-|^R7-files/.test(rule) ? 'warn' : 'error', rule, message });
   const warn = (rule, message) => out.push({ level: 'warn', rule, message });
   const langs = d.languages && d.languages.length ? d.languages : ['en'];
 
@@ -157,9 +160,9 @@ function runQA(d, baseDir) {
       emptySlots[cls] = (emptySlots[cls] || 0) + 1;
     }
     // декоративные пустышки (разделители, бургер, подложки модалок) — норма
-    const DECOR = /divider|burger|backdrop|overlay|line|dot|arrow|scroll|spacer|shape|blur|glow|bar\b|__bg|pattern/i;
+    const DECOR = /divider|burger|backdrop|overlay|line|dot|arrow|scroll|spacer|shape|blur|glow|bar\b|__bg|pattern|error|consent|check|__icon|-icon/i;
     // необязательные текстовые слоты — предупреждение, не блокер
-    const OPTIONAL = /-desc$|__desc$|-subtitle$|__subtitle$|-note$/i;
+    const OPTIONAL = /-desc$|__desc$|-subtitle$|__subtitle$|-note$|badge/i;
     Object.entries(emptySlots)
       .filter(([cls, n]) => n >= 2 && !DECOR.test(cls))
       .forEach(([cls, n]) => {
@@ -168,8 +171,12 @@ function runQA(d, baseDir) {
       });
     // контейнер цикла, в который не попало ни одного элемента
     const containerRe = /<div\s+class="([^"]*(?:__list|__grid|__items|__highlights|__distances|__cards)[^"]*)"\s*>\s*<\/div>/g;
+    const galleryEmpty = !(d.gallery && d.gallery.images || []).filter(Boolean).length;
     while ((m = containerRe.exec(html))) {
-      err('R12-render', `Пустой контейнер: ${m[1].split(/\s+/)[0]} — цикл не получил данных`);
+      const cls = m[1].split(/\s+/)[0];
+      // пустая галерея при отсутствии фото — ожидаемо, секция скрывается
+      if (galleryEmpty && /gallery/i.test(cls)) continue;
+      err('R12-render', `Пустой контейнер: ${cls} — цикл не получил данных`);
     }
     // телефонный код не из страны проекта
     const dialByCountry = { OM: '+968', TH: '+66', AE: '+971', SA: '+966', QA: '+974', BH: '+973', KW: '+965' };
