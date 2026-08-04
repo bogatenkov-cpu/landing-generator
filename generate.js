@@ -12,7 +12,7 @@ const path = require('path');
 const TEMPLATES = {
   default: {
     id: 'default',
-    name: 'Tranio Classic',
+    name: 'Classic',
     description: 'Teal & cream, clean and professional',
     colors: {
       cream: '#F2EDE6', 'cream-light': '#FAF8F5',
