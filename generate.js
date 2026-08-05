@@ -1348,7 +1348,9 @@ function prepareTemplateData(data, langs) {
         text: f.text || f.value || f.description || '',
         desc: f.text || f.value || f.description || '',
         icon: f.icon || defaultIcons[i % defaultIcons.length],
-        image: f.image || (d.concept && d.concept.image) || (d.hero && d.hero.image) || ''
+        // No shared fallback: pointing every card at concept.image printed
+        // the same photo four times across the section.
+        image: f.image || ''
       };
     });
   } else if (d.concept && d.concept.specs) {
@@ -1358,9 +1360,9 @@ function prepareTemplateData(data, langs) {
         text: s.value || '',
         desc: s.value || '',
         icon: defaultIcons[i % defaultIcons.length],
-        image: s.image || (d.concept && d.concept.image) || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+        image: s.image || '',
         alt: s.key || '',
-        _no_image: s.image || (d.concept && d.concept.image) ? '' : ' concept__card--no-img'
+        _no_image: s.image ? '' : ' concept__card--no-img'
       };
     });
   }
