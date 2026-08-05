@@ -2092,8 +2092,12 @@ function langPath(lang, defaultLang) {
 }
 
 // Draft landings are published for review only — they must never be indexed
+// Indexing is opt-in. A landing has to say status:"live" to be crawlable —
+// a missing field must never mean "open", or a project created without the
+// field gets indexed on its temporary <slug>.pages.dev address and the brand
+// traffic lands somewhere we later have to redirect away from.
 function isDraft(data) {
-  return String(data && data.status || '').toLowerCase() === 'draft';
+  return String(data && data.status || '').toLowerCase() !== 'live';
 }
 function robotsMeta(data) {
   return isDraft(data) ? '<meta name="robots" content="noindex,nofollow">\n  ' : '';
