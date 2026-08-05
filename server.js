@@ -434,13 +434,19 @@ const server = http.createServer(async (req, res) => {
       for (const slug of fs.readdirSync(dataDir)) {
         const imgDir = path.join(dataDir, slug, 'images');
         if (!fs.existsSync(imgDir)) continue;
+        const files = fs.readdirSync(imgDir);
+        const webp = new Set(files.filter(f => /\.webp$/i.test(f)).map(f => f.replace(/\.webp$/i, '')));
         let mb = 0, vb = 0, mc = 0, vc = 0;
-        for (const f of fs.readdirSync(imgDir)) {
+        for (const f of files) {
           const p = path.join(imgDir, f);
           let size = 0;
           try { size = fs.statSync(p).size; } catch (e) { continue; }
-          if (/\.webp$/i.test(f)) { vb += size; vc++; }
-          else { mb += size; mc++; doomed.push(p); }
+          if (/\.webp$/i.test(f)) { vb += size; vc++; continue; }
+          mb += size; mc++;
+          // Only prune a master that already has its own WebP next to it.
+          // A project with no variants (an older import) has nothing else —
+          // deleting there would destroy the only copy on the volume.
+          if (webp.has(f.replace(/\.[a-z0-9]+$/i, ''))) doomed.push(p);
         }
         masters += mc; variants += vc; mastersBytes += mb; variantsBytes += vb;
         report.push({ slug, masters: mc, mastersKB: Math.round(mb / 1024), variants: vc, variantsKB: Math.round(vb / 1024) });
@@ -452,7 +458,7 @@ const server = http.createServer(async (req, res) => {
       try { body = await parseBody(req); } catch (e) {}
       if (!body.confirm) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'pass {"confirm":true} to delete source masters', wouldRemove: masters, wouldFreeKB: Math.round(mastersBytes / 1024) }));
+        res.end(JSON.stringify({ error: 'pass {"confirm":true} to delete source masters', wouldRemove: doomed.length, wouldFreeKB: doomed.reduce((n, p) => { try { return n + Math.round(fs.statSync(p).size / 1024); } catch (e) { return n; } }, 0) }));
         return;
       }
       for (const p of doomed) {
