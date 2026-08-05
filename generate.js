@@ -1426,7 +1426,9 @@ function prepareTemplateData(data, langs) {
       tab_label: fp.tab_name || fpName,
       name: fpName,
       title: fpName,
-      image: fp.image || (d.hero && d.hero.image) || '',
+      // No hero fallback: it put the same aerial in every floor-plan tab and
+      // labelled it as a unit. Without a plan the panel now degrades to text.
+      image: fp.image || '',
       image_alt: fpName,
       alt: fpName,
       details_html: details.length ? (isAriseVibe ? details.join('') : '<ul class="floorplans__plan-details">' + details.join('') + '</ul>') : '',
@@ -2175,8 +2177,40 @@ function applyResponsiveImages(html, slug) {
   // Preload the hero so it starts downloading with the HTML, not after CSS parse
   var heroMatch = html.match(/(?:image-set\(url\(|url\()["']?([^"')]*images\/hero(?:-\d+)?\.webp)/i);
   if (heroMatch) {
-    html = html.replace('</head>',
-      '  <link rel="preload" as="image" href="' + heroMatch[1] + '" fetchpriority="high">\n</head>');
+    var heroUrl = heroMatch[1];
+    var dir = heroUrl.replace(/hero(?:-\d+)?\.webp$/i, '');
+    var small = hasFile('hero-800.webp') ? dir + 'hero-800.webp' : null;
+    var mid = hasFile('hero-1280.webp') ? dir + 'hero-1280.webp' : null;
+
+    // The hero here is a CSS background, and a background has no srcset — every
+    // viewport would pull the 1920px file (450KB where a phone needs 88KB).
+    // Point narrow screens at the smaller variants via media queries, reusing
+    // whatever selector the template actually painted the hero with.
+    if (small || mid) {
+      var sels = [];
+      var ruleRe = /([^{}]+)\{[^{}]*url\(["']?[^"')]*images\/hero\.webp[^{}]*\}/gi;
+      var rm;
+      while ((rm = ruleRe.exec(html))) {
+        var sel = rm[1].split('\n').pop().trim();
+        if (sel && sel.indexOf('@') !== 0 && sels.indexOf(sel) === -1) sels.push(sel);
+      }
+      if (sels.length) {
+        var joined = sels.join(',');
+        var rules = [];
+        if (small) rules.push('@media (max-width:760px){' + joined + '{background-image:url(' + small + ')!important}}');
+        if (mid) rules.push('@media (min-width:761px) and (max-width:1280px){' + joined + '{background-image:url(' + mid + ')!important}}');
+        html = html.replace('</head>', '  <style>' + rules.join('') + '</style>\n</head>');
+      }
+    }
+
+    // Preload must follow the same breakpoints, otherwise it races the CSS and
+    // the page fetches two different hero files.
+    var links = [];
+    if (small) links.push('<link rel="preload" as="image" href="' + small + '" media="(max-width:760px)" fetchpriority="high">');
+    if (mid) links.push('<link rel="preload" as="image" href="' + mid + '" media="(min-width:761px) and (max-width:1280px)" fetchpriority="high">');
+    links.push('<link rel="preload" as="image" href="' + heroUrl + '"' +
+      ((small || mid) ? ' media="(min-width:1281px)"' : '') + ' fetchpriority="high">');
+    html = html.replace('</head>', '  ' + links.join('\n  ') + '\n</head>');
   }
   return html;
 }
