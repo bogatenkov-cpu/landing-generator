@@ -188,6 +188,17 @@ function runQA(d, baseDir) {
       err('R16-imgsrc', `${srcless} <img> с пустым src — оберните картинку в {{#field}} в шаблоне`);
     }
 
+    // Контактов нет вообще. Генератор больше не подставляет фиктивный номер,
+    // поэтому отсутствие данных теперь молча убирает строки — и это надо
+    // видеть до публикации, а не после.
+    const hasPhone = !!(d.contact && d.contact.phone);
+    const hasEmail = !!(d.contact && d.contact.email);
+    if (!hasPhone && !hasEmail) {
+      warn('R17-contacts', 'Ни телефона, ни email — в футере и блоке контактов останется только форма');
+    } else if (!hasPhone || !hasEmail) {
+      warn('R17-contacts', `Не заполнен ${hasPhone ? 'email' : 'телефон'} в contact`);
+    }
+
     // телефонный код не из страны проекта
     const dialByCountry = { OM: '+968', TH: '+66', AE: '+971', SA: '+966', QA: '+974', BH: '+973', KW: '+965' };
     const expected = dialByCountry[schemaCountryOf(d)];

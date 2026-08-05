@@ -1315,9 +1315,12 @@ function prepareTemplateData(data, langs) {
   // Phone hints follow the project's country, not the template's origin —
   // a Thai +66 placeholder on an Oman landing reads as a copy-paste mistake
   var dial = DIAL_CODES[schemaCountry(d)] || '+';
-  var phone = d.contact && d.contact.phone || (dial + ' XX XXX XXXX');
+  // No invented contacts. A "+968 XX XXX XXXX" rendered as a live tel: link is
+  // worse than no link — a visitor taps it and reaches nothing. The dial code
+  // stays only as a form placeholder; empty values are stripped from the page.
+  var phone = d.contact && d.contact.phone || '';
   var phoneClean = phone.replace(/[^\d+]/g, '');
-  var email = d.contact && d.contact.email || ('info@' + (d.project_slug || 'project') + '.com');
+  var email = d.contact && d.contact.email || '';
   var wa = d.contact && d.contact.whatsapp || phone;
   var waClean = wa ? wa.replace(/[^\d]/g, '') : '';
   var waLink = waClean ? 'https://wa.me/' + waClean : '';
@@ -1851,7 +1854,10 @@ function prepareTemplateData(data, langs) {
     contact_lead: {en: 'Get in touch with our team for personalized assistance.', ru: 'Свяжитесь с нашей командой для персональной помощи.'},
     contact_text: d.contact && d.contact.text || '',
     contact_desc: d.contact && d.contact.description || {en: 'Leave your details and our expert will contact you shortly', ru: 'Оставьте контакты — наш эксперт свяжется с вами'},
-    contact_address: d.contact && d.contact.address || (d.location && d.location.description) || (d.location && d.location.address) || '',
+    // Address only if the project actually has one. The old fallback pasted the
+    // whole location paragraph into a one-line footer slot; truncating it just
+    // produced an ellipsis. No address is better than an invented one.
+    contact_address: (d.contact && d.contact.address) || (d.location && d.location.address) || '',
     contact_showroom: d.contact && d.contact.showroom || '',
     contact_form_title: {en: 'Send a Request', ru: 'Отправить заявку'},
     contact_form_submit: {en: 'Send Request', ru: 'Отправить заявку'},
@@ -2017,7 +2023,9 @@ function generateFromTemplate(data) {
     // Footer is a closing note, not a section: tighter padding and type
     'footer.footer{border-top:1px solid rgba(255,255,255,.12);padding:44px 0 22px!important}',
     'footer.footer .footer__grid{gap:28px 40px!important;padding-bottom:24px!important}',
-    'footer.footer .footer__grid > *{max-height:200px}',
+    // No height cap on footer columns. Clipping at a fixed height did not
+    // shorten the list — it made it spill over the divider and the copyright.
+    'footer.footer .footer__grid > *{min-width:0}',
     'footer.footer .footer__brand-name{font-size:20px!important;margin-bottom:8px!important}',
     'footer.footer .footer__brand-text{font-size:13px!important;line-height:1.5!important;max-width:34ch}',
     'footer.footer .footer__col-title{font-size:12px!important;margin-bottom:10px!important}',
@@ -2053,7 +2061,7 @@ function generateFromTemplate(data) {
   tplData.inline_js = js + (tplData.lang_js || '') + hideEmptyJS;
 
   // Render template
-  return dropEmptyImages(renderTemplateEngine(templateHtml, tplData, langs));
+  return dropEmptyContacts(dropEmptyImages(renderTemplateEngine(templateHtml, tplData, langs)));
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -2132,6 +2140,61 @@ function buildSitemap(origin, langs, defaultLang) {
 // no-photo state is correct even before CSS and JS arrive.
 function dropEmptyImages(html) {
   return html.replace(/<img\b[^>]*?\bsrc=""[^>]*>/gi, '');
+}
+
+// Contacts a project has not filled in must disappear, not render as a dead
+// link. Templates put phone/email in 22 different wrappers, so this cleans up
+// after the fact instead of asking every template to guard every field.
+function dropEmptyContacts(html) {
+  // href="tel:" / "mailto:" with nothing after the scheme — kill the whole link
+  html = html.replace(/<a\b[^>]*href="(?:tel:|mailto:|https?:\/\/wa\.me\/)"[^>]*>[\s\S]*?<\/a>/gi, '');
+  // Each pass can empty the wrapper the previous pass left behind, so repeat
+  // until nothing changes: link → row → column.
+  var before;
+  do {
+    before = html;
+    html = html.replace(/<(li|p|span|div)\b[^>]*>\s*<\/\1>/gi, '');
+    // A contact row is an icon plus a value. With the value gone the icon is
+    // left floating, so drop any row whose text content is now blank.
+    html = stripBlankBlocks(html, /contact-item|contact__detail|footer__contact\b/);
+    // A footer column left with nothing but its own heading ("Contacts" over
+    // empty space) reads as a bug — drop the column, let the grid re-flow.
+    html = stripBlankBlocks(html, /footer__col\b|footer__contacts\b|footer__links\b/, /-title\b|__title\b/);
+  } while (html !== before);
+  return html;
+}
+
+// Remove elements whose class matches and whose text content is blank.
+// Regex cannot match nested same-name tags, so walk the tag stack instead.
+// `ignoreRe` marks child classes that do not count as content — a heading does
+// not make a column non-empty.
+function stripBlankBlocks(html, classRe, ignoreRe) {
+  var openRe = /<(div|li|p)\b[^>]*class="([^"]*)"[^>]*>/gi;
+  var m;
+  while ((m = openRe.exec(html))) {
+    if (!classRe.test(m[2])) continue;
+    var tag = m[1].toLowerCase();
+    var scan = new RegExp('<(/?)' + tag + '\\b[^>]*>', 'gi');
+    scan.lastIndex = m.index + m[0].length;
+    var depth = 1, t, end = -1;
+    while ((t = scan.exec(html))) {
+      depth += t[1] ? -1 : 1;
+      if (depth === 0) { end = t.index + t[0].length; break; }
+    }
+    if (end === -1) continue;
+    var block = html.slice(m.index, end);
+    var probe = block;
+    if (ignoreRe) {
+      probe = probe.replace(/<(h[1-6]|div|span|p)\b[^>]*class="([^"]*)"[^>]*>[\s\S]*?<\/\1>/gi,
+        function(full, tag, cls) { return ignoreRe.test(cls) ? '' : full; });
+    }
+    // svg/img count as content only when something textual sits beside them
+    if (/[^\s]/.test(probe.replace(/<[^>]*>/g, ''))) continue;
+    if (/<img\b/i.test(block)) continue;
+    html = html.slice(0, m.index) + html.slice(end);
+    openRe.lastIndex = m.index;
+  }
+  return html;
 }
 
 // Subpages like /ru/ can't reference images/ relatively — make paths absolute
