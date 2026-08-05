@@ -20,6 +20,12 @@ const path = require('path');
 // Widths we ship, from the design-system media budget
 const WIDTHS = [1920, 1280, 800];
 const QUALITY = { 1920: 76, 1280: 74, 800: 72 };
+// Byte budget per width. Quality alone does not bound file size: a dense
+// aerial at q76 lands at 440KB where a calm interior lands at 140KB. Detailed
+// shots get their quality stepped down until they fit, so no single photo can
+// blow the page budget — and nobody has to hand-tune a file per landing.
+const MAX_BYTES = { 1920: 320 * 1024, 1280: 160 * 1024, 800: 90 * 1024 };
+const QUALITY_FLOOR = 58;
 // Исходники приходят и в webp/avif — их тоже надо привести к нашим
 // размерам, иначе страница сошлётся на несуществующий вариант
 const SOURCE_RE = /\.(jpe?g|png|webp|avif)$/i;
@@ -58,9 +64,15 @@ async function optimizeFile(sharp, dir, file) {
       made.push({ file: path.basename(out), width: w, bytes: fs.statSync(out).size, cached: true });
       continue;
     }
-    const buf = await sharp(src).resize(w).webp({ quality: QUALITY[w] || 74 }).toBuffer();
+    let q = QUALITY[w] || 74;
+    let buf = await sharp(src).resize(w).webp({ quality: q }).toBuffer();
+    const budget = MAX_BYTES[w];
+    while (budget && buf.length > budget && q > QUALITY_FLOOR) {
+      q = Math.max(QUALITY_FLOOR, q - 6);
+      buf = await sharp(src).resize(w).webp({ quality: q }).toBuffer();
+    }
     fs.writeFileSync(out, buf);
-    made.push({ file: path.basename(out), width: w, bytes: buf.length });
+    made.push({ file: path.basename(out), width: w, bytes: buf.length, quality: q });
   }
   return made;
 }
