@@ -419,6 +419,55 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Storage report / cleanup for the persistent volume.
+  //
+  // Only the WebP variants are ever served; the source JPEG/PNG masters are
+  // kept in the repo and re-encoded locally, so a copy on the volume is dead
+  // weight — a single 15360px master ran to 124MB and filled the disk.
+  // GET reports what is there; POST with {confirm:true} removes the masters.
+  if (url.pathname === '/api/storage' && (req.method === 'GET' || req.method === 'POST')) {
+    const dataDir = path.join(__dirname, 'data');
+    const report = [];
+    let masters = 0, variants = 0, mastersBytes = 0, variantsBytes = 0;
+    const doomed = [];
+    if (fs.existsSync(dataDir)) {
+      for (const slug of fs.readdirSync(dataDir)) {
+        const imgDir = path.join(dataDir, slug, 'images');
+        if (!fs.existsSync(imgDir)) continue;
+        let mb = 0, vb = 0, mc = 0, vc = 0;
+        for (const f of fs.readdirSync(imgDir)) {
+          const p = path.join(imgDir, f);
+          let size = 0;
+          try { size = fs.statSync(p).size; } catch (e) { continue; }
+          if (/\.webp$/i.test(f)) { vb += size; vc++; }
+          else { mb += size; mc++; doomed.push(p); }
+        }
+        masters += mc; variants += vc; mastersBytes += mb; variantsBytes += vb;
+        report.push({ slug, masters: mc, mastersKB: Math.round(mb / 1024), variants: vc, variantsKB: Math.round(vb / 1024) });
+      }
+    }
+    let removed = 0, freedKB = 0;
+    if (req.method === 'POST') {
+      let body = {};
+      try { body = await parseBody(req); } catch (e) {}
+      if (!body.confirm) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'pass {"confirm":true} to delete source masters', wouldRemove: masters, wouldFreeKB: Math.round(mastersBytes / 1024) }));
+        return;
+      }
+      for (const p of doomed) {
+        try { freedKB += Math.round(fs.statSync(p).size / 1024); fs.unlinkSync(p); removed++; } catch (e) {}
+      }
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      totals: { masters, mastersKB: Math.round(mastersBytes / 1024), variants, variantsKB: Math.round(variantsBytes / 1024) },
+      removed, freedKB,
+      projects: report.sort((a, b) => b.mastersKB - a.mastersKB)
+    }));
+    return;
+  }
+
   // List projects
   if (req.method === 'GET' && url.pathname === '/api/projects') {
     const dataDir = path.join(__dirname, 'data');
