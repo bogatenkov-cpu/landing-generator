@@ -143,9 +143,9 @@
         <div class="concept__grid">
           {{#concept_features}}
           <div class="concept__card">
-            <div class="concept__card-image">
+            {{#image}}<div class="concept__card-image">
               <img src="{{=image}}" alt="{{=title}}" width="400" height="260" loading="lazy">
-            </div>
+            </div>{{/image}}
             <h3 class="concept__card-title">{{title}}</h3>
             <p class="concept__card-text">{{text}}</p>
           </div>
@@ -170,7 +170,7 @@
           <div class="amenities__slider" id="amenities-slider">
             {{#amenities_items}}
             <div class="amenities__slide">
-              <img src="{{=image}}" alt="{{=title}}" width="600" height="400" loading="lazy">
+              {{#image}}<img src="{{=image}}" alt="{{=title}}" width="600" height="400" loading="lazy">{{/image}}
               <div class="amenities__slide-content">
                 <h3 class="amenities__slide-title">{{title}}</h3>
                 <p class="amenities__slide-text">{{text}}</p>
@@ -198,9 +198,9 @@
         <div class="floorplans__panels">
           {{#floorplans}}
           <div class="floorplans__panel{{_active_class_panel}}" id="panel-{{=id}}">
-            <div class="floorplans__plan-image">
+            {{#image}}<div class="floorplans__plan-image">
               <img src="{{=image}}" alt="{{=name}}" width="800" height="600" loading="lazy">
-            </div>
+            </div>{{/image}}
             <div class="floorplans__plan-info">
               <h3 class="floorplans__plan-name">{{name}}</h3>
               {{{details_html}}}
@@ -261,9 +261,9 @@
     <!-- Developer Section -->
     <section class="developer" id="developer">
       <div class="developer__container">
-        <div class="developer__image">
+        {{#developer_image}}<div class="developer__image">
           <img src="{{=developer_image}}" alt="{{=developer_image_alt}}" width="800" height="600" loading="lazy">
-        </div>
+        </div>{{/developer_image}}
         <div class="developer__info">
           <span class="developer__label">{{developer_label}}</span>
           <h2 class="developer__title">{{developer_title}}</h2>

@@ -138,7 +138,7 @@
                 <div class="concept__grid">
                     {{#concept_features}}
                     <div class="concept__card{{_large_class}}">
-                        <img src="{{=image}}" alt="{{=alt}}" class="concept__card-img" loading="lazy">
+                        {{#image}}<img src="{{=image}}" alt="{{=alt}}" class="concept__card-img" loading="lazy">{{/image}}
                         <div class="concept__card-content">
                             <h3 class="concept__card-title">{{title}}</h3>
                             <p class="concept__card-text">{{text}}</p>
@@ -196,11 +196,11 @@
                 <div class="floor-plan__grid">
                     {{#floorplans}}
                     <div class="floor-plan__card{{_featured_class}}">
-                        <div class="floor-plan__card-img-wrap">
+                        {{#image}}<div class="floor-plan__card-img-wrap">
                             <img src="{{=image}}" alt="{{=alt}}" class="floor-plan__card-img" loading="lazy">
-                            <span class="floor-plan__card-badge">{{badge}}</span>
+                            {{#badge}}<span class="floor-plan__card-badge">{{badge}}</span>{{/badge}}
                             {{{popular_html}}}
-                        </div>
+                        </div>{{/image}}
                         <div class="floor-plan__card-content">
                             <h3 class="floor-plan__card-title">{{name}}</h3>
                             <ul class="floor-plan__card-features">

@@ -180,6 +180,14 @@ function runQA(d, baseDir) {
       if (galleryEmpty && /gallery/i.test(cls)) continue;
       err('R12-render', `Пустой контейнер: ${cls} — цикл не получил данных`);
     }
+    // <img> без src: шаблон вставил картинку, не проверив, что она есть.
+    // Генератор такие теги вырезает, поэтому дошедший до сюда — признак того,
+    // что путь сборки обошёл dropEmptyImages.
+    const srcless = (html.match(/<img\b[^>]*\bsrc=""/gi) || []).length;
+    if (srcless) {
+      err('R16-imgsrc', `${srcless} <img> с пустым src — оберните картинку в {{#field}} в шаблоне`);
+    }
+
     // телефонный код не из страны проекта
     const dialByCountry = { OM: '+968', TH: '+66', AE: '+971', SA: '+966', QA: '+974', BH: '+973', KW: '+965' };
     const expected = dialByCountry[schemaCountryOf(d)];

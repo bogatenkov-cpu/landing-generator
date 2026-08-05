@@ -186,12 +186,12 @@
       {{#floorplans}}
       <div class="floorplans__content{{_active_class_content}}" data-content="{{=tab_id}}">
         <div class="floorplans__card">
-          <div class="floorplans__visual">
+          {{#image}}<div class="floorplans__visual">
             <img src="{{=image}}" alt="{{=title}}" loading="lazy" width="800" height="600">
-          </div>
+          </div>{{/image}}
           <div class="floorplans__info">
             <h3 class="floorplans__info-title">{{title}}</h3>
-            <p class="floorplans__info-desc">{{desc}}</p>
+            {{#desc}}<p class="floorplans__info-desc">{{desc}}</p>{{/desc}}
             <div class="floorplans__specs">
               {{{details_html}}}
             </div>

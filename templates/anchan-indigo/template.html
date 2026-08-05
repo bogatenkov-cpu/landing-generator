@@ -186,11 +186,11 @@
 
       <div class="floorplans__content">
         {{#floorplans}}
-        <div class="floorplans__plan{{_active_class_panel}}" id="plan-{{=id}}">
+        <div class="floorplans__plan{{_active_class_plan}}" id="plan-{{=id}}">
           <div class="floorplans__plan-grid">
-            <div class="floorplans__plan-image">
+            {{#image}}<div class="floorplans__plan-image">
               <img src="{{=image}}" alt="{{=name}}" loading="lazy" width="800" height="460">
-            </div>
+            </div>{{/image}}
             <div class="floorplans__plan-details">
               <h3 class="floorplans__plan-title">{{name}}</h3>
               {{{details_html}}}
@@ -213,9 +213,9 @@
       <div class="amenities__grid">
         {{#amenities_items}}
         <div class="amenities__card reveal-up">
-          <div class="amenities__card-image">
+          {{#image}}<div class="amenities__card-image">
             <img src="{{=image}}" alt="{{=title}}" loading="lazy" width="600" height="400">
-          </div>
+          </div>{{/image}}
           <div class="amenities__card-body">
             <h3 class="amenities__card-title">{{title}}</h3>
             <p class="amenities__card-text">{{text}}</p>
@@ -297,7 +297,7 @@
             {{/developer_facts}}
           </div>
         </div>
-        <div class="developer__visual reveal-right">
+        {{#developer_image}}<div class="developer__visual reveal-right">
           <div class="developer__image-wrapper">
             <img src="{{=developer_image}}" alt="{{=developer_image_alt}}" loading="lazy" width="800" height="500">
             <div class="developer__logo-overlay">
@@ -305,7 +305,7 @@
               <span class="developer__logo-sub">{{developer_logo_sub}}</span>
             </div>
           </div>
-        </div>
+        </div>{{/developer_image}}
       </div>
     </div>
   </section>

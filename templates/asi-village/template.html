@@ -159,13 +159,13 @@
       <div class="floorplan__grid">
         {{#floorplans}}
         <div class="floorplan__card reveal{{_reveal_delay_class}}">
-          <div class="floorplan__card-image">
+          {{#image}}<div class="floorplan__card-image">
             <img src="{{=image}}" alt="{{=image_alt}}" loading="lazy">
             {{#badge}}<span class="floorplan__card-badge">{{badge}}</span>{{/badge}}
-          </div>
+          </div>{{/image}}
           <div class="floorplan__card-body">
             <h3 class="floorplan__card-title">{{title}}</h3>
-            <p class="floorplan__card-subtitle">{{subtitle}}</p>
+            {{#subtitle}}<p class="floorplan__card-subtitle">{{subtitle}}</p>{{/subtitle}}
             <div class="floorplan__card-specs">
               {{#specs}}
               <div class="floorplan__card-spec">
