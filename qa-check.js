@@ -188,6 +188,21 @@ function runQA(d, baseDir) {
       err('R16-imgsrc', `${srcless} <img> с пустым src — оберните картинку в {{#field}} в шаблоне`);
     }
 
+    // Герой есть в данных, но на странице его нечем нарисовать. Ловит случай,
+    // когда очистка вёрстки удалила слой фона (.hero__bg — пустой div по
+    // замыслу): CSS с картинкой на месте, а элемента под него уже нет.
+    if (d.hero && d.hero.image) {
+      const heroFile = String(d.hero.image).split('/').pop().replace(/\.[a-z0-9]+$/i, '');
+      const heroSection = (/<section[^>]*class="[^"]*hero[^"]*"[\s\S]*?<\/section>/i.exec(html)
+        || /<section[^>]*id="hero"[\s\S]*?<\/section>/i.exec(html) || [''])[0];
+      const hasImg = new RegExp('<img[^>]*' + heroFile + '\\.', 'i').test(heroSection);
+      const bgHolder = /class="[^"]*(?:hero__bg|hero__background|hero__media|hero__image)[^"]*"/i.test(heroSection);
+      const inlineBg = /style="[^"]*background-image/i.test(heroSection);
+      if (!hasImg && !bgHolder && !inlineBg) {
+        err('R19-hero', 'Герой задан в данных, но на первом экране нет ни <img>, ни слоя под фон — обложка не отрисуется');
+      }
+    }
+
     // Одна и та же картинка несколько раз на странице. R7 сверяет файлы на
     // диске, но не то, что реально отрисовалось: общий фолбэк в генераторе
     // печатал concept.image в каждой карточке — по файлам всё честно.

@@ -2155,7 +2155,9 @@ function dropEmptyContacts(html) {
   var before;
   do {
     before = html;
-    html = html.replace(/<(li|p|span|div)\b[^>]*>\s*<\/\1>/gi, '');
+    // Never <div> here. A background layer (.hero__bg, .cta-banner__bg) is an
+    // empty div by design — deleting it takes the hero photo with it.
+    html = html.replace(/<(li|p|span)\b[^>]*>\s*<\/\1>/gi, '');
     // A contact row is an icon plus a value. With the value gone the icon is
     // left floating, so drop any row whose text content is now blank.
     html = stripBlankBlocks(html, /contact-item|contact__detail|footer__contact\b/);
@@ -2185,6 +2187,8 @@ function stripBlankBlocks(html, classRe, ignoreRe) {
     }
     if (end === -1) continue;
     var block = html.slice(m.index, end);
+    // An element that paints a background carries content without holding text
+    if (/background|\bbg\b|__bg/i.test(m[0])) continue;
     var probe = block;
     if (ignoreRe) {
       probe = probe.replace(/<(h[1-6]|div|span|p)\b[^>]*class="([^"]*)"[^>]*>[\s\S]*?<\/\1>/gi,
