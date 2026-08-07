@@ -188,6 +188,15 @@ function runQA(d, baseDir) {
       err('R16-imgsrc', `${srcless} <img> с пустым src — оберните картинку в {{#field}} в шаблоне`);
     }
 
+    // Иконки и разметка, которая не отрисуется. Ни одно из этого не видно
+    // в данных — только в готовой странице.
+    const nestedSvg = (html.match(/<svg[^>]*>\s*<svg\b/g) || []).length;
+    if (nestedSvg) err('R20-icons', `${nestedSvg} вложенных <svg> — иконка не отрисуется (значок уже был целым элементом, а шаблон обернул его ещё раз)`);
+    const bareIcon = (html.match(/<\/(div|span)>\s*<(path|circle|rect|polyline)\b/g) || []).length;
+    if (bareIcon) err('R20-icons', `${bareIcon} путей SVG вне <svg> — иконка не отрисуется`);
+    const escTag = (html.match(/&lt;\/?(a|div|span|p|strong|br)\b/gi) || []).length;
+    if (escTag) err('R20-icons', `${escTag} HTML-тегов выведено текстом — значение попало в экранирующий слот`);
+
     // Герой есть в данных, но на странице его нечем нарисовать. Ловит случай,
     // когда очистка вёрстки удалила слой фона (.hero__bg — пустой div по
     // замыслу): CSS с картинкой на месте, а элемента под него уже нет.

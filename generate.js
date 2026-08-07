@@ -191,9 +191,28 @@ function buildSchemaObjects(d, langs) {
 function esc(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+// Icons travel as inner SVG markup only. Some sets were authored as complete
+// <svg> elements and some as bare paths; templates wrap the value themselves,
+// so a full element nested into another <svg> and rendered as nothing.
+function iconInner(markup) {
+  if (!markup) return '';
+  return String(markup).replace(/^\s*<svg\b[^>]*>/i, '').replace(/<\/svg>\s*$/i, '');
+}
+
 function sanitizeHtml(str) {
   let s = esc(str);
   s = s.replace(/&lt;(\/?(strong|em|b|i|br)\s*\/?)&gt;/gi, '<$1>');
+  // Links are allowed, but only to targets that cannot execute: an href of
+  // javascript: or data: stays escaped and shows up as text, which is the
+  // visible failure we want rather than a silent script.
+  s = s.replace(/&lt;a\s+href=&quot;((?:https?:\/\/|mailto:|tel:|[#/])[^&"'<>\s]*)&quot;&gt;/gi,
+    (m, href) => '<a href="' + href + '">');
+  s = s.replace(/&lt;\/a&gt;/gi, '</a>');
+  // An </a> with no opening tag left would break the layout — drop the pair
+  // entirely if they no longer balance.
+  if ((s.match(/<a\s/gi) || []).length !== (s.match(/<\/a>/gi) || []).length) {
+    s = s.replace(/<\/?a\b[^>]*>/gi, '');
+  }
   return s;
 }
 
@@ -1347,7 +1366,7 @@ function prepareTemplateData(data, langs) {
         title: f.title || f.key || '',
         text: f.text || f.value || f.description || '',
         desc: f.text || f.value || f.description || '',
-        icon: f.icon || defaultIcons[i % defaultIcons.length],
+        icon: iconInner(f.icon || defaultIcons[i % defaultIcons.length]),
         // No shared fallback: pointing every card at concept.image printed
         // the same photo four times across the section.
         image: f.image || ''
@@ -1359,7 +1378,7 @@ function prepareTemplateData(data, langs) {
         title: s.key || '',
         text: s.value || '',
         desc: s.value || '',
-        icon: defaultIcons[i % defaultIcons.length],
+        icon: iconInner(defaultIcons[i % defaultIcons.length]),
         image: s.image || '',
         alt: s.key || '',
         _no_image: s.image ? '' : ' concept__card--no-img'
@@ -1490,7 +1509,7 @@ function prepareTemplateData(data, langs) {
     return {
       place: placeVal, name: placeVal,
       time: timeVal, value: timeVal,
-      icon: distIcons[i % distIcons.length]
+      icon: iconInner(distIcons[i % distIcons.length])
     };
   });
 
@@ -1518,7 +1537,7 @@ function prepareTemplateData(data, langs) {
       text: parts.join(' · '),
       value: tPlain(r.price || parts[0] || '', langs),
       label: title,
-      icon: invIcons[i % invIcons.length],
+      icon: iconInner(invIcons[i % invIcons.length]),
       _reveal_delay: i > 0 ? 'reveal--delay-' + i : ''
     };
   });
@@ -1756,7 +1775,7 @@ function prepareTemplateData(data, langs) {
     investment_highlights: investmentHighlights,
     // Short trust bullets next to the closing CTA (asi-village and friends)
     cta_highlights: ((d.catalogue && d.catalogue.tags) || []).slice(0, 4).map(function(tag, i) {
-      return { text: tag, icon: invIcons[i % invIcons.length], _reveal_delay: i > 0 ? 'reveal--delay-' + i : '' };
+      return { text: tag, icon: iconInner(invIcons[i % invIcons.length]), _reveal_delay: i > 0 ? 'reveal--delay-' + i : '' };
     }),
     leadmagnet_label: {en: 'Free Download', ru: 'Бесплатная загрузка'},
     leadmagnet_submit: {en: 'Download Catalog', ru: 'Скачать каталог'},
@@ -1833,7 +1852,12 @@ function prepareTemplateData(data, langs) {
     form_placeholder_phone: {en: dial + ' XXX XXX XXXX', ru: dial + ' XXX XXX XXXX'},
     form_placeholder_message: {en: 'Your message...', ru: 'Ваше сообщение...'},
     form_consent: {en: 'I agree to the processing of personal data', ru: 'Я согласен на обработку персональных данных'},
-    form_consent_html: {en: 'I agree to the <a href="#">privacy policy</a>', ru: 'Я согласен с <a href="#">политикой конфиденциальности</a>'},
+    // Link only when there is a policy page to link to. href="#" was a link to
+    // nowhere on a consent checkbox — the one place a dead link is worst.
+    form_consent_html: d.privacy_url
+      ? {en: 'I agree to the <a href="' + d.privacy_url + '">privacy policy</a>',
+         ru: 'Я согласен с <a href="' + d.privacy_url + '">политикой конфиденциальности</a>'}
+      : {en: 'I agree to the processing of personal data', ru: 'Я согласен на обработку персональных данных'},
     consent_text: {en: 'I agree to the processing of personal data', ru: 'Я согласен на обработку персональных данных'},
     form_error_name: {en: 'Please enter your name', ru: 'Введите имя'},
     form_error_email: {en: 'Please enter a valid email', ru: 'Введите корректный email'},
